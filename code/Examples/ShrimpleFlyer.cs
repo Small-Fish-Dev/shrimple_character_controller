@@ -1,3 +1,5 @@
+using Sandbox.Citizen;
+
 namespace ShrimpleCharacterController;
 
 [Hide]
