@@ -13,7 +13,7 @@
       "__guid": "dad296d6-935e-4779-b5ae-67a3a0d28ab6",
       "Flags": 0,
       "Name": "Player",
-      "Position": "-171.0225,-113.5377,171.9933",
+      "Position": "0,-49.46404,176.2773",
       "Enabled": true,
       "Components": [
         {
@@ -72,6 +72,45 @@
               "Model": "models/dev/sphere.vmdl",
               "RenderType": "On",
               "Tint": "1,1,1,1"
+            },
+            {
+              "__type": "Sandbox.TrailRenderer",
+              "__guid": "0c954483-095d-48f1-bb1c-47d90bbb6ae6",
+              "BlendMode": "Normal",
+              "CastShadows": false,
+              "Color": {
+                "color": [
+                  {
+                    "c": "1,1,1,0.5"
+                  },
+                  {
+                    "t": 1,
+                    "c": "1,1,1,0"
+                  }
+                ],
+                "alpha": []
+              },
+              "LifeTime": 3,
+              "MaxPoints": 256,
+              "Opaque": false,
+              "PointDistance": 4,
+              "Texturing": {
+                "WorldSpace": true,
+                "UnitsPerTexture": 10,
+                "Scale": 1
+              },
+              "Width": {
+                "rangey": "0,64",
+                "frames": [
+                  {
+                    "y": 1
+                  },
+                  {
+                    "x": 1
+                  }
+                ]
+              },
+              "Wireframe": false
             }
           ]
         }

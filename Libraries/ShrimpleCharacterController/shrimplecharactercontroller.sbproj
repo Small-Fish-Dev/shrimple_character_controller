@@ -1,0 +1,15 @@
+{
+  "Title": "Shrimple Character Controller",
+  "Type": "library",
+  "Org": "fish",
+  "Ident": "scc",
+  "Schema": 1,
+  "IncludeSourceFiles": true,
+  "Resources": null,
+  "PackageReferences": [],
+  "EditorReferences": null,
+  "IsWhitelistDisabled": false,
+  "Metadata": {
+    "CsProjName": ""
+  }
+}
