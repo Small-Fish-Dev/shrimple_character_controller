@@ -1,4 +1,7 @@
 # Shrimple Character Controller
+
+https://github.com/user-attachments/assets/374eea5b-7106-4c3e-8cb6-9bb56a1ff511
+
 A shrimple yet versatile Character Controller/Move Helper that performs great.
 Performs 60%-200% better than standard Character Controller.
 
