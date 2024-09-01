@@ -38,7 +38,8 @@ public sealed class ShrimpleWalker : Component
 		Renderer = AnimationHelper.Target;
 		Camera = new GameObject( true, "Camera" );
 		Camera.SetParent( GameObject );
-		Camera.Components.Create<CameraComponent>();
+		var cameraComponent = Camera.Components.Create<CameraComponent>();
+		cameraComponent.ZFar = 32768f;
 	}
 
 	protected override void OnFixedUpdate()

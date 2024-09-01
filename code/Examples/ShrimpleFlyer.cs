@@ -1,25 +1,24 @@
+using Sandbox.Citizen;
+
 namespace ShrimpleCharacterController;
 
-[Hide]
-public sealed class ShrimpleRoller : Component
+public sealed class ShrimpleFlyer : Component
 {
 	[RequireComponent]
 	public ShrimpleCharacterController Controller { get; set; }
 
-	public ModelRenderer Renderer { get; set; }
+	[RequireComponent]
+	public CitizenAnimationHelper AnimationHelper { get; set; }
+	public SkinnedModelRenderer Renderer { get; set; }
 	public GameObject Camera { get; set; }
 
 	[Property]
-	[Range( 500f, 2000f, 100f )]
-	public float WalkSpeed { get; set; } = 1000f;
+	[Range( 400f, 1600f, 20f )]
+	public float WalkSpeed { get; set; } = 800f;
 
 	[Property]
-	[Range( 1000f, 5000f, 200f )]
-	public float RunSpeed { get; set; } = 3000f;
-
-	[Property]
-	[Range( 200f, 500f, 20f )]
-	public float JumpStrength { get; set; } = 350f;
+	[Range( 800f, 4000f, 80f )]
+	public float RunSpeed { get; set; } = 2400f;
 
 	public Angles EyeAngles { get; set; }
 
@@ -27,8 +26,7 @@ public sealed class ShrimpleRoller : Component
 	{
 		base.OnStart();
 
-		Renderer = Components.Get<ModelRenderer>( FindMode.EnabledInSelfAndDescendants );
-
+		Renderer = AnimationHelper.Target;
 		Camera = new GameObject( true, "Camera" );
 		Camera.SetParent( GameObject );
 		var cameraComponent = Camera.Components.Create<CameraComponent>();
@@ -39,16 +37,19 @@ public sealed class ShrimpleRoller : Component
 	{
 		base.OnFixedUpdate();
 
-		var wishDirection = Input.AnalogMove * Rotation.FromYaw( EyeAngles.yaw );
 		var isDucking = Input.Down( "Duck" );
 		var isRunning = Input.Down( "Run" );
+		var ascending = Input.Down( "Jump" ) ? 1f : 0f;
+		var descending = Input.Down( "Duck" ) ? -1f : 0f;
 		var wishSpeed = isRunning ? RunSpeed : WalkSpeed;
+		var wishDirection = (Input.AnalogMove + Vector3.Up * (ascending + descending)).Normal * EyeAngles.ToRotation();
 
 		Controller.WishVelocity = wishDirection * wishSpeed;
 		Controller.Move();
 
-		if ( Input.Pressed( "Jump" ) && Controller.IsOnGround )
-			Controller.Punch( Vector3.Up * JumpStrength );
+		AnimationHelper.WithWishVelocity( Controller.WishVelocity );
+		AnimationHelper.WithVelocity( Controller.Velocity );
+		AnimationHelper.IsGrounded = Controller.IsOnGround;
 	}
 
 	protected override void OnUpdate()
@@ -57,14 +58,9 @@ public sealed class ShrimpleRoller : Component
 
 		EyeAngles += Input.AnalogLook;
 		EyeAngles = EyeAngles.WithPitch( MathX.Clamp( EyeAngles.pitch, -10f, 40f ) );
+		Renderer.Transform.Rotation = Rotation.Slerp( Renderer.Transform.Rotation, Rotation.FromYaw( EyeAngles.yaw ), Time.Delta * 5f );
 
-		float pitchRotation = Controller.Velocity.x * Time.Delta;
-		float rollRotation = -Controller.Velocity.y * Time.Delta;
-		var ballPitch = Rotation.FromPitch( pitchRotation );
-		var ballRoll = Rotation.FromRoll( rollRotation );
-		Renderer.Transform.Rotation = ballPitch * ballRoll * Renderer.Transform.Rotation;
-
-		var cameraOffset = Vector3.Up * 70f + Vector3.Backward * 260f;
+		var cameraOffset = Vector3.Up * 70f + Vector3.Backward * 220f;
 		Camera.Transform.Rotation = EyeAngles.ToRotation();
 		Camera.Transform.LocalPosition = cameraOffset * Camera.Transform.Rotation;
 	}
