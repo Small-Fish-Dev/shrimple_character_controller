@@ -583,8 +583,8 @@ public class ShrimpleCharacterController : Component
                 {
                     // Scale our leftover velocity based on the angle of approach relative to the wall
                     // (Perpendicular = 0%, Parallel = 100%)
-                    var scale = ScaleAgainstWalls ? 1f - Vector3.Dot(-travelTrace.Normal.WithZ(0f).Normal, velocity.WithZ(0f).Normal) : 1f;
-                    var wallLeftover = ScaleAgainstWalls ? Vector3.VectorPlaneProject(leftover, travelTrace.Normal.WithZ(0f).Normal) : leftover.ProjectAndScale(travelTrace.Normal.WithZ(0f).Normal);
+                    var scale = ScaleAgainstWalls ? 1f - Vector3.Dot(-travelTrace.Normal.Normal, velocity.Normal) : 1f;
+                    var wallLeftover = ScaleAgainstWalls ? Vector3.VectorPlaneProject(leftover, travelTrace.Normal.Normal) : leftover.ProjectAndScale(travelTrace.Normal.Normal);
                     leftover = (wallLeftover * scale).WithZ(wallLeftover.z);
 
                     WallObject = travelTrace.GameObject;
