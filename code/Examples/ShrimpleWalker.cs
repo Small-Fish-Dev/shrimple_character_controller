@@ -35,7 +35,7 @@ public sealed class ShrimpleWalker : Component
     {
         base.OnStart();
 
-        Renderer = AnimationHelper.Target;
+        Renderer = Components.Get<SkinnedModelRenderer>(FindMode.EverythingInSelfAndDescendants);
         Camera = new GameObject(true, "Camera");
         Camera.SetParent(GameObject);
         var cameraComponent = Camera.Components.Create<CameraComponent>();
@@ -58,8 +58,10 @@ public sealed class ShrimpleWalker : Component
         if (Input.Pressed("Jump") && Controller.IsOnGround)
         {
             Controller.Punch(Vector3.Up * JumpStrength);
-            AnimationHelper.TriggerJump();
+            AnimationHelper?.TriggerJump();
         }
+
+        if (!AnimationHelper.IsValid()) return;
 
         AnimationHelper.WithWishVelocity(Controller.WishVelocity);
         AnimationHelper.WithVelocity(Controller.Velocity);
