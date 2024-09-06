@@ -560,11 +560,12 @@ public class ShrimpleCharacterController : Component
                 if (angle >= 89f && angle <= 91f) // Check for steps
                 {
                     IsPushingAgainstWall = true; // We're pushing against a wall
+
                     if (IsOnGround) // Stairs VVV
                     {
                         var stepHorizontal = velocity.WithZ(0f).Normal * StepDepth; // How far in front we're looking for steps
                         var stepVertical = Vector3.Up * StepHeight; // How high we're looking for steps
-                        var stepTrace = BuildTrace(_shrunkenBounds, position + stepHorizontal + stepVertical, position + stepHorizontal);
+                        var stepTrace = BuildTrace(_shrunkenBounds, travelTrace.EndPosition + stepHorizontal + stepVertical, travelTrace.EndPosition + stepHorizontal);
 
                         if (!stepTrace.StartedSolid && stepTrace.Hit) // We found a step!
                         {
@@ -579,6 +580,7 @@ public class ShrimpleCharacterController : Component
                         }
                     }
                 }
+
                 if (IsPushingAgainstWall)
                 {
                     // Scale our leftover velocity based on the angle of approach relative to the wall
