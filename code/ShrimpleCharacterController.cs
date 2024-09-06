@@ -569,10 +569,8 @@ public class ShrimpleCharacterController : Component
 
                         if (!stepTrace.StartedSolid && stepTrace.Hit) // We found a step!
                         {
-                            var stepDistance = stepTrace.HitPosition - travelTrace.HitPosition;
-                            var stepLength = stepDistance.Length + SkinWidth;
-                            var stepTravelled = stepDistance.Normal * stepLength;
-
+                            var stepDistance = stepTrace.EndPosition - travelTrace.EndPosition;
+                            var stepTravelled = Vector3.Up * stepDistance;
                             position += stepTravelled; // Offset our position by the height of the step climbed
                             IsPushingAgainstWall = false; // Nevermind, we're not against a wall, we climbed a step!
                             WallObject = null;
