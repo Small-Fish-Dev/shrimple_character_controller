@@ -643,12 +643,12 @@ public class ShrimpleCharacterController : Component
     private Vector3 CalculateGoalVelocity(float delta)
     {
         bool shouldIgnoreZ = IgnoreZ || (IgnoreZWhenZero && WishVelocity.z.AlmostEqual(0f));
-
-        var wishVelocity = shouldIgnoreZ ? WishVelocity.WithZ(Velocity.z) : WishVelocity;
+        var wishVelocity = shouldIgnoreZ ? WishVelocity.WithZ(Velocity.z).Normal * WishVelocity.Length : WishVelocity;
         var isAccelerating = shouldIgnoreZ ? wishVelocity.WithZ(0f).Length >= Velocity.WithZ(0f).Length : wishVelocity.Length >= Velocity.Length;
 
         var goalSpeed = CalculateGoalSpeed(wishVelocity, Velocity, isAccelerating, delta);
         var goalVelocity = Velocity.MoveTowards(wishVelocity, goalSpeed);
+
         return goalVelocity;
     }
 
