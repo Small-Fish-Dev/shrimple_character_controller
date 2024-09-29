@@ -622,7 +622,7 @@ public class ShrimpleCharacterController : Component
     {
         float goalSpeed;
 
-        var isSameDirection = velocity.IsNearlyZero(1f) || Vector3.Dot(wishVelocity.Normal, velocity.Normal) >= 0f; // Is our wishVelocity roughly moving towards our velocity already?
+        var isSameDirection = velocity.IsNearlyZero(1f) || Vector3.Dot(wishVelocity.WithZ(0f).Normal, velocity.WithZ(0f).Normal) >= 0f; // Is our wishVelocity roughly moving towards our velocity already?
 
         var acceleration = IsOnGround ? GroundAcceleration : AirAcceleration;
         var deceleration = IsOnGround ? GroundDeceleration : AirDeceleration;
@@ -643,13 +643,13 @@ public class ShrimpleCharacterController : Component
     private Vector3 CalculateGoalVelocity(float delta)
     {
         bool shouldIgnoreZ = IgnoreZ || (IgnoreZWhenZero && WishVelocity.z.AlmostEqual(0f));
-        var wishVelocity = shouldIgnoreZ ? WishVelocity.WithZ(Velocity.z).Normal * WishVelocity.Length : WishVelocity;
+        var wishVelocity = shouldIgnoreZ ? (WishVelocity.Normal * WishVelocity.Length).WithZ(Velocity.z) : WishVelocity;
         var isAccelerating = shouldIgnoreZ ? wishVelocity.WithZ(0f).Length >= Velocity.WithZ(0f).Length : wishVelocity.Length >= Velocity.Length;
 
         var goalSpeed = CalculateGoalSpeed(wishVelocity, Velocity, isAccelerating, delta);
         var goalVelocity = Velocity.MoveTowards(wishVelocity, goalSpeed);
 
-        return goalVelocity;
+        return shouldIgnoreZ ? goalVelocity.WithZ(Velocity.z) : goalVelocity;
     }
 
 
