@@ -1,0 +1,62 @@
+{
+  "scene.lastopened": {
+    "Value": "\u0022scenes/walker_example.scene\u0022",
+    "Timeout": 1730585809,
+    "DeleteAt": 0
+  },
+  "scenes/flyer_example.scene.Viewport0": {
+    "Value": "{\u0022CameraPosition\u0022:\u0022-354.6075,-298.1075,467.0746\u0022,\u0022CameraRotation\u0022:\u0022-0.1464466,0.3535534,0.3535534,0.8535534\u0022,\u0022View\u0022:0,\u0022RenderMode\u0022:0,\u0022WireframeMode\u0022:false,\u0022EnablePostProcessing\u0022:true,\u0022ShowGrid\u0022:true,\u0022GridOpacity\u0022:0.2,\u0022GridAxis\u0022:0,\u0022CameraOrthoHeight\u0022:1000}",
+    "Timeout": 1727804419,
+    "DeleteAt": 1728080199
+  },
+  "gizmo.settings": {
+    "Value": "{\u0022EditMode\u0022:\u0022position\u0022,\u0022Selection\u0022:true,\u0022ViewMode\u0022:\u00223d\u0022,\u0022GizmosEnabled\u0022:true,\u0022GizmoScale\u0022:1,\u0022GridSpacing\u0022:8,\u0022SnapToGrid\u0022:true,\u0022SnapToAngles\u0022:true,\u0022AngleSpacing\u0022:15,\u0022GlobalSpace\u0022:false,\u0022DebugActionGraphs\u0022:false}",
+    "Timeout": 1730585809,
+    "DeleteAt": 0
+  },
+  "scenes/roller_example.scene.Viewport0": {
+    "Value": "{\u0022CameraPosition\u0022:\u0022-43.56374,-93.06374,270.1084\u0022,\u0022CameraRotation\u0022:\u0022-0.1464466,0.3535534,0.3535534,0.8535534\u0022,\u0022View\u0022:0,\u0022RenderMode\u0022:0,\u0022WireframeMode\u0022:false,\u0022EnablePostProcessing\u0022:true,\u0022ShowGrid\u0022:true,\u0022GridOpacity\u0022:0.2,\u0022GridAxis\u0022:0,\u0022CameraOrthoHeight\u0022:1000}",
+    "Timeout": 1727804492,
+    "DeleteAt": 1728080199
+  },
+  "scenes/walker_example.scene.Viewport0": {
+    "Value": "{\u0022CameraPosition\u0022:\u00224.097099,268.366,496.7835\u0022,\u0022CameraRotation\u0022:\u00220.2423258,0.2017571,-0.7292984,0.6072035\u0022,\u0022CameraOrthoHeight\u0022:1000}",
+    "Timeout": 1730585859,
+    "DeleteAt": 0
+  },
+  ".Viewport0": {
+    "Value": "{\u0022CameraPosition\u0022:\u0022-179.2743,-214.2743,328.7174\u0022,\u0022CameraRotation\u0022:\u0022-0.1464466,0.3535534,0.3535534,0.8535534\u0022,\u0022View\u0022:0,\u0022RenderMode\u0022:0,\u0022WireframeMode\u0022:false,\u0022EnablePostProcessing\u0022:true,\u0022ShowGrid\u0022:true,\u0022GridOpacity\u0022:0.2,\u0022GridAxis\u0022:0,\u0022CameraOrthoHeight\u0022:1000}",
+    "Timeout": 1730216229,
+    "DeleteAt": 0
+  },
+  "AssetBrowser.History.AssetsBrowser.ViewMode": {
+    "Value": "0",
+    "Timeout": 1730214972,
+    "DeleteAt": 0
+  },
+  "AssetBrowser.History.AssetsBrowser.ShowJunkFiles": {
+    "Value": "false",
+    "Timeout": 1730214972,
+    "DeleteAt": 0
+  },
+  "AssetBrowser.History.AssetsBrowser.ShowRecursiveFiles": {
+    "Value": "false",
+    "Timeout": 1730214972,
+    "DeleteAt": 0
+  },
+  "prefabs/debug_world.prefab.Viewport0": {
+    "Value": "{\u0022CameraPosition\u0022:\u0022445.9478,-1115.382,261.235\u0022,\u0022CameraRotation\u0022:\u0022-0.264746,0.1574427,0.8177085,0.4862861\u0022,\u0022View\u0022:0,\u0022RenderMode\u0022:0,\u0022WireframeMode\u0022:false,\u0022EnablePostProcessing\u0022:true,\u0022ShowGrid\u0022:true,\u0022GridOpacity\u0022:0.2,\u0022GridAxis\u0022:0,\u0022CameraOrthoHeight\u0022:1000}",
+    "Timeout": 1728250978,
+    "DeleteAt": 0
+  },
+  "expand.dad296d6-935e-4779-b5ae-67a3a0d28ab6.MissingComponent": {
+    "Value": "false",
+    "Timeout": 1730216229,
+    "DeleteAt": 0
+  },
+  "SceneView.Viewport0.Settings": {
+    "Value": "{\u0022CameraPosition\u0022:\u00224.097099,268.366,496.7835\u0022,\u0022CameraRotation\u0022:\u00220.2423258,0.2017571,-0.7292984,0.6072035\u0022,\u0022View\u0022:0,\u0022RenderMode\u0022:0,\u0022WireframeMode\u0022:false,\u0022EnablePostProcessing\u0022:true,\u0022ShowGrid\u0022:true,\u0022GridOpacity\u0022:0.2,\u0022GridAxis\u0022:0,\u0022CameraOrthoHeight\u0022:1000}",
+    "Timeout": 1730585859,
+    "DeleteAt": 0
+  }
+}

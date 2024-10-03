@@ -62,10 +62,10 @@ public sealed class ShrimpleRoller : Component
         float rollRotation = -Controller.Velocity.y * Time.Delta;
         var ballPitch = Rotation.FromPitch(pitchRotation);
         var ballRoll = Rotation.FromRoll(rollRotation);
-        Renderer.Transform.Rotation = ballPitch * ballRoll * Renderer.Transform.Rotation;
+        Renderer.WorldRotation = ballPitch * ballRoll * Renderer.WorldRotation;
 
         var cameraOffset = Vector3.Up * 70f + Vector3.Backward * 260f;
-        Camera.Transform.Rotation = EyeAngles.ToRotation();
-        Camera.Transform.LocalPosition = cameraOffset * Camera.Transform.Rotation;
+        Camera.WorldRotation = EyeAngles.ToRotation();
+        Camera.LocalPosition = cameraOffset * Camera.WorldRotation;
     }
 }

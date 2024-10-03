@@ -59,10 +59,10 @@ public sealed class ShrimpleFlyer : Component
 
         EyeAngles += Input.AnalogLook;
         EyeAngles = EyeAngles.WithPitch(MathX.Clamp(EyeAngles.pitch, -10f, 40f));
-        Renderer.Transform.Rotation = Rotation.Slerp(Renderer.Transform.Rotation, Rotation.FromYaw(EyeAngles.yaw), Time.Delta * 5f);
+        Renderer.WorldRotation = Rotation.Slerp(Renderer.WorldRotation, Rotation.FromYaw(EyeAngles.yaw), Time.Delta * 5f);
 
         var cameraOffset = Vector3.Up * 70f + Vector3.Backward * 220f;
-        Camera.Transform.Rotation = EyeAngles.ToRotation();
-        Camera.Transform.LocalPosition = cameraOffset * Camera.Transform.Rotation;
+        Camera.WorldRotation = EyeAngles.ToRotation();
+        Camera.LocalPosition = cameraOffset * Camera.WorldRotation;
     }
 }

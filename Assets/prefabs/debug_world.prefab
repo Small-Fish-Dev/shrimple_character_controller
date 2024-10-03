@@ -19343,7 +19343,7 @@
   "MenuIcon": null,
   "ResourceVersion": 1,
   "__references": [
-    "matek.dev_checker_light"
+    "matek.dev_checker_light#46462"
   ],
   "__version": 1
 }
