@@ -534,7 +534,7 @@ public class ShrimpleCharacterController : Component
                 if (IsSlipping && !gravityPass && velocity.z > 0f)
                     velocity = velocity.WithZ(0f); // If we're slipping ignore any extra velocity we had
 
-                if (IsOnGround && GroundStickEnabled)
+                if (IsOnGround && GroundStickEnabled && !IsSlipping)
                 {
                     position = groundTrace.EndPosition + Vector3.Up * SkinWidth; // Place on the ground
                     velocity = Vector3.VectorPlaneProject(velocity, groundTrace.Normal); // Follow the ground you're on without projecting Z
@@ -580,6 +580,7 @@ public class ShrimpleCharacterController : Component
             if (angle <= MaxGroundAngle) // Terrain we can walk on
             {
                 ComputeWalk();
+                _stepAngle = 90f;
             }
             else
             {
@@ -599,7 +600,6 @@ public class ShrimpleCharacterController : Component
                             var stepHorizontal = velocity.WithZ(0f).Normal * StepDepth; // How far in front we're looking for steps
                             var stepVertical = Vector3.Up * StepHeight; // How high we're looking for steps
                             var stepTrace = BuildTrace(_shrunkenBounds, travelTrace.EndPosition + stepHorizontal + stepVertical, travelTrace.EndPosition + stepHorizontal);
-                            _stepAngle = Vector3.GetAngle(Vector3.Up, stepTrace.Normal);
 
                             if (!stepTrace.StartedSolid && stepTrace.Hit) // We found a step!
                             {
@@ -615,7 +615,11 @@ public class ShrimpleCharacterController : Component
                                 }
                                 else
                                 {
-                                    ComputeWalk();
+                                    if (!IsSlipping)
+                                    {
+                                        _stepAngle = Vector3.GetAngle(Vector3.Up, stepTrace.Normal);
+                                        ComputeWalk();
+                                    }
                                 }
                             }
                             else

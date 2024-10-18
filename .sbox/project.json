@@ -6,12 +6,12 @@
   },
   "gizmo.settings": {
     "Value": "{\u0022EditMode\u0022:\u0022position\u0022,\u0022Selection\u0022:true,\u0022ViewMode\u0022:\u00223d\u0022,\u0022GizmosEnabled\u0022:true,\u0022GizmoScale\u0022:1,\u0022GridSpacing\u0022:8,\u0022SnapToGrid\u0022:true,\u0022SnapToAngles\u0022:true,\u0022AngleSpacing\u0022:15,\u0022GlobalSpace\u0022:false,\u0022DebugActionGraphs\u0022:false}",
-    "Timeout": 1731419389,
+    "Timeout": 1731419547,
     "DeleteAt": 0
   },
   "scenes/flyer_example.scene.Viewport0": {
     "Value": "{\u0022CameraPosition\u0022:\u0022-7143.974,-7143.975,10902.61\u0022,\u0022CameraRotation\u0022:\u0022-0.1464466,0.3535534,0.3535534,0.8535534\u0022,\u0022CameraOrthoHeight\u0022:1000}",
-    "Timeout": 1731419445,
+    "Timeout": 1731419547,
     "DeleteAt": 0
   },
   "scenes/walker_example.scene.Viewport0": {
@@ -51,12 +51,12 @@
   },
   "SceneView.Viewport0.Settings": {
     "Value": "{\u0022CameraPosition\u0022:\u0022-7143.974,-7143.975,10902.61\u0022,\u0022CameraRotation\u0022:\u0022-0.1464466,0.3535534,0.3535534,0.8535534\u0022,\u0022View\u0022:0,\u0022RenderMode\u0022:0,\u0022WireframeMode\u0022:false,\u0022EnablePostProcessing\u0022:true,\u0022ShowGrid\u0022:true,\u0022GridOpacity\u0022:0.2,\u0022GridAxis\u0022:0,\u0022CameraOrthoHeight\u0022:1000}",
-    "Timeout": 1731419445,
+    "Timeout": 1731419547,
     "DeleteAt": 0
   },
   "SceneView.Layout": {
     "Value": "{\u0022Layout\u0022:0,\u0022SplitterState\u0022:[]}",
-    "Timeout": 1731419389,
+    "Timeout": 1731419547,
     "DeleteAt": 0
   }
 }
