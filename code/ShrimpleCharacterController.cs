@@ -529,6 +529,9 @@ public class ShrimpleCharacterController : Component
                 var isGrounded = IsOnGround && groundTrace.Hit; // Was already on the ground and still is, this helps stick when going down stairs
 
                 IsOnGround = hasLanded || isGrounded;
+                GroundSurface = IsOnGround ? groundTrace.Surface : null;
+                GroundNormal = IsOnGround ? groundTrace.Normal : Vector3.Up;
+                GroundObject = IsOnGround ? groundTrace.GameObject : null;
                 IsSlipping = IsOnGround && (GroundAngle > MaxGroundAngle && (!PseudoStepsEnabled || _stepAngle > MaxGroundAngle));
 
                 if (IsSlipping && !gravityPass && velocity.z > 0f)
@@ -539,10 +542,6 @@ public class ShrimpleCharacterController : Component
                     position = groundTrace.EndPosition + Vector3.Up * SkinWidth; // Place on the ground
                     velocity = Vector3.VectorPlaneProject(velocity, groundTrace.Normal); // Follow the ground you're on without projecting Z
                 }
-
-                GroundSurface = IsOnGround ? groundTrace.Surface : null;
-                GroundNormal = IsOnGround ? groundTrace.Normal : Vector3.Up;
-                GroundObject = IsOnGround ? groundTrace.GameObject : null;
 
                 IsStuck = false;
             }
@@ -572,7 +571,6 @@ public class ShrimpleCharacterController : Component
                     leftover = Vector3.VectorPlaneProject(leftover, travelTrace.Normal); // Don't project the vertical velocity after landing else it boosts your horizontal velocity
                 else
                     leftover = leftover.ProjectAndScale(travelTrace.Normal); // Project the velocity along the terrain
-
                 IsPushingAgainstWall = false;
                 WallObject = null;
             }
