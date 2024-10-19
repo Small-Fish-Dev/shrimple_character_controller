@@ -625,7 +625,7 @@ public class ShrimpleCharacterController : Component
                 {
                     if (!climbedStair)
                     {
-                        var scale = 1f - Vector3.Dot(-travelTrace.Normal, velocity.Normal);
+                        var scale = IsSlipping ? 1f : 1f - Vector3.Dot(-travelTrace.Normal, velocity.Normal);
                         leftover = ScaleAgainstWalls ? Vector3.VectorPlaneProject(leftover, travelTrace.Normal) * scale : leftover.ProjectAndScale(travelTrace.Normal);
                     }
                 }
