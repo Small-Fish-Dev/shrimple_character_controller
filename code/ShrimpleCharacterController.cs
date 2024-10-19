@@ -332,7 +332,6 @@ public class ShrimpleCharacterController : Component
     private BBox _shrunkenBounds;
     private string[] _pushTags;
     private Vector3 _lastVelocity;
-    private float _stepAngle;
 
     /// <summary>
     /// If another MoveHelper moved at the same time and they're stuck, let this one know that the other already unstuck for us
@@ -532,7 +531,7 @@ public class ShrimpleCharacterController : Component
                 GroundSurface = IsOnGround ? groundTrace.Surface : null;
                 GroundNormal = IsOnGround ? groundTrace.Normal : Vector3.Up;
                 GroundObject = IsOnGround ? groundTrace.GameObject : null;
-                IsSlipping = IsOnGround && (GroundAngle > MaxGroundAngle && (!PseudoStepsEnabled || _stepAngle > MaxGroundAngle));
+                IsSlipping = IsOnGround && GroundAngle > MaxGroundAngle;
 
                 if (IsSlipping && !gravityPass && velocity.z > 0f)
                     velocity = velocity.WithZ(0f); // If we're slipping ignore any extra velocity we had
@@ -540,7 +539,7 @@ public class ShrimpleCharacterController : Component
                 if (IsOnGround && GroundStickEnabled && !IsSlipping)
                 {
                     position = groundTrace.EndPosition + Vector3.Up * SkinWidth; // Place on the ground
-                    velocity = Vector3.VectorPlaneProject(velocity, groundTrace.Normal); // Follow the ground you're on without projecting Z
+                    velocity = Vector3.VectorPlaneProject(velocity, GroundNormal); // Follow the ground you're on without projecting Z
                 }
 
                 IsStuck = false;
@@ -565,7 +564,7 @@ public class ShrimpleCharacterController : Component
             if (toTravel >= SkinWidth && travelTrace.Distance < SkinWidth)
                 travelled = Vector3.Zero;
 
-            void ComputeWalk()
+            if (angle <= MaxGroundAngle) // Terrain we can walk on
             {
                 if (gravityPass || !IsOnGround)
                     leftover = Vector3.VectorPlaneProject(leftover, travelTrace.Normal); // Don't project the vertical velocity after landing else it boosts your horizontal velocity
@@ -573,12 +572,6 @@ public class ShrimpleCharacterController : Component
                     leftover = leftover.ProjectAndScale(travelTrace.Normal); // Project the velocity along the terrain
                 IsPushingAgainstWall = false;
                 WallObject = null;
-            }
-
-            if (angle <= MaxGroundAngle) // Terrain we can walk on
-            {
-                ComputeWalk();
-                _stepAngle = 90f;
             }
             else
             {
@@ -598,10 +591,11 @@ public class ShrimpleCharacterController : Component
                             var stepHorizontal = velocity.WithZ(0f).Normal * StepDepth; // How far in front we're looking for steps
                             var stepVertical = Vector3.Up * StepHeight; // How high we're looking for steps
                             var stepTrace = BuildTrace(_shrunkenBounds, travelTrace.EndPosition + stepHorizontal + stepVertical, travelTrace.EndPosition + stepHorizontal);
+                            var stepAngle = Vector3.GetAngle(stepTrace.Normal, Vector3.Up);
 
-                            if (!stepTrace.StartedSolid && stepTrace.Hit) // We found a step!
+                            if (!stepTrace.StartedSolid && stepTrace.Hit && stepAngle <= MaxGroundAngle) // We found a step!
                             {
-                                if (isStep)
+                                if (isStep || !IsSlipping && PseudoStepsEnabled)
                                 {
                                     var stepDistance = stepTrace.EndPosition - travelTrace.EndPosition;
                                     var stepTravelled = Vector3.Up * stepDistance;
@@ -611,17 +605,7 @@ public class ShrimpleCharacterController : Component
                                     IsPushingAgainstWall = false; // Nevermind, we're not against a wall, we climbed a step!
                                     WallObject = null;
                                 }
-                                else
-                                {
-                                    if (!IsSlipping)
-                                    {
-                                        _stepAngle = Vector3.GetAngle(Vector3.Up, stepTrace.Normal);
-                                        ComputeWalk();
-                                    }
-                                }
                             }
-                            else
-                                _stepAngle = 90f;
                         }
                     }
                 }
@@ -636,7 +620,6 @@ public class ShrimpleCharacterController : Component
 
                     WallObject = travelTrace.GameObject;
                     WallNormal = travelTrace.Normal;
-                    _stepAngle = 90f;
                 }
                 else
                 {
