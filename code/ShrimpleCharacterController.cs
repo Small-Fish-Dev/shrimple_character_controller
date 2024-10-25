@@ -138,6 +138,14 @@ public class ShrimpleCharacterController : Component
     public float WallTolerance { get; set; } = 1f;
 
     /// <summary>
+    /// Player feels like it's gripping walls too much? Try more Grip Factor Reduction!
+    /// </summary>
+    [Group("Movement")]
+    [Property]
+    [Range(1f, 10f, 0.1f, true)]
+    public float GripFactorReduction { get; set; } = 1f;
+
+    /// <summary>
     /// Stick the MoveHelper to the ground (IsOnGround will default to false if disabled)
     /// </summary>
     [ToggleGroup("GroundStickEnabled")]
@@ -614,7 +622,7 @@ public class ShrimpleCharacterController : Component
                 {
                     // Scale our leftover velocity based on the angle of approach relative to the wall
                     // (Perpendicular = 0%, Parallel = 100%)
-                    var scale = ScaleAgainstWalls ? 1f - Vector3.Dot(-travelTrace.Normal.Normal, velocity.Normal) : 1f;
+                    var scale = ScaleAgainstWalls ? 1f - Vector3.Dot(-travelTrace.Normal.Normal/GripFactorReduction, velocity.Normal) : 1f;
                     var wallLeftover = ScaleAgainstWalls ? Vector3.VectorPlaneProject(leftover, travelTrace.Normal.Normal) : leftover.ProjectAndScale(travelTrace.Normal.Normal);
                     leftover = (wallLeftover * scale).WithZ(wallLeftover.z);
 
@@ -625,7 +633,7 @@ public class ShrimpleCharacterController : Component
                 {
                     if (!climbedStair)
                     {
-                        var scale = IsSlipping ? 1f : 1f - Vector3.Dot(-travelTrace.Normal, velocity.Normal);
+                        var scale = IsSlipping ? 1f : 1f - Vector3.Dot(-travelTrace.Normal/GripFactorReduction, velocity.Normal);
                         leftover = ScaleAgainstWalls ? Vector3.VectorPlaneProject(leftover, travelTrace.Normal) * scale : leftover.ProjectAndScale(travelTrace.Normal);
                     }
                 }
