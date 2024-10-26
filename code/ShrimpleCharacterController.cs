@@ -374,7 +374,14 @@ public class ShrimpleCharacterController : Component
         return PushTagsWeight.Keys.ToArray();
     }
 
-    private SceneTraceResult BuildTrace(BBox bounds, Vector3 from, Vector3 to)
+    /// <summary>
+    /// Casts the current bounds from to and returns the scene trace result
+    /// </summary>
+    /// <param name="bounds"></param>
+    /// <param name="from"></param>
+    /// <param name="to"></param>
+    /// <returns></returns>
+    public SceneTraceResult BuildTrace(BBox bounds, Vector3 from, Vector3 to)
     {
         return Game.SceneTrace.Box(bounds, from, to)
             .IgnoreGameObjectHierarchy(GameObject)
@@ -622,7 +629,7 @@ public class ShrimpleCharacterController : Component
                 {
                     // Scale our leftover velocity based on the angle of approach relative to the wall
                     // (Perpendicular = 0%, Parallel = 100%)
-                    var scale = ScaleAgainstWalls ? 1f - Vector3.Dot(-travelTrace.Normal.Normal/GripFactorReduction, velocity.Normal) : 1f;
+                    var scale = ScaleAgainstWalls ? 1f - Vector3.Dot(-travelTrace.Normal.Normal / GripFactorReduction, velocity.Normal) : 1f;
                     var wallLeftover = ScaleAgainstWalls ? Vector3.VectorPlaneProject(leftover, travelTrace.Normal.Normal) : leftover.ProjectAndScale(travelTrace.Normal.Normal);
                     leftover = (wallLeftover * scale).WithZ(wallLeftover.z);
 
@@ -633,7 +640,7 @@ public class ShrimpleCharacterController : Component
                 {
                     if (!climbedStair)
                     {
-                        var scale = IsSlipping ? 1f : 1f - Vector3.Dot(-travelTrace.Normal/GripFactorReduction, velocity.Normal);
+                        var scale = IsSlipping ? 1f : 1f - Vector3.Dot(-travelTrace.Normal / GripFactorReduction, velocity.Normal);
                         leftover = ScaleAgainstWalls ? Vector3.VectorPlaneProject(leftover, travelTrace.Normal) * scale : leftover.ProjectAndScale(travelTrace.Normal);
                     }
                 }
