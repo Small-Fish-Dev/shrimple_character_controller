@@ -698,20 +698,26 @@ public class ShrimpleCharacterController : Component
         return shouldIgnoreZ ? goalVelocity.WithZ(Velocity.z) : goalVelocity;
     }
 
-
     public bool TryUnstuck(Vector3 position, out Vector3 result)
     {
+        if (_lastVelocity == Vector3.Zero)
+            _lastVelocity = Vector3.Down;
+
         var velocityLength = _lastVelocity.Length + SkinWidth;
         var startPos = position - _lastVelocity.Normal * velocityLength; // Try undoing the last velocity 1st
         var endPos = position;
 
         for (int i = 0; i < MaxUnstuckTries + 1; i++)
         {
+
             if (i == 1)
                 startPos = position + Vector3.Up * 2f; // Try going up 2nd
 
             if (i > 1)
                 startPos = position + Vector3.Random.Normal * ((float)i / 2f); // Start randomly checking 3rd
+
+            if (startPos - endPos == Vector3.Zero) // No difference!
+                continue;
 
             var unstuckTrace = BuildTrace(_shrunkenBounds, startPos, endPos);
 
