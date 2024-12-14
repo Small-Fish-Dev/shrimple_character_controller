@@ -25,3 +25,6 @@ code/Properties/*
 
 # Exported / standalone games
 Exports/
+/.sbox
+/.sbox
+code/scc.csproj.user

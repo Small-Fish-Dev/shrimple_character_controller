@@ -724,6 +724,7 @@ public class ShrimpleCharacterController : Component
             if (!unstuckTrace.StartedSolid)
             {
                 result = unstuckTrace.EndPosition - _lastVelocity.Normal * SkinWidth;
+                _lastVelocity = Vector3.Zero;
                 return true;
             }
         }
