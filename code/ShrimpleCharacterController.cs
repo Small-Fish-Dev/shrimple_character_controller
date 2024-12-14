@@ -507,7 +507,7 @@ public class ShrimpleCharacterController : Component
         // GROUND AND UNSTUCK CHECK //
         if (depth == 0) // Only check for the first step since it's impossible to get stuck on other steps
         {
-            var groundTrace = BuildTrace(_shrunkenBounds, position, position + Vector3.Down * GroundStickDistance);
+            var groundTrace = BuildTrace(_shrunkenBounds, position, position + Vector3.Down * (GroundStickDistance + SkinWidth * 1.1f)); // Compensate for floating inaccuracy
 
             if (groundTrace.StartedSolid)
             {
@@ -604,7 +604,7 @@ public class ShrimpleCharacterController : Component
                         if (IsOnGround) // Stairs VVV
                         {
                             var stepHorizontal = velocity.WithZ(0f).Normal * StepDepth; // How far in front we're looking for steps
-                            var stepVertical = Vector3.Up * StepHeight; // How high we're looking for steps
+                            var stepVertical = Vector3.Up * (StepHeight + SkinWidth); // How high we're looking for steps + Some to compensate for floating inaccuracy
                             var stepTrace = BuildTrace(_shrunkenBounds, travelTrace.EndPosition + stepHorizontal + stepVertical, travelTrace.EndPosition + stepHorizontal);
                             var stepAngle = Vector3.GetAngle(stepTrace.Normal, Vector3.Up);
 
@@ -709,7 +709,6 @@ public class ShrimpleCharacterController : Component
 
         for (int i = 0; i < MaxUnstuckTries + 1; i++)
         {
-
             if (i == 1)
                 startPos = position + Vector3.Up * 2f; // Try going up 2nd
 
