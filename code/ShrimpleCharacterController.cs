@@ -148,7 +148,7 @@ public class ShrimpleCharacterController : Component
     /// <summary>
     /// Stick the MoveHelper to the ground (IsOnGround will default to false if disabled)
     /// </summary>
-    [ToggleGroup("GroundStickEnabled")]
+    [FeatureEnabled("GroundStick")]
     [Property]
     public bool GroundStickEnabled { get; set; } = true;
 
@@ -156,7 +156,7 @@ public class ShrimpleCharacterController : Component
     /// How steep terrain can be for you to stand on without slipping
     /// </summary>
     [Property]
-    [Group("GroundStickEnabled")]
+    [Feature("GroundStick")]
     [Range(0f, 89f, 1f, true, true)]
     public float MaxGroundAngle { get; set; } = 60f;
 
@@ -164,21 +164,21 @@ public class ShrimpleCharacterController : Component
     /// How far from the ground the MoveHelper is going to stick (Useful for going down stairs!)
     /// </summary>
     [Property]
-    [Group("GroundStickEnabled")]
+    [Feature("GroundStick")]
     [Range(1f, 32f, 1f, false)]
     public float GroundStickDistance { get; set; } = 12f;
 
     /// <summary>
     /// Enable steps climbing (+1 Trace call)
     /// </summary>
-    [ToggleGroup("StepsEnabled")]
+    [FeatureEnabled("Steps")]
     [Property]
     public bool StepsEnabled { get; set; } = true;
 
     /// <summary>
     /// How high steps can be for you to climb on
     /// </summary>
-    [Group("StepsEnabled")]
+    [Feature("Steps")]
     [Property]
     [Range(1f, 32f, 1f, false)]
     public float StepHeight { get; set; } = 12f;
@@ -186,7 +186,7 @@ public class ShrimpleCharacterController : Component
     /// <summary>
     /// How deep it checks for steps (Minimum depth)
     /// </summary>
-    [Group("StepsEnabled")]
+    [Feature("Steps")]
     [Property]
     [Range(0.1f, 8f, 0.1f, false)]
     public float StepDepth { get; set; } = 2f;
@@ -194,7 +194,7 @@ public class ShrimpleCharacterController : Component
     /// <summary>
     /// Tolerance from a 90° surface before it's considered a valid step (Ex. Tolerance 1 = Between 89° and 91° can be a step, 0.1 = 89.9° to 90.1°)
     /// </summary>
-    [Group("StepsEnabled")]
+    [Feature("Steps")]
     [Property]
     [Range(0f, 10f, 0.1f, false)]
     public float StepTolerance { get; set; } = 1f;
@@ -202,14 +202,14 @@ public class ShrimpleCharacterController : Component
     /// <summary>
     /// Enable to ability to walk on a surface that's too steep if it's equal or smaller than a step (+1 Trace call when on steep terrain)
     /// </summary>
-    [Group("StepsEnabled")]
+    [Feature("Steps")]
     [Property]
     public bool PseudoStepsEnabled { get; set; } = true;
 
     /// <summary>
     /// Instead of colliding with these tags the MoveHelper will be pushed away (Make sure the tags are in IgnoreTags as well!)
     /// </summary>
-    [ToggleGroup("PushEnabled")]
+    [FeatureEnabled("Push")]
     [Property]
     public bool PushEnabled { get; set; } = false;
 
@@ -220,7 +220,7 @@ public class ShrimpleCharacterController : Component
     /// Which tags will push this MoveHelper away and with how much force (Make sure they are also included in IgnoreTags!) (+1 Trace call)
     /// </summary>
     [Property]
-    [Group("PushEnabled")]
+    [Feature("Push")]
     public Dictionary<string, float> PushTagsWeight
     {
         get => _pushTagsWeight;
@@ -234,7 +234,7 @@ public class ShrimpleCharacterController : Component
     /// <summary>
     /// Apply gravity to this MoveHelper when not on the ground
     /// </summary>
-    [ToggleGroup("GravityEnabled")]
+    [FeatureEnabled("Gravity")]
     [Property]
     public bool GravityEnabled { get; set; } = true;
 
@@ -242,14 +242,14 @@ public class ShrimpleCharacterController : Component
     /// Use the scene's gravity or our own
     /// </summary>
     [Property]
-    [Group("GravityEnabled")]
+    [Feature("Gravity")]
     public bool UseSceneGravity { get; set; } = true;
 
     /// <summary>
     /// Units per second squared (Default is -850f)
     /// </summary>
     [Property]
-    [Group("GravityEnabled")]
+    [Feature("Gravity")]
     [Range(-2000, 2000, 1, false)]
     [HideIf("UseSceneGravity", true)]
     public float Gravity { get; set; } = -850f;
@@ -257,7 +257,7 @@ public class ShrimpleCharacterController : Component
     /// <summary>
     /// Check if the MoveHelper is stuck and try to get it to unstuck (+Trace calls if stuck)
     /// </summary>
-    [ToggleGroup("UnstuckEnabled")]
+    [FeatureEnabled("Unstuck")]
     [Property]
     public bool UnstuckEnabled { get; set; } = true;
 
@@ -265,7 +265,7 @@ public class ShrimpleCharacterController : Component
     /// How many trace calls it will attempt to get the MoveHelper unstuck
     /// </summary>
     [Property]
-    [Group("UnstuckEnabled")]
+    [Feature("Unstuck")]
     [Range(1, 50, 1, false)]
     public int MaxUnstuckTries { get; set; } = 20;
 
