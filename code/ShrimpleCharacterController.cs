@@ -403,11 +403,8 @@ public class ShrimpleCharacterController : Component
     /// <param name="amount"></param>
     public void Punch(in Vector3 amount)
     {
-        if (amount.z < 10f) return; // Get out with that weak crap
-
         IsOnGround = false;
         Velocity += amount;
-
     }
 
     /// <summary>
