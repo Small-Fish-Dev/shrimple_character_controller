@@ -17,7 +17,7 @@ You can find code examples for the Walker, Roller, and Flyer here: [Example Cont
 
 It all boils down to:
 
-```
+```csharp
 Controller.WishVelocity = Vector3.Forward;
 Controller.Move();
 ```
@@ -25,7 +25,7 @@ Controller.Move();
 You'll have to call `.Move()` only if your Controller options "Manual Update" is set to true. Otherwise you can set it to false and it will always be simulated.
 
 You are also able to manually update the GameObject's transform rather than letting the Controller do it:
-```
+```csharp
 Controller.WishVelocity = wishDirection * wishSpeed;
 var controllerResult = Controller.Move( false );
 

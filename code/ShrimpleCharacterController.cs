@@ -138,9 +138,17 @@ public class ShrimpleCharacterController : Component
     public float WallTolerance { get; set; } = 1f;
 
     /// <summary>
+    /// Player feels like it's gripping walls too much? Try more Grip Factor Reduction!
+    /// </summary>
+    [Group("Movement")]
+    [Property]
+    [Range(1f, 10f, 0.1f, true)]
+    public float GripFactorReduction { get; set; } = 1f;
+
+    /// <summary>
     /// Stick the MoveHelper to the ground (IsOnGround will default to false if disabled)
     /// </summary>
-    [ToggleGroup("GroundStickEnabled")]
+    [FeatureEnabled("GroundStick")]
     [Property]
     public bool GroundStickEnabled { get; set; } = true;
 
@@ -148,7 +156,7 @@ public class ShrimpleCharacterController : Component
     /// How steep terrain can be for you to stand on without slipping
     /// </summary>
     [Property]
-    [Group("GroundStickEnabled")]
+    [Feature("GroundStick")]
     [Range(0f, 89f, 1f, true, true)]
     public float MaxGroundAngle { get; set; } = 60f;
 
@@ -156,21 +164,21 @@ public class ShrimpleCharacterController : Component
     /// How far from the ground the MoveHelper is going to stick (Useful for going down stairs!)
     /// </summary>
     [Property]
-    [Group("GroundStickEnabled")]
+    [Feature("GroundStick")]
     [Range(1f, 32f, 1f, false)]
     public float GroundStickDistance { get; set; } = 12f;
 
     /// <summary>
     /// Enable steps climbing (+1 Trace call)
     /// </summary>
-    [ToggleGroup("StepsEnabled")]
+    [FeatureEnabled("Steps")]
     [Property]
     public bool StepsEnabled { get; set; } = true;
 
     /// <summary>
     /// How high steps can be for you to climb on
     /// </summary>
-    [Group("StepsEnabled")]
+    [Feature("Steps")]
     [Property]
     [Range(1f, 32f, 1f, false)]
     public float StepHeight { get; set; } = 12f;
@@ -178,7 +186,7 @@ public class ShrimpleCharacterController : Component
     /// <summary>
     /// How deep it checks for steps (Minimum depth)
     /// </summary>
-    [Group("StepsEnabled")]
+    [Feature("Steps")]
     [Property]
     [Range(0.1f, 8f, 0.1f, false)]
     public float StepDepth { get; set; } = 2f;
@@ -186,7 +194,7 @@ public class ShrimpleCharacterController : Component
     /// <summary>
     /// Tolerance from a 90° surface before it's considered a valid step (Ex. Tolerance 1 = Between 89° and 91° can be a step, 0.1 = 89.9° to 90.1°)
     /// </summary>
-    [Group("StepsEnabled")]
+    [Feature("Steps")]
     [Property]
     [Range(0f, 10f, 0.1f, false)]
     public float StepTolerance { get; set; } = 1f;
@@ -194,14 +202,14 @@ public class ShrimpleCharacterController : Component
     /// <summary>
     /// Enable to ability to walk on a surface that's too steep if it's equal or smaller than a step (+1 Trace call when on steep terrain)
     /// </summary>
-    [Group("StepsEnabled")]
+    [Feature("Steps")]
     [Property]
     public bool PseudoStepsEnabled { get; set; } = true;
 
     /// <summary>
     /// Instead of colliding with these tags the MoveHelper will be pushed away (Make sure the tags are in IgnoreTags as well!)
     /// </summary>
-    [ToggleGroup("PushEnabled")]
+    [FeatureEnabled("Push")]
     [Property]
     public bool PushEnabled { get; set; } = false;
 
@@ -212,7 +220,7 @@ public class ShrimpleCharacterController : Component
     /// Which tags will push this MoveHelper away and with how much force (Make sure they are also included in IgnoreTags!) (+1 Trace call)
     /// </summary>
     [Property]
-    [Group("PushEnabled")]
+    [Feature("Push")]
     public Dictionary<string, float> PushTagsWeight
     {
         get => _pushTagsWeight;
@@ -226,7 +234,7 @@ public class ShrimpleCharacterController : Component
     /// <summary>
     /// Apply gravity to this MoveHelper when not on the ground
     /// </summary>
-    [ToggleGroup("GravityEnabled")]
+    [FeatureEnabled("Gravity")]
     [Property]
     public bool GravityEnabled { get; set; } = true;
 
@@ -234,14 +242,14 @@ public class ShrimpleCharacterController : Component
     /// Use the scene's gravity or our own
     /// </summary>
     [Property]
-    [Group("GravityEnabled")]
+    [Feature("Gravity")]
     public bool UseSceneGravity { get; set; } = true;
 
     /// <summary>
     /// Units per second squared (Default is -850f)
     /// </summary>
     [Property]
-    [Group("GravityEnabled")]
+    [Feature("Gravity")]
     [Range(-2000, 2000, 1, false)]
     [HideIf("UseSceneGravity", true)]
     public float Gravity { get; set; } = -850f;
@@ -249,7 +257,7 @@ public class ShrimpleCharacterController : Component
     /// <summary>
     /// Check if the MoveHelper is stuck and try to get it to unstuck (+Trace calls if stuck)
     /// </summary>
-    [ToggleGroup("UnstuckEnabled")]
+    [FeatureEnabled("Unstuck")]
     [Property]
     public bool UnstuckEnabled { get; set; } = true;
 
@@ -257,7 +265,7 @@ public class ShrimpleCharacterController : Component
     /// How many trace calls it will attempt to get the MoveHelper unstuck
     /// </summary>
     [Property]
-    [Group("UnstuckEnabled")]
+    [Feature("Unstuck")]
     [Range(1, 50, 1, false)]
     public int MaxUnstuckTries { get; set; } = 20;
 
@@ -366,7 +374,14 @@ public class ShrimpleCharacterController : Component
         return PushTagsWeight.Keys.ToArray();
     }
 
-    private SceneTraceResult BuildTrace(BBox bounds, Vector3 from, Vector3 to)
+    /// <summary>
+    /// Casts the current bounds from to and returns the scene trace result
+    /// </summary>
+    /// <param name="bounds"></param>
+    /// <param name="from"></param>
+    /// <param name="to"></param>
+    /// <returns></returns>
+    public SceneTraceResult BuildTrace(BBox bounds, Vector3 from, Vector3 to)
     {
         return Game.SceneTrace.Box(bounds, from, to)
             .IgnoreGameObjectHierarchy(GameObject)
@@ -388,11 +403,8 @@ public class ShrimpleCharacterController : Component
     /// <param name="amount"></param>
     public void Punch(in Vector3 amount)
     {
-        if (amount.z < 10f) return; // Get out with that weak crap
-
         IsOnGround = false;
         Velocity += amount;
-
     }
 
     /// <summary>
@@ -492,7 +504,7 @@ public class ShrimpleCharacterController : Component
         // GROUND AND UNSTUCK CHECK //
         if (depth == 0) // Only check for the first step since it's impossible to get stuck on other steps
         {
-            var groundTrace = BuildTrace(_shrunkenBounds, position, position + Vector3.Down * GroundStickDistance);
+            var groundTrace = BuildTrace(_shrunkenBounds, position, position + Vector3.Down * (GroundStickDistance + SkinWidth * 1.1f)); // Compensate for floating inaccuracy
 
             if (groundTrace.StartedSolid)
             {
@@ -589,7 +601,7 @@ public class ShrimpleCharacterController : Component
                         if (IsOnGround) // Stairs VVV
                         {
                             var stepHorizontal = velocity.WithZ(0f).Normal * StepDepth; // How far in front we're looking for steps
-                            var stepVertical = Vector3.Up * StepHeight; // How high we're looking for steps
+                            var stepVertical = Vector3.Up * (StepHeight + SkinWidth); // How high we're looking for steps + Some to compensate for floating inaccuracy
                             var stepTrace = BuildTrace(_shrunkenBounds, travelTrace.EndPosition + stepHorizontal + stepVertical, travelTrace.EndPosition + stepHorizontal);
                             var stepAngle = Vector3.GetAngle(stepTrace.Normal, Vector3.Up);
 
@@ -614,7 +626,7 @@ public class ShrimpleCharacterController : Component
                 {
                     // Scale our leftover velocity based on the angle of approach relative to the wall
                     // (Perpendicular = 0%, Parallel = 100%)
-                    var scale = ScaleAgainstWalls ? 1f - Vector3.Dot(-travelTrace.Normal.Normal, velocity.Normal) : 1f;
+                    var scale = ScaleAgainstWalls ? 1f - Vector3.Dot(-travelTrace.Normal.Normal / GripFactorReduction, velocity.Normal) : 1f;
                     var wallLeftover = ScaleAgainstWalls ? Vector3.VectorPlaneProject(leftover, travelTrace.Normal.Normal) : leftover.ProjectAndScale(travelTrace.Normal.Normal);
                     leftover = (wallLeftover * scale).WithZ(wallLeftover.z);
 
@@ -625,7 +637,7 @@ public class ShrimpleCharacterController : Component
                 {
                     if (!climbedStair)
                     {
-                        var scale = IsSlipping ? 1f : 1f - Vector3.Dot(-travelTrace.Normal, velocity.Normal);
+                        var scale = IsSlipping ? 1f : 1f - Vector3.Dot(-travelTrace.Normal / GripFactorReduction, velocity.Normal);
                         leftover = ScaleAgainstWalls ? Vector3.VectorPlaneProject(leftover, travelTrace.Normal) * scale : leftover.ProjectAndScale(travelTrace.Normal);
                     }
                 }
@@ -683,9 +695,11 @@ public class ShrimpleCharacterController : Component
         return shouldIgnoreZ ? goalVelocity.WithZ(Velocity.z) : goalVelocity;
     }
 
-
     public bool TryUnstuck(Vector3 position, out Vector3 result)
     {
+        if (_lastVelocity == Vector3.Zero)
+            _lastVelocity = Vector3.Down;
+
         var velocityLength = _lastVelocity.Length + SkinWidth;
         var startPos = position - _lastVelocity.Normal * velocityLength; // Try undoing the last velocity 1st
         var endPos = position;
@@ -698,11 +712,15 @@ public class ShrimpleCharacterController : Component
             if (i > 1)
                 startPos = position + Vector3.Random.Normal * ((float)i / 2f); // Start randomly checking 3rd
 
+            if (startPos - endPos == Vector3.Zero) // No difference!
+                continue;
+
             var unstuckTrace = BuildTrace(_shrunkenBounds, startPos, endPos);
 
             if (!unstuckTrace.StartedSolid)
             {
                 result = unstuckTrace.EndPosition - _lastVelocity.Normal * SkinWidth;
+                _lastVelocity = Vector3.Zero;
                 return true;
             }
         }
