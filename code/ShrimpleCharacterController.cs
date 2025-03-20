@@ -698,7 +698,7 @@ public class ShrimpleCharacterController : Component
     public bool TryUnstuck(Vector3 position, out Vector3 result)
     {
         if (_lastVelocity == Vector3.Zero)
-            _lastVelocity = Vector3.Down;
+            _lastVelocity = Vector3.Up;
 
         var velocityLength = _lastVelocity.Length + SkinWidth;
         var startPos = position - _lastVelocity.Normal * velocityLength; // Try undoing the last velocity 1st
@@ -719,7 +719,7 @@ public class ShrimpleCharacterController : Component
 
             if (!unstuckTrace.StartedSolid)
             {
-                result = unstuckTrace.EndPosition - _lastVelocity.Normal * SkinWidth;
+                result = unstuckTrace.EndPosition - _lastVelocity.Normal * SkinWidth / 4f;
                 _lastVelocity = Vector3.Zero;
                 return true;
             }
