@@ -613,7 +613,7 @@ public class ShrimpleCharacterController : Component
 
                 IsOnGround = hasLanded || isGrounded;
                 GroundSurface = IsOnGround ? groundTrace.Surface : null;
-                GroundNormal = IsOnGround ? groundTrace.Normal : Vector3.Up;
+                GroundNormal = IsOnGround ? groundTrace.Normal : -AppliedGravity.Normal;
                 GroundObject = IsOnGround ? groundTrace.GameObject : null;
                 IsSlipping = IsOnGround && GroundAngle > MaxGroundAngle;
 
@@ -672,17 +672,17 @@ public class ShrimpleCharacterController : Component
                     {
                         if (IsOnGround) // Stairs VVV
                         {
-                            var stepHorizontal = velocity.WithZ(0f).Normal * StepDepth; // How far in front we're looking for steps
+                            var stepHorizontal = Vector3.VectorPlaneProject(velocity, AppliedGravity).Normal * StepDepth; // How far in front we're looking for steps
                             var stepVertical = -AppliedGravity.Normal * (StepHeight + SkinWidth); // How high we're looking for steps + Some to compensate for floating inaccuracy
                             var stepTrace = BuildTrace(_shrunkenBounds, travelTrace.EndPosition + stepHorizontal + stepVertical, travelTrace.EndPosition + stepHorizontal);
-                            var stepAngle = Vector3.GetAngle(stepTrace.Normal, Vector3.Up);
+                            var stepAngle = Vector3.GetAngle(stepTrace.Normal, -AppliedGravity.Normal);
 
                             if (!stepTrace.StartedSolid && stepTrace.Hit && stepAngle <= MaxGroundAngle) // We found a step!
                             {
                                 if (isStep || !IsSlipping && PseudoStepsEnabled)
                                 {
                                     var stepDistance = stepTrace.EndPosition - travelTrace.EndPosition;
-                                    var stepTravelled = Vector3.Up * stepDistance;
+                                    var stepTravelled = -AppliedGravity.Normal * stepDistance;
                                     position += stepTravelled; // Offset our position by the height of the step climbed
                                     climbedStair = true;
 
@@ -770,7 +770,7 @@ public class ShrimpleCharacterController : Component
     public bool TryUnstuck(Vector3 position, out Vector3 result)
     {
         if (_lastVelocity == Vector3.Zero)
-            _lastVelocity = Vector3.Up;
+            _lastVelocity = -AppliedGravity.Normal;
 
         var velocityLength = _lastVelocity.Length + SkinWidth;
         var startPos = position - _lastVelocity.Normal * velocityLength; // Try undoing the last velocity 1st
@@ -779,7 +779,7 @@ public class ShrimpleCharacterController : Component
         for (int i = 0; i < MaxUnstuckTries + 1; i++)
         {
             if (i == 1)
-                startPos = position + Vector3.Up * 2f; // Try going up 2nd
+                startPos = position + -AppliedGravity.Normal * 2f; // Try going up 2nd
 
             if (i > 1)
                 startPos = position + Vector3.Random.Normal * ((float)i / 2f); // Start randomly checking 3rd
