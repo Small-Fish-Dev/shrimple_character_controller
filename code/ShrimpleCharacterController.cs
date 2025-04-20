@@ -448,7 +448,12 @@ public class ShrimpleCharacterController : Component
         {
             Gizmo.GizmoDraw draw = Gizmo.Draw;
             draw.Color = Color.Blue;
-            draw.LineBBox(BuildBounds().Translate(Vector3.Up * TraceHeight / 2f * GameObject.WorldScale.z));
+            var bounds = BuildBounds();
+
+            if (CylinderTrace)
+                draw.LineCylinder(Vector3.Zero, WorldRotation.Up * (bounds.Maxs.z - bounds.Mins.z), bounds.Maxs.x, bounds.Maxs.x, 24);
+            else
+                draw.LineBBox(bounds.Translate(Vector3.Up * TraceHeight / 2f * GameObject.WorldScale.z));
         }
     }
 
@@ -481,7 +486,14 @@ public class ShrimpleCharacterController : Component
     /// <returns></returns>
     public SceneTraceResult BuildTrace(BBox bounds, Vector3 from, Vector3 to)
     {
-        var builder = Game.SceneTrace.Box(bounds, from, to)
+        SceneTrace builder = new SceneTrace(); // Empty trace builder
+
+        if (CylinderTrace)
+            builder = Game.SceneTrace.Cylinder(bounds.Maxs.z - bounds.Mins.z, bounds.Maxs.x, from, to);
+        else
+            builder = Game.SceneTrace.Box(bounds, from, to);
+
+        builder = builder
             .IgnoreGameObjectHierarchy(GameObject)
             .WithoutTags(IgnoreTags);
 
@@ -493,7 +505,14 @@ public class ShrimpleCharacterController : Component
 
     private SceneTraceResult BuildPushTrace(BBox bounds, Vector3 from, Vector3 to)
     {
-        var builder = Game.SceneTrace.Box(bounds, from, to)
+        SceneTrace builder = new SceneTrace(); // Empty trace builder
+
+        if (CylinderTrace)
+            builder = Game.SceneTrace.Cylinder(bounds.Maxs.z - bounds.Mins.z, bounds.Maxs.x, from, to);
+        else
+            builder = Game.SceneTrace.Box(bounds, from, to);
+
+        builder = builder
             .IgnoreGameObjectHierarchy(GameObject)
             .WithAnyTags(_pushTags); // Check for only the push tags
 
