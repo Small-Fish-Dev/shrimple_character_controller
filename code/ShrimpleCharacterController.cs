@@ -246,13 +246,35 @@ public class ShrimpleCharacterController : Component
     public bool UseSceneGravity { get; set; } = true;
 
     /// <summary>
+    /// Use a Vector3 gravity instead of a single float (Use this if you want to use a custom gravity)
+    /// </summary>
+    [Property]
+    [Feature("Gravity")]
+    [HideIf("UseSceneGravity", true)]
+    public bool UseVectorGravity { get; set; } = false;
+
+    private bool _useFloatGravity => !UseVectorGravity && !UseSceneGravity;
+    private bool _useVectorGravity => UseVectorGravity && !UseSceneGravity;
+
+    /// <summary>
     /// Units per second squared (Default is -850f)
     /// </summary>
     [Property]
     [Feature("Gravity")]
     [Range(-2000, 2000, 1, false)]
-    [HideIf("UseSceneGravity", true)]
+    [ShowIf("_useFloatGravity", true)]
     public float Gravity { get; set; } = -850f;
+
+    /// <summary>
+    /// Units per second squared (Default is 0f, 0f, -850f)<br/>
+    /// Changes which way <see cref="GroundStickEnabled"/> sticks to the ground
+    /// </summary>
+    [Property]
+    [Feature("Gravity")]
+    [ShowIf("_useVectorGravity", true)]
+    public Vector3 VectorGravity { get; set; } = new Vector3(0f, 0f, -850f);
+
+    private Vector3 _finalGravity => UseSceneGravity ? Scene.PhysicsWorld.Gravity : UseVectorGravity ? VectorGravity : new Vector3(0f, 0f, Gravity); // Use the scene's gravity or our own
 
     /// <summary>
     /// Check if the MoveHelper is stuck and try to get it to unstuck (+Trace calls if stuck)
