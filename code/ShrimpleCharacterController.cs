@@ -349,6 +349,7 @@ public class ShrimpleCharacterController : Component
     /// </summary>
     [Sync] public bool IsOnGround { get; set; }
 
+    /// <summary>
     /// The current ground normal you're standing on (Always Vector3.Zero if IsOnGround false)
     /// </summary>
     public Vector3 GroundNormal { get; private set; } = Vector3.Zero;
