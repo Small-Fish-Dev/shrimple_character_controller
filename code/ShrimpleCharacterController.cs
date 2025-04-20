@@ -60,6 +60,11 @@ public class ShrimpleCharacterController : Component
     }
 
     /// <summary>
+    /// Rotate the trace with the gameobject
+    /// </summary>
+    public bool RotateWithGameObject { get; set; } = true;
+
+    /// <summary>
     /// Which tags it should ignore
     /// </summary>
     [Property]
@@ -466,20 +471,26 @@ public class ShrimpleCharacterController : Component
     /// <returns></returns>
     public SceneTraceResult BuildTrace(BBox bounds, Vector3 from, Vector3 to)
     {
-        return Game.SceneTrace.Box(bounds, from, to)
-            .Rotated(GameObject.WorldRotation)
+        var builder = Game.SceneTrace.Box(bounds, from, to)
             .IgnoreGameObjectHierarchy(GameObject)
-            .WithoutTags(IgnoreTags)
-            .Run();
+            .WithoutTags(IgnoreTags);
+
+        if (RotateWithGameObject)
+            builder = builder.Rotated(GameObject.WorldRotation);
+
+        return builder.Run();
     }
 
     private SceneTraceResult BuildPushTrace(BBox bounds, Vector3 from, Vector3 to)
     {
-        return Game.SceneTrace.Box(bounds, from, to)
-            .Rotated(GameObject.WorldRotation)
+        var builder = Game.SceneTrace.Box(bounds, from, to)
             .IgnoreGameObjectHierarchy(GameObject)
-            .WithAnyTags(_pushTags) // Check for only the push tags
-            .Run();
+            .WithAnyTags(_pushTags); // Check for only the push tags
+
+        if (RotateWithGameObject)
+            builder = builder.Rotated(GameObject.WorldRotation);
+
+        return builder.Run();
     }
 
     /// <summary>
