@@ -62,7 +62,17 @@ public class ShrimpleCharacterController : Component
     /// <summary>
     /// Rotate the trace with the gameobject
     /// </summary>
+    [Property]
+    [Group("Trace")]
     public bool RotateWithGameObject { get; set; } = true;
+
+    /// <summary>
+    /// Use a cylinder trace instead of a box trace<br/>
+    /// [WARNING] This is a PHYSICAL TRACE, so it's more expensive than the normal box trace
+    /// </summary>
+    [Property]
+    [Group("Trace")]
+    public bool CylinderTrace { get; set; } = false;
 
     /// <summary>
     /// Which tags it should ignore
