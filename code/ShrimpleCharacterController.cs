@@ -399,6 +399,11 @@ public class ShrimpleCharacterController : Component
     /// </summary>
     public float SkinWidth;
 
+    public float AppliedWidth => TraceWidth / 2f * WorldScale.x; // The width of the MoveHelper in world units
+    public float AppliedDepth => TraceWidth / 2f * WorldScale.y; // The depth of the MoveHelper in world units
+    public float AppliedHeight => TraceHeight / 2f * WorldScale.z; // The height of the MoveHelper in world units
+    private Vector3 _offset => WorldRotation.Up * AppliedHeight; // The position of the MoveHelper in world units
+
     /// <summary>
     /// The bounds of this MoveHelper generated from the TraceWidth and TraceHeight
     /// </summary>
@@ -428,7 +433,7 @@ public class ShrimpleCharacterController : Component
         {
             Gizmo.GizmoDraw draw = Gizmo.Draw;
             draw.Color = Color.Blue;
-            draw.LineBBox(BuildBounds());
+            draw.LineBBox(BuildBounds().Translate(Vector3.Up * TraceHeight / 2f * GameObject.WorldScale.z));
         }
     }
 
@@ -438,7 +443,11 @@ public class ShrimpleCharacterController : Component
         var y = GameObject.WorldScale.y;
         var z = GameObject.WorldScale.z;
 
-        return new BBox(new Vector3(-TraceWidth / 2 * x, -TraceWidth / 2f * y, 0f), new Vector3(TraceWidth / 2f * x, TraceWidth / 2f * y, TraceHeight * z));
+        var width = TraceWidth / 2f * x;
+        var depth = TraceWidth / 2f * y;
+        var height = TraceHeight / 2f * z;
+
+        return new BBox(new Vector3(-width, -depth, -height), new Vector3(width, depth, height));
     }
 
     private Vector3 BuildGravity() => UseSceneGravity ? Scene.PhysicsWorld.Gravity : UseVectorGravity ? VectorGravity : new Vector3(0f, 0f, Gravity);
@@ -458,6 +467,7 @@ public class ShrimpleCharacterController : Component
     public SceneTraceResult BuildTrace(BBox bounds, Vector3 from, Vector3 to)
     {
         return Game.SceneTrace.Box(bounds, from, to)
+            .Rotated(GameObject.WorldRotation)
             .IgnoreGameObjectHierarchy(GameObject)
             .WithoutTags(IgnoreTags)
             .Run();
@@ -466,6 +476,7 @@ public class ShrimpleCharacterController : Component
     private SceneTraceResult BuildPushTrace(BBox bounds, Vector3 from, Vector3 to)
     {
         return Game.SceneTrace.Box(bounds, from, to)
+            .Rotated(GameObject.WorldRotation)
             .IgnoreGameObjectHierarchy(GameObject)
             .WithAnyTags(_pushTags) // Check for only the push tags
             .Run();
@@ -501,7 +512,7 @@ public class ShrimpleCharacterController : Component
         // SIMULATE PUSH FORCES //
         if (PushEnabled)
         {
-            var pushTrace = BuildPushTrace(Bounds, WorldPosition, WorldPosition); // Build a trace but using the Push tags instead of the Ignore tags
+            var pushTrace = BuildPushTrace(Bounds, WorldPosition + _offset, WorldPosition); // Build a trace but using the Push tags instead of the Ignore tags
 
             if (pushTrace.Hit) // We're inside any of the push tags
             {
@@ -519,7 +530,7 @@ public class ShrimpleCharacterController : Component
             }
         }
 
-        var moveHelperResult = CollideAndSlide(goalVelocity, WorldPosition, delta); // Simulate the MoveHelper
+        var moveHelperResult = CollideAndSlide(goalVelocity, WorldPosition + _offset, delta); // Simulate the MoveHelper
 
         var finalPosition = moveHelperResult.Position;
         var finalVelocity = moveHelperResult.Velocity;
@@ -542,7 +553,7 @@ public class ShrimpleCharacterController : Component
         if (!manualUpdate)
         {
             Velocity = finalVelocity;
-            WorldPosition = finalPosition; // Actually updating the position is "expensive" so we only do it once at the end
+            WorldPosition = finalPosition - _offset; // Actually updating the position is "expensive" so we only do it once at the end
         }
 
         return new MoveHelperResult(finalPosition, finalVelocity);
