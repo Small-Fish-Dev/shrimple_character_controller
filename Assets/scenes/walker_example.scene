@@ -2,6 +2,31 @@
   "__guid": "e78370eb-4e25-4b7f-bbf8-89f0fcbaa68b",
   "GameObjects": [
     {
+      "__guid": "4a794eac-df05-4fff-b80b-f4f40e6b4e9e",
+      "Flags": 0,
+      "Name": "Scene Information",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "Sandbox.SceneInformation",
+          "__guid": "f6aaec07-69f8-4387-b7d9-f94cbc0f362d",
+          "Author": null,
+          "Changes": null,
+          "Description": "",
+          "Group": null,
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null,
+          "SceneTags": "",
+          "Title": "walker_example",
+          "Version": null
+        }
+      ]
+    },
+    {
       "__guid": "048573b1-fa80-406a-a30d-93881e2b19c9",
       "Flags": 0,
       "Name": "debug_world",
@@ -23,6 +48,7 @@
           "AirDeceleration": 0,
           "Gravity": -850,
           "GravityEnabled": true,
+          "GripFactorReduction": 1,
           "GroundAcceleration": 1000,
           "GroundDeceleration": 1500,
           "GroundStickDistance": 12,
@@ -35,6 +61,13 @@
           "MaxBounces": 5,
           "MaxGroundAngle": 60,
           "MaxUnstuckTries": 20,
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null,
+          "PseudoStepsEnabled": true,
           "PushEnabled": false,
           "PushTagsWeight": {
             "player": 1
@@ -43,30 +76,24 @@
           "StepDepth": 2,
           "StepHeight": 12,
           "StepsEnabled": true,
+          "StepTolerance": 1,
           "TraceHeight": 72,
           "TraceWidth": 16,
           "UnstuckEnabled": true,
-          "UseSceneGravity": true
-        },
-        {
-          "__type": "Sandbox.Citizen.CitizenAnimationHelper",
-          "__guid": "6bb6e1f8-1402-4b7b-9006-ea4866eb9e64",
-          "BodyWeight": 1,
-          "EyesWeight": 1,
-          "HeadWeight": 1,
-          "LookAtEnabled": false,
-          "Target": {
-            "_type": "component",
-            "component_id": "75a0dedf-07bc-4a29-9027-9e88625f7ba0",
-            "go": "768529ee-5ecc-4ddb-a81e-73fdb775baec",
-            "component_type": "SkinnedModelRenderer"
-          }
+          "UseSceneGravity": true,
+          "WallTolerance": 1
         },
         {
           "__type": "ShrimpleCharacterController.ShrimpleWalker",
           "__guid": "21e48f2b-e808-42b7-83e6-83282972f187",
           "DuckSpeed": 50,
           "JumpStrength": 350,
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null,
           "RunSpeed": 300,
           "WalkSpeed": 100
         }
@@ -76,16 +103,44 @@
           "__guid": "768529ee-5ecc-4ddb-a81e-73fdb775baec",
           "Flags": 0,
           "Name": "Model",
-          "Position": "0,0,0",
           "Enabled": true,
           "Components": [
             {
               "__type": "Sandbox.SkinnedModelRenderer",
               "__guid": "75a0dedf-07bc-4a29-9027-9e88625f7ba0",
+              "AnimationGraph": null,
               "BodyGroups": 341,
+              "BoneMergeTarget": null,
+              "CreateAttachments": false,
               "CreateBoneObjects": false,
+              "MaterialGroup": null,
+              "MaterialOverride": null,
               "Model": "models/citizen/citizen.vmdl",
+              "Morphs": {},
+              "OnComponentDestroy": null,
+              "OnComponentDisabled": null,
+              "OnComponentEnabled": null,
+              "OnComponentFixedUpdate": null,
+              "OnComponentStart": null,
+              "OnComponentUpdate": null,
+              "Parameters": {
+                "bools": {},
+                "ints": {},
+                "floats": {},
+                "vectors": {},
+                "rotations": {}
+              },
+              "PlaybackRate": 1,
+              "RenderOptions": {
+                "GameLayer": true,
+                "OverlayLayer": false,
+                "BloomLayer": false,
+                "AfterUILayer": false
+              },
               "RenderType": "On",
+              "Sequence": {
+                "Name": null
+              },
               "Tint": "1,1,1,1",
               "UseAnimGraph": true
             }
@@ -99,9 +154,13 @@
     "MaxFixedUpdates": 5,
     "NetworkFrequency": 30,
     "NetworkInterpolation": true,
+    "PhysicsSubSteps": 1,
     "ThreadedAnimation": true,
     "TimeScale": 1,
     "UseFixedUpdate": true,
+    "Metadata": {
+      "Title": "walker_example"
+    },
     "NavMesh": {
       "Enabled": false,
       "IncludeStaticBodies": true,
@@ -115,9 +174,9 @@
       "IncludedBodies": ""
     }
   },
+  "ResourceVersion": 2,
   "Title": "walker_example",
-  "Description": "",
-  "ResourceVersion": 1,
+  "Description": null,
   "__references": [],
-  "__version": 1
+  "__version": 2
 }
