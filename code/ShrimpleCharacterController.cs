@@ -274,7 +274,7 @@ public class ShrimpleCharacterController : Component
     [ShowIf("_useVectorGravity", true)]
     public Vector3 VectorGravity { get; set; } = new Vector3(0f, 0f, -850f);
 
-    private Vector3 _finalGravity => UseSceneGravity ? Scene.PhysicsWorld.Gravity : UseVectorGravity ? VectorGravity : new Vector3(0f, 0f, Gravity); // Use the scene's gravity or our own
+    private Vector3 AppliedGravity => UseSceneGravity ? Scene.PhysicsWorld.Gravity : UseVectorGravity ? VectorGravity : new Vector3(0f, 0f, Gravity); // Use the scene's gravity or our own
 
     /// <summary>
     /// Check if the MoveHelper is stuck and try to get it to unstuck (+Trace calls if stuck)
@@ -481,7 +481,7 @@ public class ShrimpleCharacterController : Component
         {
             if (!IsOnGround || IsSlipping || !GroundStickEnabled)
             {
-                var gravity = _finalGravity * delta;
+                var gravity = AppliedGravity * delta;
                 var gravityResult = CollideAndSlide(gravity, moveHelperResult.Position, delta, gravityPass: true); // Apply and simulate the gravity step
 
                 finalPosition = gravityResult.Position;
@@ -529,7 +529,7 @@ public class ShrimpleCharacterController : Component
         // GROUND AND UNSTUCK CHECK //
         if (depth == 0) // Only check for the first step since it's impossible to get stuck on other steps
         {
-            var groundTrace = BuildTrace(_shrunkenBounds, position, position + Vector3.Down * (GroundStickDistance + SkinWidth * 1.1f)); // Compensate for floating inaccuracy
+            var groundTrace = BuildTrace(_shrunkenBounds, position, position + AppliedGravity.Normal * (GroundStickDistance + SkinWidth * 1.1f)); // Compensate for floating inaccuracy
 
             if (groundTrace.StartedSolid)
             {
@@ -561,7 +561,7 @@ public class ShrimpleCharacterController : Component
             }
             else
             {
-                var hasLanded = !IsOnGround && Velocity.z <= 0f && groundTrace.Hit && groundTrace.Distance <= SkinWidth * 2f; // Wasn't on the ground and now is
+                var hasLanded = !IsOnGround && Vector3.Dot(Velocity, AppliedGravity) >= 0f && groundTrace.Hit && groundTrace.Distance <= SkinWidth * 2f; // Wasn't on the ground and now is
                 var isGrounded = IsOnGround && groundTrace.Hit; // Was already on the ground and still is, this helps stick when going down stairs
 
                 IsOnGround = hasLanded || isGrounded;
@@ -570,12 +570,12 @@ public class ShrimpleCharacterController : Component
                 GroundObject = IsOnGround ? groundTrace.GameObject : null;
                 IsSlipping = IsOnGround && GroundAngle > MaxGroundAngle;
 
-                if (IsSlipping && !gravityPass && velocity.z > 0f)
+                if (IsSlipping && !gravityPass && Vector3.Dot(velocity, AppliedGravity) < 0f)
                     velocity = velocity.WithZ(0f); // If we're slipping ignore any extra velocity we had
 
                 if (IsOnGround && GroundStickEnabled && !IsSlipping)
                 {
-                    position = groundTrace.EndPosition + Vector3.Up * SkinWidth; // Place on the ground
+                    position = groundTrace.EndPosition + -AppliedGravity.Normal * SkinWidth; // Place on the ground
                     velocity = Vector3.VectorPlaneProject(velocity, GroundNormal); // Follow the ground you're on without projecting Z
                 }
 
@@ -597,7 +597,7 @@ public class ShrimpleCharacterController : Component
             var travelled = velocity.Normal * Math.Max(travelTrace.Distance - SkinWidth, 0f);
 
             var leftover = velocity - travelled; // How much leftover velocity still needs to be simulated
-            var angle = Vector3.GetAngle(Vector3.Up, travelTrace.Normal);
+            var angle = Vector3.GetAngle(-AppliedGravity.Normal, travelTrace.Normal);
             if (toTravel >= SkinWidth && travelTrace.Distance < SkinWidth)
                 travelled = Vector3.Zero;
 
@@ -626,7 +626,7 @@ public class ShrimpleCharacterController : Component
                         if (IsOnGround) // Stairs VVV
                         {
                             var stepHorizontal = velocity.WithZ(0f).Normal * StepDepth; // How far in front we're looking for steps
-                            var stepVertical = Vector3.Up * (StepHeight + SkinWidth); // How high we're looking for steps + Some to compensate for floating inaccuracy
+                            var stepVertical = -AppliedGravity.Normal * (StepHeight + SkinWidth); // How high we're looking for steps + Some to compensate for floating inaccuracy
                             var stepTrace = BuildTrace(_shrunkenBounds, travelTrace.EndPosition + stepHorizontal + stepVertical, travelTrace.EndPosition + stepHorizontal);
                             var stepAngle = Vector3.GetAngle(stepTrace.Normal, Vector3.Up);
 
