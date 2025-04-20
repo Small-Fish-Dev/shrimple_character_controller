@@ -407,7 +407,7 @@ public class ShrimpleCharacterController : Component
     public float AppliedWidth => TraceWidth / 2f * WorldScale.x; // The width of the MoveHelper in world units
     public float AppliedDepth => TraceWidth / 2f * WorldScale.y; // The depth of the MoveHelper in world units
     public float AppliedHeight => TraceHeight / 2f * WorldScale.z; // The height of the MoveHelper in world units
-    private Vector3 _offset => WorldRotation.Up * AppliedHeight; // The position of the MoveHelper in world units
+    private Vector3 _offset => (RotateWithGameObject ? WorldRotation.Up : Vector3.Up) * AppliedHeight; // The position of the MoveHelper in world units
 
     /// <summary>
     /// The bounds of this MoveHelper generated from the TraceWidth and TraceHeight
