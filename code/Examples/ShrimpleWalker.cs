@@ -46,7 +46,7 @@ public sealed class ShrimpleWalker : Component
     {
         base.OnFixedUpdate();
 
-        var wishDirection = Input.AnalogMove.Normal * Rotation.FromYaw(EyeAngles.yaw);
+        var wishDirection = Input.AnalogMove.Normal * Rotation.FromYaw(EyeAngles.yaw) * GameObject.WorldRotation;
         var isDucking = Input.Down("Duck");
         var isRunning = Input.Down("Run");
         var wishSpeed = isDucking ? DuckSpeed :
@@ -57,7 +57,7 @@ public sealed class ShrimpleWalker : Component
 
         if (Input.Pressed("Jump") && Controller.IsOnGround)
         {
-            Controller.Punch(Vector3.Up * JumpStrength);
+            Controller.Punch(-Controller.AppliedGravity.Normal * JumpStrength);
             AnimationHelper?.TriggerJump();
         }
 
@@ -75,10 +75,10 @@ public sealed class ShrimpleWalker : Component
 
         EyeAngles += Input.AnalogLook;
         EyeAngles = EyeAngles.WithPitch(MathX.Clamp(EyeAngles.pitch, -10f, 40f));
-        Renderer.WorldRotation = Rotation.Slerp(Renderer.WorldRotation, Rotation.FromYaw(EyeAngles.yaw), Time.Delta * 5f);
+        // Renderer.WorldRotation = Rotation.Slerp(Renderer.WorldRotation, Rotation.FromYaw(EyeAngles.yaw), Time.Delta * 5f);
 
         var cameraOffset = Vector3.Up * 70f + Vector3.Backward * 220f;
-        Camera.WorldRotation = EyeAngles.ToRotation();
-        Camera.LocalPosition = cameraOffset * Camera.WorldRotation;
+        Camera.LocalRotation = EyeAngles.ToRotation();
+        Camera.LocalPosition = cameraOffset * Camera.LocalRotation;
     }
 }
