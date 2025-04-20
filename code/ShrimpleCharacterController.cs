@@ -366,7 +366,11 @@ public class ShrimpleCharacterController : Component
 
     private BBox BuildBounds()
     {
-        return new BBox(new Vector3(-TraceWidth / 2, -TraceWidth / 2f, 0f), new Vector3(TraceWidth / 2f, TraceWidth / 2f, TraceHeight));
+        var x = GameObject.WorldScale.x;
+        var y = GameObject.WorldScale.y;
+        var z = GameObject.WorldScale.z;
+
+        return new BBox(new Vector3(-TraceWidth / 2 * x, -TraceWidth / 2f * y, 0f), new Vector3(TraceWidth / 2f * x, TraceWidth / 2f * y, TraceHeight * z));
     }
 
     private string[] BuildPushTags()
