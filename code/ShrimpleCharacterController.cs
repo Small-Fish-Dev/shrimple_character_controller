@@ -251,7 +251,7 @@ public class ShrimpleCharacterController : Component
         set
         {
             _useSceneGravity = value;
-            _appliedGravity = UseSceneGravity ? Scene.PhysicsWorld.Gravity : UseVectorGravity ? VectorGravity : new Vector3(0f, 0f, Gravity);
+            _appliedGravity = BuildGravity();
         }
     }
 
@@ -269,7 +269,7 @@ public class ShrimpleCharacterController : Component
         set
         {
             _useVectorGravity = value;
-            _appliedGravity = UseSceneGravity ? Scene.PhysicsWorld.Gravity : UseVectorGravity ? VectorGravity : new Vector3(0f, 0f, Gravity);
+            _appliedGravity = BuildGravity();
         }
     }
 
@@ -291,7 +291,7 @@ public class ShrimpleCharacterController : Component
         set
         {
             _gravity = value;
-            _appliedGravity = UseSceneGravity ? Scene.PhysicsWorld.Gravity : UseVectorGravity ? VectorGravity : new Vector3(0f, 0f, Gravity);
+            _appliedGravity = BuildGravity();
         }
     }
 
@@ -310,7 +310,7 @@ public class ShrimpleCharacterController : Component
         set
         {
             _vectorGravity = value;
-            _appliedGravity = UseSceneGravity ? Scene.PhysicsWorld.Gravity : UseVectorGravity ? VectorGravity : new Vector3(0f, 0f, Gravity);
+            _appliedGravity = BuildGravity();
         }
     }
 
@@ -435,6 +435,8 @@ public class ShrimpleCharacterController : Component
 
         return new BBox(new Vector3(-TraceWidth / 2 * x, -TraceWidth / 2f * y, 0f), new Vector3(TraceWidth / 2f * x, TraceWidth / 2f * y, TraceHeight * z));
     }
+
+    private Vector3 BuildGravity() => UseSceneGravity ? Scene.PhysicsWorld.Gravity : UseVectorGravity ? VectorGravity : new Vector3(0f, 0f, Gravity);
 
     private string[] BuildPushTags()
     {
