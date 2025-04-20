@@ -1,4 +1,6 @@
-﻿namespace ShrimpleCharacterController;
+﻿using System.Text.Json.Nodes;
+
+namespace ShrimpleCharacterController;
 
 [Icon("nordic_walking")]
 public class ShrimpleCharacterController : Component
@@ -408,6 +410,8 @@ public class ShrimpleCharacterController : Component
     /// If another MoveHelper moved at the same time and they're stuck, let this one know that the other already unstuck for us
     /// </summary>
     public ShrimpleCharacterController UnstuckTarget;
+
+    public override int ComponentVersion => 1;
 
     protected override void OnStart()
     {
@@ -822,5 +826,12 @@ public class ShrimpleCharacterController : Component
 
         if (!ManuallyUpdate && Active)
             Move();
+    }
+
+    [JsonUpgrader(typeof(ShrimpleCharacterController), 1)]
+    private static void FloatGravityUpgrader(JsonObject json)
+    {
+        json.Remove("Gravity", out var newNode);
+        json["_gravity"] = newNode;
     }
 }
