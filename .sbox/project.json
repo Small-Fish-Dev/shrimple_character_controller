@@ -11,7 +11,7 @@
   },
   "scenes/walker_example.scene.Viewport0": {
     "Value": "{\u0022CameraPosition\u0022:\u0022-550.0612,2132.678,-151.8793\u0022,\u0022CameraRotation\u0022:\u0022-0.2394525,0.1451304,0.8209781,0.4975889\u0022,\u0022CameraOrthoHeight\u0022:1000}",
-    "Timeout": 1747748038,
+    "Timeout": 1747748098,
     "DeleteAt": 0
   },
   "AssetBrowser.Map.HistoryIdx": {
@@ -26,22 +26,22 @@
   },
   "prefabs/debug_world.prefab.Viewport0": {
     "Value": "{\u0022CameraPosition\u0022:\u00225.282104,-1364.955,335.8959\u0022,\u0022CameraRotation\u0022:\u0022-0.1058694,0.1174974,0.6609651,0.7335606\u0022,\u0022CameraOrthoHeight\u0022:1000}",
-    "Timeout": 1747748038,
+    "Timeout": 1747748098,
     "DeleteAt": 0
   },
   ".Viewport0": {
     "Value": "{\u0022CameraPosition\u0022:\u0022-1032.626,3031.692,-311.8106\u0022,\u0022CameraRotation\u0022:\u0022-0.009980856,0.01025632,0.6973458,0.716592\u0022,\u0022CameraOrthoHeight\u0022:1000}",
-    "Timeout": 1747747410,
+    "Timeout": 1747748098,
     "DeleteAt": 0
   },
   "SceneView.Viewport0.Settings": {
-    "Value": "{\u0022CameraPosition\u0022:\u00225.282104,-1364.955,335.8959\u0022,\u0022CameraRotation\u0022:\u0022-0.1058694,0.1174974,0.6609651,0.7335606\u0022,\u0022View\u0022:0,\u0022RenderMode\u0022:0,\u0022WireframeMode\u0022:false,\u0022EnablePostProcessing\u0022:true,\u0022EnablePrefabLighting\u0022:true,\u0022ShowGrid\u0022:true,\u0022GridOpacity\u0022:0.2,\u0022GridAxis\u0022:0,\u0022CameraOrthoHeight\u0022:1000}",
-    "Timeout": 1747748038,
+    "Value": "{\u0022CameraPosition\u0022:\u0022-1032.626,3031.692,-311.8106\u0022,\u0022CameraRotation\u0022:\u0022-0.009980856,0.01025632,0.6973458,0.716592\u0022,\u0022View\u0022:0,\u0022RenderMode\u0022:0,\u0022WireframeMode\u0022:false,\u0022EnablePostProcessing\u0022:true,\u0022EnablePrefabLighting\u0022:true,\u0022ShowGrid\u0022:true,\u0022GridOpacity\u0022:0.2,\u0022GridAxis\u0022:0,\u0022CameraOrthoHeight\u0022:1000}",
+    "Timeout": 1747748098,
     "DeleteAt": 0
   },
   "SceneView.Layout": {
     "Value": "{\u0022Layout\u0022:0,\u0022SplitterState\u0022:[]}",
-    "Timeout": 1747747410,
+    "Timeout": 1747748097,
     "DeleteAt": 0
   },
   "folder-metadata": {

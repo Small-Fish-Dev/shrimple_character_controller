@@ -481,8 +481,7 @@ public class ShrimpleCharacterController : Component
         {
             if (!IsOnGround || IsSlipping || !GroundStickEnabled)
             {
-                var gravityAmount = UseSceneGravity ? Scene.PhysicsWorld.Gravity.z : Gravity;
-                var gravity = gravityAmount * Vector3.Up * delta;
+                var gravity = _finalGravity * delta;
                 var gravityResult = CollideAndSlide(gravity, moveHelperResult.Position, delta, gravityPass: true); // Apply and simulate the gravity step
 
                 finalPosition = gravityResult.Position;
