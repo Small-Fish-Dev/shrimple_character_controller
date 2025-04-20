@@ -238,12 +238,24 @@ public class ShrimpleCharacterController : Component
     [Property]
     public bool GravityEnabled { get; set; } = true;
 
+    private bool _useSceneGravity = true;
+
     /// <summary>
     /// Use the scene's gravity or our own
     /// </summary>
     [Property]
     [Feature("Gravity")]
-    public bool UseSceneGravity { get; set; } = true;
+    public bool UseSceneGravity
+    {
+        get => _useSceneGravity;
+        set
+        {
+            _useSceneGravity = value;
+            _appliedGravity = UseSceneGravity ? Scene.PhysicsWorld.Gravity : UseVectorGravity ? VectorGravity : new Vector3(0f, 0f, Gravity);
+        }
+    }
+
+    private bool _useVectorGravity = false;
 
     /// <summary>
     /// Use a Vector3 gravity instead of a single float (Use this if you want to use a custom gravity)
@@ -251,10 +263,20 @@ public class ShrimpleCharacterController : Component
     [Property]
     [Feature("Gravity")]
     [HideIf("UseSceneGravity", true)]
-    public bool UseVectorGravity { get; set; } = false;
+    public bool UseVectorGravity
+    {
+        get => _useVectorGravity;
+        set
+        {
+            _useVectorGravity = value;
+            _appliedGravity = UseSceneGravity ? Scene.PhysicsWorld.Gravity : UseVectorGravity ? VectorGravity : new Vector3(0f, 0f, Gravity);
+        }
+    }
 
-    private bool _useFloatGravity => !UseVectorGravity && !UseSceneGravity;
-    private bool _useVectorGravity => UseVectorGravity && !UseSceneGravity;
+    private bool _usingFloatGravity => !UseVectorGravity && !UseSceneGravity;
+    private bool _usingVectorGravity => UseVectorGravity && !UseSceneGravity;
+
+    private float _gravity = -850f;
 
     /// <summary>
     /// Units per second squared (Default is -850f)
@@ -262,8 +284,18 @@ public class ShrimpleCharacterController : Component
     [Property]
     [Feature("Gravity")]
     [Range(-2000, 2000, 1, false)]
-    [ShowIf("_useFloatGravity", true)]
-    public float Gravity { get; set; } = -850f;
+    [ShowIf("_usingFloatGravity", true)]
+    public float Gravity
+    {
+        get => _gravity;
+        set
+        {
+            _gravity = value;
+            _appliedGravity = UseSceneGravity ? Scene.PhysicsWorld.Gravity : UseVectorGravity ? VectorGravity : new Vector3(0f, 0f, Gravity);
+        }
+    }
+
+    private Vector3 _vectorGravity = new Vector3(0f, 0f, -850f);
 
     /// <summary>
     /// Units per second squared (Default is 0f, 0f, -850f)<br/>
@@ -271,10 +303,19 @@ public class ShrimpleCharacterController : Component
     /// </summary>
     [Property]
     [Feature("Gravity")]
-    [ShowIf("_useVectorGravity", true)]
-    public Vector3 VectorGravity { get; set; } = new Vector3(0f, 0f, -850f);
+    [ShowIf("_usingVectorGravity", true)]
+    public Vector3 VectorGravity
+    {
+        get => _vectorGravity;
+        set
+        {
+            _vectorGravity = value;
+            _appliedGravity = UseSceneGravity ? Scene.PhysicsWorld.Gravity : UseVectorGravity ? VectorGravity : new Vector3(0f, 0f, Gravity);
+        }
+    }
 
-    private Vector3 AppliedGravity => UseSceneGravity ? Scene.PhysicsWorld.Gravity : UseVectorGravity ? VectorGravity : new Vector3(0f, 0f, Gravity); // Use the scene's gravity or our own
+    private Vector3 _appliedGravity;
+    public Vector3 AppliedGravity => _appliedGravity;
 
     /// <summary>
     /// Check if the MoveHelper is stuck and try to get it to unstuck (+Trace calls if stuck)
