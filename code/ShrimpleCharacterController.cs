@@ -359,6 +359,13 @@ public class ShrimpleCharacterController : Component
     /// </summary>
     [Sync] public Vector3 Velocity { get; set; }
 
+     /// <summary>
+    /// Velocity controlled by outside factors, such as knockback, rootmotion, etc.
+    /// It is only applied to our final position and doesn't affect our Velocity.
+    /// It should be handled outside the controller.
+    /// </summary>
+    [Sync] public Vector3 ExternalVelocity { get; set; }
+
     /// <summary>
     /// Is the MoveHelper currently touching the ground
     /// </summary>
@@ -587,6 +594,11 @@ public class ShrimpleCharacterController : Component
                 finalPosition = gravityResult.Position;
                 finalVelocity += gravityResult.Velocity;
             }
+        }
+
+        if (!ExternalVelocity.IsNearZeroLength)
+        {
+	        finalPosition = CollideAndSlide(ExternalVelocity, finalPosition, delta).Position;
         }
 
         _lastVelocity = Velocity * delta;
