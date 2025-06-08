@@ -1,92 +1,92 @@
 {
   "scene.lastopened": {
     "Value": "[\u0022scenes/walker_example.scene\u0022,\u0022prefabs/debug_world.prefab\u0022,\u0022scenes/empty.scene\u0022]",
-    "Timeout": 1751979082,
+    "Timeout": 1751979989,
     "DeleteAt": 0
   },
   "gizmo.settings": {
     "Value": "{\u0022EditMode\u0022:\u0022position\u0022,\u0022Selection\u0022:true,\u0022ViewMode\u0022:\u00223d\u0022,\u0022GizmosEnabled\u0022:true,\u0022GizmoScale\u0022:1,\u0022GridSpacing\u0022:8,\u0022SnapToGrid\u0022:true,\u0022SnapToAngles\u0022:true,\u0022AngleSpacing\u0022:15,\u0022GlobalSpace\u0022:false,\u0022DebugActionGraphs\u0022:false}",
-    "Timeout": 1751979401,
+    "Timeout": 1751979987,
     "DeleteAt": 0
   },
   "scenes/walker_example.scene.Viewport0": {
     "Value": "{\u0022CameraPosition\u0022:\u0022-99.46711,-362.8735,485.0559\u0022,\u0022CameraRotation\u0022:\u0022-0.3022594,0.2325998,0.7326022,0.5637646\u0022,\u0022CameraOrthoHeight\u0022:1000}",
-    "Timeout": 1751979401,
+    "Timeout": 1751980399,
     "DeleteAt": 0
   },
   "AssetLocations.ShowBaseContent": {
     "Value": "true",
-    "Timeout": 1751979082,
+    "Timeout": 1751980000,
     "DeleteAt": 0
   },
   "prefabs/debug_world.prefab.Viewport0": {
     "Value": "{\u0022CameraPosition\u0022:\u0022-1000.614,-397.3705,176.5595\u0022,\u0022CameraRotation\u0022:\u0022-0.01832572,0.1785511,0.1004413,0.978619\u0022,\u0022CameraOrthoHeight\u0022:1000}",
-    "Timeout": 1751979401,
+    "Timeout": 1751980399,
     "DeleteAt": 0
   },
   ".Viewport0": {
     "Value": "{\u0022CameraPosition\u0022:\u002264.7494,-611.3881,145.0907\u0022,\u0022CameraRotation\u0022:\u0022-0.00140108,0.3086819,0.004317207,0.9511545\u0022,\u0022CameraOrthoHeight\u0022:1000}",
     "Timeout": 1748339083,
-    "DeleteAt": 1749473467
+    "DeleteAt": 1749473481
   },
   "SceneView.Viewport0.Settings": {
-    "Value": "{\u0022CameraPosition\u0022:\u0022-1000.614,-397.3705,176.5595\u0022,\u0022CameraRotation\u0022:\u0022-0.01832572,0.1785511,0.1004413,0.978619\u0022,\u0022View\u0022:0,\u0022RenderMode\u0022:0,\u0022WireframeMode\u0022:false,\u0022EnablePostProcessing\u0022:true,\u0022EnablePrefabLighting\u0022:true,\u0022ShowGrid\u0022:true,\u0022GridOpacity\u0022:0.2,\u0022GridAxis\u0022:0,\u0022CameraOrthoHeight\u0022:1000}",
-    "Timeout": 1751979401,
+    "Value": "{\u0022CameraPosition\u0022:\u0022234.1995,348.2158,520.08\u0022,\u0022CameraRotation\u0022:\u00220.3250074,0.3576815,-0.5887433,0.6479316\u0022,\u0022View\u0022:0,\u0022RenderMode\u0022:0,\u0022WireframeMode\u0022:false,\u0022EnablePostProcessing\u0022:true,\u0022EnablePrefabLighting\u0022:true,\u0022ShowGrid\u0022:true,\u0022GridOpacity\u0022:0.2,\u0022GridAxis\u0022:0,\u0022CameraOrthoHeight\u0022:1000}",
+    "Timeout": 1751980399,
     "DeleteAt": 0
   },
   "SceneView.Layout": {
     "Value": "{\u0022Layout\u0022:0,\u0022SplitterState\u0022:[]}",
-    "Timeout": 1751979401,
+    "Timeout": 1751979989,
     "DeleteAt": 0
   },
   "scenes/empty.scene.Viewport0": {
     "Value": "{\u0022CameraPosition\u0022:\u0022234.1995,348.2158,520.08\u0022,\u0022CameraRotation\u0022:\u00220.3250074,0.3576815,-0.5887433,0.6479316\u0022,\u0022CameraOrthoHeight\u0022:1000}",
-    "Timeout": 1751979401,
+    "Timeout": 1751980399,
     "DeleteAt": 0
   },
   "AssetBrowser.History": {
     "Value": "[\u0022C:\\\\Users\\\\uberm\\\\Desktop\\\\Projects\\\\shrimple_character_controller\\\\Assets\u0022,\u0022C:\\\\Users\\\\uberm\\\\Desktop\\\\Projects\\\\shrimple_character_controller\\\\Assets\\\\scenes\u0022,\u0022C:\\\\Program Files (x86)\\\\Steam\\\\steamapps\\\\common\\\\sbox\\\\addons\\\\citizen\\\\assets\u0022,\u0022C:\\\\Program Files (x86)\\\\Steam\\\\steamapps\\\\common\\\\sbox\\\\addons\\\\citizen\\\\assets\\\\models\u0022,\u0022C:\\\\Program Files (x86)\\\\Steam\\\\steamapps\\\\common\\\\sbox\\\\addons\\\\citizen\\\\assets\\\\models\\\\citizen\u0022]",
-    "Timeout": 1751979082,
+    "Timeout": 1751979989,
     "DeleteAt": 0
   },
   "AssetBrowser.HistoryIdx": {
     "Value": "4",
-    "Timeout": 1751979082,
+    "Timeout": 1751979989,
     "DeleteAt": 0
   },
   "Window.SboxSceneEditor.Dock": {
-    "Value": "{\u0022floatingWindows\u0022:[],\u0022mainWrapper\u0022:{\u0022geometry\u0022:\u0022AdnQywADAAAAAAAAAAAAAAAAB/UAAAPoAAAAAAAAAAAAAAf1AAAD6AAAAAAAAAAACAAAAAAAAAAAAAAAB/UAAAPo\u0022,\u0022splitter\u0022:{\u0022items\u0022:[{\u0022currentIndex\u0022:0,\u0022objects\u0022:[{\u0022data\u0022:null,\u0022managedType\u0022:\u0022SceneTreeWidget\u0022,\u0022name\u0022:\u0022Hierarchy\u0022},{\u0022data\u0022:null,\u0022managedType\u0022:\u0022PanelInspectorWidget\u0022,\u0022name\u0022:\u0022UI Panels\u0022}],\u0022type\u0022:\u0022area\u0022},{\u0022items\u0022:[{\u0022items\u0022:[{\u0022currentIndex\u0022:2,\u0022objects\u0022:[{\u0022data\u0022:null,\u0022managedType\u0022:\u0022\u0022,\u0022name\u0022:\u0022GameFrame\u0022},{\u0022data\u0022:null,\u0022managedType\u0022:\u0022SceneDock\u0022,\u0022name\u0022:\u0022SceneDock:scenes/walker_example.scene\u0022},{\u0022data\u0022:null,\u0022managedType\u0022:\u0022SceneDock\u0022,\u0022name\u0022:\u0022SceneDock:prefabs/debug_world.prefab\u0022},{\u0022data\u0022:null,\u0022managedType\u0022:\u0022SceneDock\u0022,\u0022name\u0022:\u0022SceneDock:scenes/empty.scene\u0022}],\u0022type\u0022:\u0022area\u0022},{\u0022currentIndex\u0022:0,\u0022objects\u0022:[{\u0022data\u0022:null,\u0022managedType\u0022:\u0022ConsoleWidget\u0022,\u0022name\u0022:\u0022Console\u0022},{\u0022data\u0022:null,\u0022managedType\u0022:\u0022MainAssetBrowser\u0022,\u0022name\u0022:\u0022Asset Browser\u0022},{\u0022data\u0022:null,\u0022managedType\u0022:\u0022LibraryManagerDock\u0022,\u0022name\u0022:\u0022Library Manager\u0022},{\u0022data\u0022:null,\u0022managedType\u0022:\u0022MixerDock\u0022,\u0022name\u0022:\u0022Mixer\u0022}],\u0022type\u0022:\u0022area\u0022}],\u0022state\u0022:\u0022AAAA/wAAAAEAAAACAAACuAAAAsoA/////wEAAAACAA==\u0022,\u0022type\u0022:\u0022splitter\u0022},{\u0022items\u0022:[{\u0022currentIndex\u0022:0,\u0022objects\u0022:[{\u0022data\u0022:null,\u0022managedType\u0022:\u0022Inspector\u0022,\u0022name\u0022:\u0022Inspector\u0022},{\u0022data\u0022:null,\u0022managedType\u0022:\u0022UndoDock\u0022,\u0022name\u0022:\u0022Undo\u0022}],\u0022type\u0022:\u0022area\u0022},{\u0022currentIndex\u0022:0,\u0022objects\u0022:[{\u0022data\u0022:null,\u0022managedType\u0022:\u0022PerformanceDock\u0022,\u0022name\u0022:\u0022Performance\u0022}],\u0022type\u0022:\u0022area\u0022}],\u0022state\u0022:\u0022AAAA/wAAAAEAAAACAAAC2wAAAOcA/////wEAAAACAA==\u0022,\u0022type\u0022:\u0022splitter\u0022}],\u0022state\u0022:\u0022AAAA/wAAAAEAAAACAAAE/AAAAckA/////wEAAAABAA==\u0022,\u0022type\u0022:\u0022splitter\u0022}],\u0022state\u0022:\u0022AAAA/wAAAAEAAAACAAABBgAABskA/////wEAAAABAA==\u0022,\u0022type\u0022:\u0022splitter\u0022}},\u0022toolWindowManagerStateFormat\u0022:1}",
-    "Timeout": 1751979401,
+    "Value": "{\u0022floatingWindows\u0022:[],\u0022mainWrapper\u0022:{\u0022geometry\u0022:\u0022AdnQywADAAAAAAAAAAAAAAAAB/UAAAPoAAAAAAAAAAAAAAf1AAAD6AAAAAAAAAAACAAAAAAAAAAAAAAAB/UAAAPo\u0022,\u0022splitter\u0022:{\u0022items\u0022:[{\u0022currentIndex\u0022:0,\u0022objects\u0022:[{\u0022data\u0022:null,\u0022managedType\u0022:\u0022SceneTreeWidget\u0022,\u0022name\u0022:\u0022Hierarchy\u0022},{\u0022data\u0022:null,\u0022managedType\u0022:\u0022PanelInspectorWidget\u0022,\u0022name\u0022:\u0022UI Panels\u0022}],\u0022type\u0022:\u0022area\u0022},{\u0022items\u0022:[{\u0022items\u0022:[{\u0022currentIndex\u0022:3,\u0022objects\u0022:[{\u0022data\u0022:null,\u0022managedType\u0022:\u0022\u0022,\u0022name\u0022:\u0022GameFrame\u0022},{\u0022data\u0022:null,\u0022managedType\u0022:\u0022SceneDock\u0022,\u0022name\u0022:\u0022SceneDock:scenes/walker_example.scene\u0022},{\u0022data\u0022:null,\u0022managedType\u0022:\u0022SceneDock\u0022,\u0022name\u0022:\u0022SceneDock:prefabs/debug_world.prefab\u0022},{\u0022data\u0022:null,\u0022managedType\u0022:\u0022SceneDock\u0022,\u0022name\u0022:\u0022SceneDock:scenes/empty.scene\u0022}],\u0022type\u0022:\u0022area\u0022},{\u0022currentIndex\u0022:0,\u0022objects\u0022:[{\u0022data\u0022:null,\u0022managedType\u0022:\u0022ConsoleWidget\u0022,\u0022name\u0022:\u0022Console\u0022},{\u0022data\u0022:null,\u0022managedType\u0022:\u0022MainAssetBrowser\u0022,\u0022name\u0022:\u0022Asset Browser\u0022},{\u0022data\u0022:null,\u0022managedType\u0022:\u0022LibraryManagerDock\u0022,\u0022name\u0022:\u0022Library Manager\u0022},{\u0022data\u0022:null,\u0022managedType\u0022:\u0022MixerDock\u0022,\u0022name\u0022:\u0022Mixer\u0022}],\u0022type\u0022:\u0022area\u0022}],\u0022state\u0022:\u0022AAAA/wAAAAEAAAACAAACuAAAAsoA/////wEAAAACAA==\u0022,\u0022type\u0022:\u0022splitter\u0022},{\u0022items\u0022:[{\u0022currentIndex\u0022:0,\u0022objects\u0022:[{\u0022data\u0022:null,\u0022managedType\u0022:\u0022Inspector\u0022,\u0022name\u0022:\u0022Inspector\u0022},{\u0022data\u0022:null,\u0022managedType\u0022:\u0022UndoDock\u0022,\u0022name\u0022:\u0022Undo\u0022}],\u0022type\u0022:\u0022area\u0022},{\u0022currentIndex\u0022:0,\u0022objects\u0022:[{\u0022data\u0022:null,\u0022managedType\u0022:\u0022PerformanceDock\u0022,\u0022name\u0022:\u0022Performance\u0022}],\u0022type\u0022:\u0022area\u0022}],\u0022state\u0022:\u0022AAAA/wAAAAEAAAACAAAC2wAAAOcA/////wEAAAACAA==\u0022,\u0022type\u0022:\u0022splitter\u0022}],\u0022state\u0022:\u0022AAAA/wAAAAEAAAACAAAE/AAAAckA/////wEAAAABAA==\u0022,\u0022type\u0022:\u0022splitter\u0022}],\u0022state\u0022:\u0022AAAA/wAAAAEAAAACAAABBgAABskA/////wEAAAABAA==\u0022,\u0022type\u0022:\u0022splitter\u0022}},\u0022toolWindowManagerStateFormat\u0022:1}",
+    "Timeout": 1751980322,
     "DeleteAt": 0
   },
   "AssetBrowser.Model.History": {
     "Value": "[\u0022C:\\\\Users\\\\uberm\\\\Desktop\\\\Projects\\\\shrimple_character_controller\\\\Assets\u0022,\u0022c:\\\\program files (x86)\\\\steam\\\\steamapps\\\\common\\\\sbox\\\\core\\\\models\\\\dev\u0022,\u0022C:\\\\Program Files (x86)\\\\Steam\\\\steamapps\\\\common\\\\sbox\\\\addons\\\\citizen\\\\assets\u0022,\u0022c:\\\\program files (x86)\\\\steam\\\\steamapps\\\\common\\\\sbox\\\\addons\\\\citizen\\\\assets\\\\models\\\\citizen_clothes\\\\seasonal\\\\2024\\\\santa\\\\santa_hat\\\\models\u0022,\u0022C:\\\\Program Files (x86)\\\\Steam\\\\steamapps\\\\common\\\\sbox\\\\addons\\\\citizen\\\\assets\\\\models\\\\citizen_clothes\u0022,\u0022c:\\\\program files (x86)\\\\steam\\\\steamapps\\\\common\\\\sbox\\\\addons\\\\citizen\\\\assets\\\\models\\\\citizen_clothes\\\\trousers\\\\smarttrousers\u0022,\u0022C:\\\\Program Files (x86)\\\\Steam\\\\steamapps\\\\common\\\\sbox\\\\addons\\\\citizen\\\\assets\\\\models\\\\citizen_clothes\u0022]",
     "Timeout": 1748338636,
-    "DeleteAt": 1749473467
+    "DeleteAt": 1749473481
   },
   "AssetBrowser.Model.HistoryIdx": {
     "Value": "6",
     "Timeout": 1748338636,
-    "DeleteAt": 1749473467
+    "DeleteAt": 1749473481
   },
   "AssetBrowser.Model.ViewMode": {
     "Value": "3",
     "Timeout": 1748338643,
-    "DeleteAt": 1749473467
+    "DeleteAt": 1749473481
   },
   "AssetBrowser.Model.ShowJunkFiles": {
     "Value": "false",
     "Timeout": 1748338643,
-    "DeleteAt": 1749473467
+    "DeleteAt": 1749473481
   },
   "AssetBrowser.Model.HideNonAssets": {
     "Value": "false",
     "Timeout": 1748338643,
-    "DeleteAt": 1749473467
+    "DeleteAt": 1749473481
   },
   "AssetBrowser.Model.ShowRecursiveFiles": {
     "Value": "false",
     "Timeout": 1748338643,
-    "DeleteAt": 1749473467
+    "DeleteAt": 1749473481
   }
 }
