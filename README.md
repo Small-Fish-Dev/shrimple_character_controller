@@ -29,13 +29,15 @@ You are also able to manually update the GameObject's transform rather than lett
 Controller.WishVelocity = wishDirection * wishSpeed;
 var controllerResult = Controller.Move( false );
 
-if ( controllerResult.Position.z <= 999f ) // Out of bounds!
-{
-    Destroy();
-}
-else
+var edgeCheckTrace = Controller.BuildTrace( Controller.Bounds.Grow( -Controller.SkinWidth ), controllerResult.Position, controllerResult.Position + Vector3.Down 10f );
+
+if ( edgeCheckTrace.Hit ) // We're safe to move
 {
     Transform.Position = controllerResult.Position;
     MyVelocity = controllerResult.Velocity;
+}
+else // Uh oh, we'll fall if we keep going!
+{
+    MyVelocity = Vector3.Zero;
 }
 ```
