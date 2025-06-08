@@ -426,6 +426,7 @@ public class ShrimpleCharacterController : Component
     private BBox _shrunkenBounds;
     private string[] _pushTags;
     private Vector3 _lastVelocity;
+    private float _minimumTolerance => MathX.Clamp(Time.Delta / 2f, 0.005f, 0.1f); // Floating precision tolerance, too high if used inside of OnUpdate so tied to update rate
 
     /// <summary>
     /// If another MoveHelper moved at the same time and they're stuck, let this one know that the other already unstuck for us
@@ -682,7 +683,7 @@ public class ShrimpleCharacterController : Component
             }
         }
 
-        if (velocity.IsNearlyZero(0.01f)) // Not worth continuing, reduces small stutter
+        if (velocity.IsNearlyZero(_minimumTolerance)) // Not worth continuing, reduces small stutter
         {
             return new MoveHelperResult(position, Vector3.Zero);
         }
@@ -767,7 +768,7 @@ public class ShrimpleCharacterController : Component
                 }
             }
 
-            if (travelled.Length <= 0.01f && leftover.Length <= 0.01f)
+            if (travelled.Length <= _minimumTolerance && leftover.Length <= _minimumTolerance)
                 return new MoveHelperResult(position + travelled, travelled / delta);
 
             var newResult = CollideAndSlide(new MoveHelperResult(position + travelled, leftover / delta), delta, depth + 1, gravityPass); // Simulate another bounce for the leftover velocity from the latest position
