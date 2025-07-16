@@ -163,6 +163,14 @@ public class ShrimpleCharacterController : Component
     public float GripFactorReduction { get; set; } = 1f;
 
     /// <summary>
+    /// How much the MoveHelper will "bounce" off walls and ground when colliding with them (0f = No bounce, 1f = Full bounce)
+    /// </summary>
+    [Group("Movement")]
+    [Property]
+    [Range(0f, 1f, true)]
+    public float Elasticity { get; set; } = 0f;
+
+    /// <summary>
     /// Stick the MoveHelper to the ground (IsOnGround will default to false if disabled)
     /// </summary>
     [FeatureEnabled("GroundStick")]
@@ -787,6 +795,8 @@ public class ShrimpleCharacterController : Component
 
             }
 
+            if (Elasticity > 0f)
+                velocity = (Vector3.Reflect(velocity, travelTrace.Normal) - AppliedGravity * delta * delta * 1.5f) * Elasticity;
 
             if (travelled.Length <= _minimumTolerance && leftover.Length <= _minimumTolerance)
                 return new MoveHelperResult(position + travelled, travelled / delta);
