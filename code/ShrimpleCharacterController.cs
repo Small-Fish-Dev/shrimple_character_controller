@@ -912,11 +912,4 @@ public class ShrimpleCharacterController : Component
         if (!ManuallyUpdate && Active)
             Move();
     }
-
-    [JsonUpgrader(typeof(ShrimpleCharacterController), 1)]
-    private static void FloatGravityUpgrader(JsonObject json)
-    {
-        json.Remove("Gravity", out var newNode);
-        json["_gravity"] = newNode;
-    }
 }
