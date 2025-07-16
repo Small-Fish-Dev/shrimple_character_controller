@@ -14,19 +14,19 @@ public sealed class ShrimpleWalker : Component
     public GameObject Camera { get; set; }
 
     [Property]
-    [Range(50f, 200f, 10f)]
+    [Range(50f, 200f)]
     public float WalkSpeed { get; set; } = 100f;
 
     [Property]
-    [Range(100f, 500f, 20f)]
+    [Range(100f, 500f)]
     public float RunSpeed { get; set; } = 300f;
 
     [Property]
-    [Range(25f, 100f, 5f)]
+    [Range(25f, 100f)]
     public float DuckSpeed { get; set; } = 50f;
 
     [Property]
-    [Range(200f, 500f, 20f)]
+    [Range(200f, 500f)]
     public float JumpStrength { get; set; } = 350f;
 
     public Angles EyeAngles { get; set; }

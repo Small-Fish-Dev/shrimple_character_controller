@@ -27,7 +27,7 @@ public class ShrimpleCharacterController : Component
     /// </summary>
     [Property]
     [Group("Trace")]
-    [Range(1f, 64f, 1f, true, true)]
+    [Range(1f, 64f, true, true)]
     public float TraceWidth
     {
         get => _traceWidth;
@@ -47,7 +47,7 @@ public class ShrimpleCharacterController : Component
     /// </summary>
     [Property]
     [Group("Trace")]
-    [Range(1f, 256f, 1f, true, true)]
+    [Range(1f, 256f, true, true)]
     public float TraceHeight
     {
         get => _traceHeight;
@@ -86,7 +86,7 @@ public class ShrimpleCharacterController : Component
     /// </summary>
     [Property]
     [Group("Trace")]
-    [Range(1, 20, 1, true, true)]
+    [Range(1, 20, true, true)]
     public int MaxBounces { get; set; } = 5;
 
     /// <summary>
@@ -94,7 +94,7 @@ public class ShrimpleCharacterController : Component
     /// </summary>
     [Property]
     [Group("Movement")]
-    [Range(0f, 3000f, 10f, false)]
+    [Range(0f, 3000f, false)]
     [HideIf("GroundStickEnabled", false)]
     public float GroundAcceleration { get; set; } = 1000f;
 
@@ -103,7 +103,7 @@ public class ShrimpleCharacterController : Component
     /// </summary>
     [Property]
     [Group("Movement")]
-    [Range(0f, 3000f, 10f, false)]
+    [Range(0f, 3000f, false)]
     [HideIf("GroundStickEnabled", false)]
     public float GroundDeceleration { get; set; } = 1500f;
 
@@ -112,7 +112,7 @@ public class ShrimpleCharacterController : Component
     /// </summary>
     [Property]
     [Group("Movement")]
-    [Range(0f, 3000f, 10f, false)]
+    [Range(0f, 3000f, false)]
     public float AirAcceleration { get; set; } = 300f;
 
     /// <summary>
@@ -120,7 +120,7 @@ public class ShrimpleCharacterController : Component
     /// </summary>
     [Property]
     [Group("Movement")]
-    [Range(0f, 3000f, 10f, false)]
+    [Range(0f, 3000f, false)]
     public float AirDeceleration { get; set; } = 0f;
 
     /// <summary>
@@ -151,7 +151,7 @@ public class ShrimpleCharacterController : Component
     /// </summary>
     [Group("Movement")]
     [Property]
-    [Range(0f, 10f, 0.1f, false)]
+    [Range(0f, 10f, false)]
     public float WallTolerance { get; set; } = 1f;
 
     /// <summary>
@@ -159,7 +159,7 @@ public class ShrimpleCharacterController : Component
     /// </summary>
     [Group("Movement")]
     [Property]
-    [Range(1f, 10f, 0.1f, true)]
+    [Range(1f, 10f, true)]
     public float GripFactorReduction { get; set; } = 1f;
 
     /// <summary>
@@ -174,7 +174,7 @@ public class ShrimpleCharacterController : Component
     /// </summary>
     [Property]
     [Feature("GroundStick")]
-    [Range(0f, 89f, 1f, true, true)]
+    [Range(0f, 89f, true, true)]
     public float MaxGroundAngle { get; set; } = 60f;
 
     /// <summary>
@@ -182,7 +182,7 @@ public class ShrimpleCharacterController : Component
     /// </summary>
     [Property]
     [Feature("GroundStick")]
-    [Range(1f, 32f, 1f, false)]
+    [Range(1f, 32f, false)]
     public float GroundStickDistance { get; set; } = 12f;
 
     /// <summary>
@@ -197,7 +197,7 @@ public class ShrimpleCharacterController : Component
     /// </summary>
     [Feature("Steps")]
     [Property]
-    [Range(1f, 32f, 1f, false)]
+    [Range(1f, 32f, false)]
     public float StepHeight { get; set; } = 12f;
 
     /// <summary>
@@ -205,7 +205,7 @@ public class ShrimpleCharacterController : Component
     /// </summary>
     [Feature("Steps")]
     [Property]
-    [Range(0.1f, 8f, 0.1f, false)]
+    [Range(0.1f, 8f, false)]
     public float StepDepth { get; set; } = 2f;
 
     /// <summary>
@@ -213,7 +213,7 @@ public class ShrimpleCharacterController : Component
     /// </summary>
     [Feature("Steps")]
     [Property]
-    [Range(0f, 10f, 0.1f, false)]
+    [Range(0f, 10f, false)]
     public float StepTolerance { get; set; } = 1f;
 
     /// <summary>
@@ -300,7 +300,7 @@ public class ShrimpleCharacterController : Component
     /// </summary>
     [Property]
     [Feature("Gravity")]
-    [Range(-2000, 2000, 1, false)]
+    [Range(-2000, 2000, false)]
     [ShowIf("_usingFloatGravity", true)]
     public float Gravity
     {
@@ -346,7 +346,8 @@ public class ShrimpleCharacterController : Component
     /// </summary>
     [Property]
     [Feature("Unstuck")]
-    [Range(1, 50, 1, false)]
+    [Range(1, 50, false)]
+    [Step(1f)]
     public int MaxUnstuckTries { get; set; } = 20;
 
     /// <summary>
@@ -359,7 +360,7 @@ public class ShrimpleCharacterController : Component
     /// </summary>
     [Sync] public Vector3 Velocity { get; set; }
 
-     /// <summary>
+    /// <summary>
     /// Velocity controlled by outside factors, such as knockback, rootmotion, etc.
     /// It is only applied to our final position and doesn't affect our Velocity.
     /// It should be handled outside the controller.
@@ -598,7 +599,7 @@ public class ShrimpleCharacterController : Component
 
         if (!ExternalVelocity.IsNearZeroLength)
         {
-	        finalPosition = CollideAndSlide(ExternalVelocity, finalPosition, delta).Position;
+            finalPosition = CollideAndSlide(ExternalVelocity, finalPosition, delta).Position;
         }
 
         _lastVelocity = Velocity * delta;
@@ -716,9 +717,13 @@ public class ShrimpleCharacterController : Component
             if (angle <= MaxGroundAngle) // Terrain we can walk on
             {
                 if (gravityPass || !IsOnGround)
+                {
                     leftover = Vector3.VectorPlaneProject(leftover, travelTrace.Normal); // Don't project the vertical velocity after landing else it boosts your horizontal velocity
+                }
                 else
+                {
                     leftover = leftover.ProjectAndScale(travelTrace.Normal); // Project the velocity along the terrain
+                }
                 IsPushingAgainstWall = false;
                 WallObject = null;
             }
@@ -778,13 +783,16 @@ public class ShrimpleCharacterController : Component
                         leftover = ScaleAgainstWalls ? Vector3.VectorPlaneProject(leftover, travelTrace.Normal) * scale : leftover.ProjectAndScale(travelTrace.Normal);
                     }
                 }
+
+
             }
+
 
             if (travelled.Length <= _minimumTolerance && leftover.Length <= _minimumTolerance)
                 return new MoveHelperResult(position + travelled, travelled / delta);
 
             var newResult = CollideAndSlide(new MoveHelperResult(position + travelled, leftover / delta), delta, depth + 1, gravityPass); // Simulate another bounce for the leftover velocity from the latest position
-            var currentResult = new MoveHelperResult(newResult.Position, travelled / delta + newResult.Velocity); // Use the new bounce's position and combine the velocities
+            var currentResult = new MoveHelperResult(newResult.Position, velocity / delta); // Use the new bounce's position and combine the velocities
 
             return currentResult;
         }

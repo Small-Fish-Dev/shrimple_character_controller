@@ -14,11 +14,11 @@ public sealed class ShrimpleFlyer : Component
     public GameObject Camera { get; set; }
 
     [Property]
-    [Range(400f, 1600f, 20f)]
+    [Range(400f, 1600f)]
     public float WalkSpeed { get; set; } = 800f;
 
     [Property]
-    [Range(800f, 4000f, 80f)]
+    [Range(800f, 4000f)]
     public float RunSpeed { get; set; } = 2400f;
 
     public Angles EyeAngles { get; set; }

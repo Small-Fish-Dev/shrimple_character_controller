@@ -10,15 +10,15 @@ public sealed class ShrimpleRoller : Component
     public GameObject Camera { get; set; }
 
     [Property]
-    [Range(500f, 2000f, 100f)]
+    [Range(500f, 2000f)]
     public float WalkSpeed { get; set; } = 1000f;
 
     [Property]
-    [Range(1000f, 5000f, 200f)]
+    [Range(1000f, 5000f)]
     public float RunSpeed { get; set; } = 3000f;
 
     [Property]
-    [Range(200f, 500f, 20f)]
+    [Range(200f, 500f)]
     public float JumpStrength { get; set; } = 350f;
 
     public Angles EyeAngles { get; set; }
