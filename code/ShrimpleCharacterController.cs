@@ -163,7 +163,9 @@ public class ShrimpleCharacterController : Component
     public float GripFactorReduction { get; set; } = 1f;
 
     /// <summary>
-    /// How much the MoveHelper will "bounce" off walls and ground when colliding with them (0f = No bounce, 1f = Full bounce)
+    /// How much the MoveHelper will "bounce" off walls and ground when colliding with them<br/>
+    /// (0f = No bounce, 1f = Full bounce)<br/>
+    /// <see cref="GroundStickEnabled"/> will override this value when sticking to the ground<br/>
     /// </summary>
     [Group("Movement")]
     [Property]

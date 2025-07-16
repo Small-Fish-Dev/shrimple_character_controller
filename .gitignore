@@ -28,3 +28,4 @@ Exports/
 /.sbox
 /.sbox
 code/scc.csproj.user
+.sbox/project.json
