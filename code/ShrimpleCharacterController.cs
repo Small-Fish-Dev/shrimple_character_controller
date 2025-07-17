@@ -804,7 +804,7 @@ public class ShrimpleCharacterController : Component
                 return new MoveHelperResult(position + travelled, travelled / delta);
 
             var newResult = CollideAndSlide(new MoveHelperResult(position + travelled, leftover / delta), delta, depth + 1, gravityPass); // Simulate another bounce for the leftover velocity from the latest position
-            var currentResult = new MoveHelperResult(newResult.Position, velocity / delta); // Use the new bounce's position and combine the velocities
+            var currentResult = new MoveHelperResult(newResult.Position, travelled / delta + newResult.Velocity); // Use the new bounce's position and combine the velocities
 
             return currentResult;
         }
