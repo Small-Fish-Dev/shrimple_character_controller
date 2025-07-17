@@ -726,14 +726,18 @@ public class ShrimpleCharacterController : Component
 
             if (angle <= MaxGroundAngle) // Terrain we can walk on
             {
+                var projectedLeftover = leftover;
+
                 if (gravityPass || !IsOnGround)
-                {
-                    leftover = Vector3.VectorPlaneProject(leftover, travelTrace.Normal); // Don't project the vertical velocity after landing else it boosts your horizontal velocity
-                }
+                    projectedLeftover = Vector3.VectorPlaneProject(projectedLeftover, travelTrace.Normal); // Don't project the vertical velocity after landing else it boosts your horizontal velocity
                 else
-                {
-                    leftover = leftover.ProjectAndScale(travelTrace.Normal); // Project the velocity along the terrain
-                }
+                    projectedLeftover = projectedLeftover.ProjectAndScale(travelTrace.Normal); // Project the velocity along the terrain
+
+                if (Elasticity > 0)
+                    leftover = Vector3.Lerp(projectedLeftover, Vector3.Reflect(leftover, travelTrace.Normal), Elasticity);
+                else
+                    leftover = projectedLeftover;
+
                 IsPushingAgainstWall = false;
                 WallObject = null;
             }
