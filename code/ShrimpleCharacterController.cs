@@ -718,8 +718,8 @@ public class ShrimpleCharacterController : Component
         if (travelTrace.Hit)
         {
             var travelled = velocity.Normal * Math.Max(travelTrace.Distance - SkinWidth, 0f);
-
             var leftover = velocity - travelled; // How much leftover velocity still needs to be simulated
+            var speed = leftover.Length;
             var angle = Vector3.GetAngle(-AppliedGravity.Normal, travelTrace.Normal);
             if (toTravel >= SkinWidth && travelTrace.Distance < SkinWidth)
                 travelled = Vector3.Zero;
@@ -784,7 +784,11 @@ public class ShrimpleCharacterController : Component
                     // (Perpendicular = 0%, Parallel = 100%)
                     var scale = ScaleAgainstWalls ? 1f - Vector3.Dot(-travelTrace.Normal.Normal / GripFactorReduction, velocity.Normal) : 1f;
                     var wallLeftover = ScaleAgainstWalls ? Vector3.VectorPlaneProject(leftover, travelTrace.Normal.Normal) : leftover.ProjectAndScale(travelTrace.Normal.Normal);
-                    leftover = (wallLeftover * scale).WithZ(wallLeftover.z);
+
+                    if (Elasticity > 0)
+                        leftover = Vector3.Lerp(wallLeftover, Vector3.Reflect(leftover, travelTrace.Normal), Elasticity);
+                    else
+                        leftover = (wallLeftover * scale).WithZ(wallLeftover.z);
 
                     WallObject = travelTrace.GameObject;
                     WallNormal = travelTrace.Normal;
@@ -794,21 +798,26 @@ public class ShrimpleCharacterController : Component
                     if (!climbedStair)
                     {
                         var scale = IsSlipping ? 1f : 1f - Vector3.Dot(-travelTrace.Normal / GripFactorReduction, velocity.Normal);
-                        leftover = ScaleAgainstWalls ? Vector3.VectorPlaneProject(leftover, travelTrace.Normal) * scale : leftover.ProjectAndScale(travelTrace.Normal);
+                        var wallLeftover = ScaleAgainstWalls ? Vector3.VectorPlaneProject(leftover, travelTrace.Normal) * scale : leftover.ProjectAndScale(travelTrace.Normal);
+
+                        if (Elasticity > 0)
+                            leftover = Vector3.Lerp(wallLeftover, Vector3.Reflect(leftover, travelTrace.Normal), Elasticity);
+                        else
+                            leftover = wallLeftover;
                     }
                 }
 
 
             }
 
-            if (Elasticity > 0f)
-                velocity = (Vector3.Reflect(velocity, travelTrace.Normal) - AppliedGravity * delta * delta * 1.5f) * Elasticity;
+            var leftoverSpeed = leftover.Length / speed; // How much speed we had left after the collision
+            velocity = leftover.Normal * velocity.Length * leftoverSpeed;
 
             if (travelled.Length <= _minimumTolerance && leftover.Length <= _minimumTolerance)
                 return new MoveHelperResult(position + travelled, travelled / delta);
 
-            var newResult = CollideAndSlide(new MoveHelperResult(position + travelled, leftover / delta), delta, depth + 1, gravityPass); // Simulate another bounce for the leftover velocity from the latest position
-            var currentResult = new MoveHelperResult(newResult.Position, travelled / delta + newResult.Velocity); // Use the new bounce's position and combine the velocities
+            //var newResult = CollideAndSlide(new MoveHelperResult(position + travelled, leftover / delta), delta, depth + 1, gravityPass); // Simulate another bounce for the leftover velocity from the latest position
+            var currentResult = new MoveHelperResult(position + travelled, velocity / delta); // Use the new bounce's position and combine the velocities
 
             return currentResult;
         }
