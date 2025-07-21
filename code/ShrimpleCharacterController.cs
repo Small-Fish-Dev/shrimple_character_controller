@@ -646,6 +646,8 @@ public class ShrimpleCharacterController : Component
         }
     }
 
+    bool _bounced = false;
+
     private MoveHelperResult CollideAndSlide(Vector3 velocity, Vector3 position, float delta, int depth = 0, bool gravityPass = false) =>
         CollideAndSlide(new MoveHelperResult(position, velocity), delta, depth, gravityPass);
 
@@ -825,6 +827,9 @@ public class ShrimpleCharacterController : Component
             if (travelled.Length <= _minimumTolerance && leftover.Length <= _minimumTolerance)
                 return new MoveHelperResult(position + travelled, velocity / delta);
 
+            if (Elasticity > 0)
+                _bounced = true;
+
             return CollideAndSlide(new MoveHelperResult(position + travelled, velocity / delta, leftover.Length / velocity.Length), delta, depth + 1, gravityPass); // Simulate another bounce for the leftover velocity from the latest position
         }
 
@@ -832,6 +837,12 @@ public class ShrimpleCharacterController : Component
         {
             IsPushingAgainstWall = false;
             WallObject = null;
+        }
+
+        if (gravityPass && _bounced)
+        {
+            _bounced = false;
+            velocity -= AppliedGravity * delta * delta * 1.4f * Elasticity; // Evil hack so it doesn't lose velocity due to gravity passes after each bounce
         }
 
         return new MoveHelperResult(position + velocity, velocity / delta); // We didn't hit anything? Ok just keep going then :-)
