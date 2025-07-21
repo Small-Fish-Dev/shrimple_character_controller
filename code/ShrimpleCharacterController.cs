@@ -96,7 +96,6 @@ public class ShrimpleCharacterController : Component
     [Property]
     public bool AccelerationEnabled { get; set; } = true;
 
-
     /// <summary>
     /// How fast you accelerate while on the ground (Units per second)
     /// </summary>
@@ -128,6 +127,34 @@ public class ShrimpleCharacterController : Component
     [Feature("Acceleration")]
     [Range(0f, 3000f, false)]
     public float AirDeceleration { get; set; } = 0f;
+
+    protected static readonly Curve DefaultAcceleration = new Curve(new List<Curve.Frame>
+    {
+        new Curve.Frame(0f, 0.2f, 0f, 1.5f),
+        new Curve.Frame(1f, 1f, 0f, 0f)
+    })
+    {
+        TimeRange = new Vector2(0f, 500f),
+        ValueRange = new Vector2(0f, 1f),
+    };
+
+    protected static readonly Curve DefaultDeceleration = new Curve(new List<Curve.Frame>
+    {
+        new Curve.Frame(0f, 1f, 0f, -2.5f),
+        new Curve.Frame(1f, 0.2f, 0f, 0f)
+    })
+    {
+        TimeRange = new Vector2(0f, 500f),
+        ValueRange = new Vector2(0f, 1f),
+    };
+
+    [Property]
+    [Feature("Acceleration")]
+    public Curve AccelerationCurve { get; set; } = DefaultAcceleration;
+
+    [Property]
+    [Feature("Acceleration")]
+    public Curve DecelerationCurve { get; set; } = DefaultDeceleration;
 
     /// <summary>
     /// Do we ignore the friction of the surface you're standing on or not?
