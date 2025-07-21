@@ -90,28 +90,34 @@ public class ShrimpleCharacterController : Component
     public int MaxBounces { get; set; } = 5;
 
     /// <summary>
+    /// Acceleration and Deceleration
+    /// </summary>
+    [FeatureEnabled("Acceleration")]
+    [Property]
+    public bool AccelerationEnabled { get; set; } = true;
+
+
+    /// <summary>
     /// How fast you accelerate while on the ground (Units per second)
     /// </summary>
     [Property]
-    [Group("Movement")]
+    [Feature("Acceleration")]
     [Range(0f, 3000f, false)]
-    [HideIf("GroundStickEnabled", false)]
     public float GroundAcceleration { get; set; } = 1000f;
 
     /// <summary>
     /// How fast you decelerate while on the ground (Units per second)
     /// </summary>
     [Property]
-    [Group("Movement")]
+    [Feature("Acceleration")]
     [Range(0f, 3000f, false)]
-    [HideIf("GroundStickEnabled", false)]
     public float GroundDeceleration { get; set; } = 1500f;
 
     /// <summary>
     /// How fast you accelerate while in the air (Units per second)
     /// </summary>
     [Property]
-    [Group("Movement")]
+    [Feature("Acceleration")]
     [Range(0f, 3000f, false)]
     public float AirAcceleration { get; set; } = 300f;
 
@@ -119,7 +125,7 @@ public class ShrimpleCharacterController : Component
     /// How fast you decelerate while in the air (Units per second)
     /// </summary>
     [Property]
-    [Group("Movement")]
+    [Feature("Acceleration")]
     [Range(0f, 3000f, false)]
     public float AirDeceleration { get; set; } = 0f;
 
