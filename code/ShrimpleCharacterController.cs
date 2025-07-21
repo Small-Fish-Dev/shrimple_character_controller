@@ -742,7 +742,7 @@ public class ShrimpleCharacterController : Component
                     projectedLeftover = projectedLeftover.ProjectAndScale(travelTrace.Normal); // Project the velocity along the terrain
 
                 if (Elasticity > 0)
-                    leftover = Vector3.Lerp(projectedLeftover, Vector3.Reflect(leftover, travelTrace.Normal), Elasticity);
+                    leftover = Vector3.Lerp(projectedLeftover, Vector3.Reflect(leftover, travelTrace.Normal), Elasticity, false);
                 else
                     leftover = projectedLeftover;
 
@@ -794,7 +794,7 @@ public class ShrimpleCharacterController : Component
                     var wallLeftover = ScaleAgainstWalls ? Vector3.VectorPlaneProject(leftover, travelTrace.Normal.Normal) : leftover.ProjectAndScale(travelTrace.Normal.Normal);
 
                     if (Elasticity > 0)
-                        leftover = Vector3.Lerp(wallLeftover, Vector3.Reflect(leftover, travelTrace.Normal), Elasticity);
+                        leftover = Vector3.Lerp(wallLeftover, Vector3.Reflect(leftover, travelTrace.Normal), Elasticity, false);
                     else
                         leftover = (wallLeftover * scale).WithZ(wallLeftover.z);
 
@@ -809,7 +809,7 @@ public class ShrimpleCharacterController : Component
                         var wallLeftover = ScaleAgainstWalls ? Vector3.VectorPlaneProject(leftover, travelTrace.Normal) * scale : leftover.ProjectAndScale(travelTrace.Normal);
 
                         if (Elasticity > 0)
-                            leftover = Vector3.Lerp(wallLeftover, Vector3.Reflect(leftover, travelTrace.Normal), Elasticity);
+                            leftover = Vector3.Lerp(wallLeftover, Vector3.Reflect(leftover, travelTrace.Normal), Elasticity, false);
                         else
                             leftover = wallLeftover;
                     }
