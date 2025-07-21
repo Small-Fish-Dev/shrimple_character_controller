@@ -915,8 +915,8 @@ public class ShrimpleCharacterController : Component
 
         var isSameDirection = velocity.IsNearlyZero(1f) || Vector3.Dot(wishVelocity.WithZ(0f).Normal, velocity.WithZ(0f).Normal) >= 0f; // Is our wishVelocity roughly moving towards our velocity already?
         var currentSpeed = Math.Max(Velocity.WithZ(0f).Length, 10f);
-        var acceleration = (IsOnGround ? GroundAcceleration : AirAcceleration) * AccelerationCurve.Evaluate(currentSpeed);
-        var deceleration = (IsOnGround ? GroundDeceleration : AirDeceleration) * DecelerationCurve.Evaluate(currentSpeed);
+        var acceleration = (IsOnGround ? GroundAcceleration : AirAcceleration) * (FixedAcceleration ? 1f : AccelerationCurve.Evaluate(currentSpeed));
+        var deceleration = (IsOnGround ? GroundDeceleration : AirDeceleration) * (FixedDeceleration ? 1f : DecelerationCurve.Evaluate(currentSpeed));
 
         if (isAccelerating)
             goalSpeed = acceleration;
