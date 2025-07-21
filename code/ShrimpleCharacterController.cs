@@ -630,11 +630,19 @@ public class ShrimpleCharacterController : Component
     {
         public Vector3 Position;
         public Vector3 Velocity;
+        internal float Leftover = 1f;
 
         public MoveHelperResult(Vector3 position, Vector3 velocity)
         {
             Position = position;
             Velocity = velocity;
+        }
+
+        internal MoveHelperResult(Vector3 position, Vector3 velocity, float leftover)
+        {
+            Position = position;
+            Velocity = velocity;
+            Leftover = leftover;
         }
     }
 
@@ -711,7 +719,7 @@ public class ShrimpleCharacterController : Component
             return new MoveHelperResult(position, Vector3.Zero);
         }
 
-        var toTravel = velocity.Length + SkinWidth;
+        var toTravel = velocity.Length * current.Leftover + SkinWidth;
         var targetPosition = position + velocity.Normal * toTravel;
         var travelTrace = BuildTrace(_shrunkenBounds, position, targetPosition);
 
@@ -816,8 +824,8 @@ public class ShrimpleCharacterController : Component
             if (travelled.Length <= _minimumTolerance && leftover.Length <= _minimumTolerance)
                 return new MoveHelperResult(position + travelled, travelled / delta);
 
-            //var newResult = CollideAndSlide(new MoveHelperResult(position + travelled, leftover / delta), delta, depth + 1, gravityPass); // Simulate another bounce for the leftover velocity from the latest position
-            var currentResult = new MoveHelperResult(position + travelled, velocity / delta); // Use the new bounce's position and combine the velocities
+            var newResult = CollideAndSlide(new MoveHelperResult(position + travelled, velocity / delta, leftover.Length / velocity.Length), delta, depth + 1, gravityPass); // Simulate another bounce for the leftover velocity from the latest position
+            var currentResult = new MoveHelperResult(newResult.Position, newResult.Velocity); // Use the new bounce's position and combine the velocities
 
             return currentResult;
         }
