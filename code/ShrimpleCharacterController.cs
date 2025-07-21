@@ -105,14 +105,6 @@ public class ShrimpleCharacterController : Component
     public float GroundAcceleration { get; set; } = 1000f;
 
     /// <summary>
-    /// How fast you decelerate while on the ground (Units per second)
-    /// </summary>
-    [Property]
-    [Feature("Acceleration")]
-    [Range(0f, 3000f, false)]
-    public float GroundDeceleration { get; set; } = 1500f;
-
-    /// <summary>
     /// How fast you accelerate while in the air (Units per second)
     /// </summary>
     [Property]
@@ -121,12 +113,11 @@ public class ShrimpleCharacterController : Component
     public float AirAcceleration { get; set; } = 300f;
 
     /// <summary>
-    /// How fast you decelerate while in the air (Units per second)
+    /// Use the fixed acceleration value instead of curves
     /// </summary>
     [Property]
     [Feature("Acceleration")]
-    [Range(0f, 3000f, false)]
-    public float AirDeceleration { get; set; } = 0f;
+    public bool FixedAcceleration { get; set; } = true;
 
     protected static readonly Curve DefaultAcceleration = new Curve(new List<Curve.Frame>
     {
@@ -138,6 +129,39 @@ public class ShrimpleCharacterController : Component
         ValueRange = new Vector2(0f, 1f),
     };
 
+    /// <summary>
+    /// How much acceleration based on the current velocity<br/>
+    /// X axis = Current Velocity (Maxes at 500 by default but you can modify)<br/>
+    /// Y axis *= Acceleration/><br/>
+    /// </summary>
+    [Property]
+    [Feature("Acceleration")]
+    [HideIf("FixedAcceleration", true)]
+    public Curve AccelerationCurve { get; set; } = DefaultAcceleration;
+
+    /// <summary>
+    /// How fast you decelerate while on the ground (Units per second)
+    /// </summary>
+    [Property]
+    [Feature("Acceleration")]
+    [Range(0f, 3000f, false)]
+    public float GroundDeceleration { get; set; } = 1500f;
+
+    /// <summary>
+    /// How fast you decelerate while in the air (Units per second)
+    /// </summary>
+    [Property]
+    [Feature("Acceleration")]
+    [Range(0f, 3000f, false)]
+    public float AirDeceleration { get; set; } = 0f;
+
+    /// <summary>
+    /// Use the fixed deceleration value instead of curves
+    /// </summary>
+    [Property]
+    [Feature("Acceleration")]
+    public bool FixedDeceleration { get; set; } = true;
+
     protected static readonly Curve DefaultDeceleration = new Curve(new List<Curve.Frame>
     {
         new Curve.Frame(0f, 1f, 0f, -2.5f),
@@ -148,12 +172,14 @@ public class ShrimpleCharacterController : Component
         ValueRange = new Vector2(0f, 1f),
     };
 
+    /// <summary>
+    /// How much deceleration based on the current velocity<br/>
+    /// X axis = Current Velocity (Maxes at 500 by default but you can modify)<br/>
+    /// Y axis *= Deceleration/><br/>
+    /// </summary>
     [Property]
     [Feature("Acceleration")]
-    public Curve AccelerationCurve { get; set; } = DefaultAcceleration;
-
-    [Property]
-    [Feature("Acceleration")]
+    [HideIf("FixedDeceleration", true)]
     public Curve DecelerationCurve { get; set; } = DefaultDeceleration;
 
     /// <summary>
