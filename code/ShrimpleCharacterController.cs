@@ -741,6 +741,7 @@ public class ShrimpleCharacterController : Component
                 else
                     projectedLeftover = projectedLeftover.ProjectAndScale(travelTrace.Normal); // Project the velocity along the terrain
 
+
                 if (Elasticity > 0)
                     leftover = Vector3.Lerp(projectedLeftover, Vector3.Reflect(leftover, travelTrace.Normal), Elasticity, false);
                 else
@@ -822,12 +823,9 @@ public class ShrimpleCharacterController : Component
             velocity = leftover.Normal * velocity.Length * leftoverSpeed;
 
             if (travelled.Length <= _minimumTolerance && leftover.Length <= _minimumTolerance)
-                return new MoveHelperResult(position + travelled, travelled / delta);
+                return new MoveHelperResult(position + travelled, velocity / delta);
 
-            var newResult = CollideAndSlide(new MoveHelperResult(position + travelled, velocity / delta, leftover.Length / velocity.Length), delta, depth + 1, gravityPass); // Simulate another bounce for the leftover velocity from the latest position
-            var currentResult = new MoveHelperResult(newResult.Position, newResult.Velocity); // Use the new bounce's position and combine the velocities
-
-            return currentResult;
+            return CollideAndSlide(new MoveHelperResult(position + travelled, velocity / delta, leftover.Length / velocity.Length), delta, depth + 1, gravityPass); // Simulate another bounce for the leftover velocity from the latest position
         }
 
         if (depth == 0 && !gravityPass)
