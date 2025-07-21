@@ -883,6 +883,8 @@ public class ShrimpleCharacterController : Component
 
     private float CalculateGoalSpeed(Vector3 wishVelocity, Vector3 velocity, bool isAccelerating, float delta)
     {
+        if (!AccelerationEnabled) return 999999999f; // Should be enough for the freaks that don't want acceleration
+
         float goalSpeed;
 
         var isSameDirection = velocity.IsNearlyZero(1f) || Vector3.Dot(wishVelocity.WithZ(0f).Normal, velocity.WithZ(0f).Normal) >= 0f; // Is our wishVelocity roughly moving towards our velocity already?
