@@ -198,8 +198,9 @@
             ]
           },
           "AccelerationEnabled": true,
-          "AirAcceleration": 250,
+          "AirAcceleration": 200,
           "AirDeceleration": 100,
+          "BouncingEnabled": true,
           "CylinderTrace": false,
           "DecelerationCurve": {
             "rangex": "0,500",
@@ -220,17 +221,17 @@
               }
             ]
           },
-          "Elasticity": 1,
           "ElasticityThreshold": 30,
-          "FixedAcceleration": true,
-          "FixedDeceleration": true,
+          "FixedAcceleration": false,
+          "FixedDeceleration": false,
           "Gravity": -850,
           "GravityEnabled": true,
           "GripFactorReduction": 1,
           "GroundAcceleration": 1000,
-          "GroundDeceleration": 2000,
+          "GroundDeceleration": 600,
           "GroundStickDistance": 12,
           "GroundStickEnabled": false,
+          "HorizontalElasticity": 0.4,
           "IgnoreGroundSurface": false,
           "IgnoreTags": "",
           "IgnoreZ": true,
@@ -263,6 +264,7 @@
           "UseSceneGravity": true,
           "UseVectorGravity": false,
           "VectorGravity": "0,0,-850",
+          "VerticalElasticity": 0.8,
           "WallTolerance": 1
         },
         {
