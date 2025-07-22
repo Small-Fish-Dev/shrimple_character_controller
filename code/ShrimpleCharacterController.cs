@@ -222,31 +222,45 @@ public class ShrimpleCharacterController : Component
     public float GripFactorReduction { get; set; } = 1f;
 
     /// <summary>
-    /// How much the MoveHelper will "bounce" off walls and ground when colliding with them<br/>
+    /// Bouncing off walls and ground on collision
+    /// </summary>
+    [FeatureEnabled("Bouncing")]
+    [Property]
+    public bool BouncingEnabled { get; set; } = false;
+
+    /// <summary>
+    /// How much the MoveHelper will "bounce" off walls when colliding with them<br/>
+    /// (0f = No bounce, 1f = Full bounce)<br/>
+    /// </summary>
+    [Property]
+    [Feature("Bouncing")]
+    [Range(0f, 1f, true)]
+    public float HorizontalElasticity { get; set; } = 0f;
+
+    /// <summary>
+    /// How much the MoveHelper will "bounce" off the ground when colliding with it<br/>
     /// (0f = No bounce, 1f = Full bounce)<br/>
     /// <see cref="GroundStickEnabled"/> will override this value when sticking to the ground<br/>
     /// </summary>
-    [Group("Movement")]
     [Property]
+    [Feature("Bouncing")]
     [Range(0f, 1f, true)]
-    public float Elasticity { get; set; } = 0f;
+    public float VerticalElasticity { get; set; } = 0f;
 
     /// <summary>
     /// Include the ground elasticity when bouncing off the ground<br/>
     /// Make sure the ground surface doesn't have a very low elasticity!
     /// </summary>
-    [Group("Options")]
     [Property]
-    [HideIf("Elasticity", 0f)]
+    [Feature("Bouncing")]
     public bool IncludeGroundElasticity { get; set; } = false;
 
     /// <summary>
     /// Minimum velocity to allow bouncing
     /// </summary>
-    [Group("Options")]
     [Property]
+    [Feature("Bouncing")]
     [Range(0f, 100f, true)]
-    [HideIf("Elasticity", 0f)]
     public float ElasticityThreshold { get; set; } = 30f;
 
     /// <summary>
@@ -801,7 +815,6 @@ public class ShrimpleCharacterController : Component
         var toTravel = velocity.Length * current.Leftover + SkinWidth;
         var targetPosition = position + velocity.Normal * toTravel;
         var travelTrace = BuildTrace(_shrunkenBounds, position, targetPosition);
-        var elasticity = velocity.Length / delta <= ElasticityThreshold ? 0f : Elasticity * (IncludeGroundElasticity ? GroundSurface?.Elasticity ?? 1f : 1f);
 
         if (travelTrace.Hit)
         {
@@ -811,6 +824,12 @@ public class ShrimpleCharacterController : Component
             var angle = Vector3.GetAngle(-AppliedGravity.Normal, travelTrace.Normal);
             if (toTravel >= SkinWidth && travelTrace.Distance < SkinWidth)
                 travelled = Vector3.Zero;
+
+            var elasticityDirection = MathX.Lerp(HorizontalElasticity, VerticalElasticity, angle / 90f);
+            var elasticity = BouncingEnabled ?
+                velocity.Length / delta <= ElasticityThreshold ?
+                    0f : elasticityDirection * (IncludeGroundElasticity ? GroundSurface?.Elasticity ?? 1f : 1f)
+                : 0f;
 
             if (angle <= MaxGroundAngle) // Terrain we can walk on
             {
@@ -822,7 +841,7 @@ public class ShrimpleCharacterController : Component
                     projectedLeftover = projectedLeftover.ProjectAndScale(travelTrace.Normal); // Project the velocity along the terrain
 
 
-                if (Elasticity > 0)
+                if (elasticity > 0)
                     leftover = Vector3.Lerp(projectedLeftover, Vector3.Reflect(leftover, travelTrace.Normal), elasticity, false);
                 else
                     leftover = projectedLeftover;
@@ -874,7 +893,7 @@ public class ShrimpleCharacterController : Component
                     var scale = ScaleAgainstWalls ? 1f - Vector3.Dot(-travelTrace.Normal.Normal / GripFactorReduction, velocity.Normal) : 1f;
                     var wallLeftover = ScaleAgainstWalls ? Vector3.VectorPlaneProject(leftover, travelTrace.Normal.Normal) : leftover.ProjectAndScale(travelTrace.Normal.Normal);
 
-                    if (Elasticity > 0)
+                    if (elasticity > 0)
                         leftover = Vector3.Lerp(wallLeftover, Vector3.Reflect(leftover, travelTrace.Normal), elasticity, false);
                     else
                         leftover = (wallLeftover * scale).WithZ(wallLeftover.z);
@@ -889,7 +908,7 @@ public class ShrimpleCharacterController : Component
                         var scale = IsSlipping ? 1f : 1f - Vector3.Dot(-travelTrace.Normal / GripFactorReduction, velocity.Normal);
                         var wallLeftover = ScaleAgainstWalls ? Vector3.VectorPlaneProject(leftover, travelTrace.Normal) * scale : leftover.ProjectAndScale(travelTrace.Normal);
 
-                        if (Elasticity > 0)
+                        if (elasticity > 0)
                             leftover = Vector3.Lerp(wallLeftover, Vector3.Reflect(leftover, travelTrace.Normal), elasticity, false);
                         else
                             leftover = wallLeftover;
@@ -920,7 +939,7 @@ public class ShrimpleCharacterController : Component
         if (gravityPass && _bounced)
         {
             _bounced = false;
-            velocity -= AppliedGravity * delta * delta * 1.4f * Elasticity; // Evil hack so it doesn't lose velocity due to gravity passes after each bounce
+            velocity -= AppliedGravity * delta * delta * 1.4f; // Evil hack so it doesn't lose velocity due to gravity passes after each bounce
         }
 
         return new MoveHelperResult(position + velocity, velocity / delta); // We didn't hit anything? Ok just keep going then :-)
