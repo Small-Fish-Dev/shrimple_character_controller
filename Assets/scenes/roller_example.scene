@@ -2,27 +2,231 @@
   "__guid": "e78370eb-4e25-4b7f-bbf8-89f0fcbaa68b",
   "GameObjects": [
     {
-      "__guid": "048573b1-fa80-406a-a30d-93881e2b19c9",
+      "__guid": "a47d1acd-6c64-4df4-adb3-e8139ea174e3",
+      "__version": 1,
       "Flags": 0,
-      "Name": "debug_world",
+      "Name": "Scene Information",
+      "Position": "0,0,0",
+      "Rotation": "0,0,0,1",
+      "Scale": "1,1,1",
+      "Tags": "",
       "Enabled": true,
+      "NetworkMode": 2,
+      "NetworkInterpolation": true,
+      "NetworkOrphaned": 0,
+      "OwnerTransfer": 1,
+      "Components": [
+        {
+          "__type": "Sandbox.SceneInformation",
+          "__guid": "6403d6c9-cbff-4d56-8b00-bb8e8312f034",
+          "__enabled": true,
+          "Author": null,
+          "Changes": null,
+          "Description": "",
+          "Group": null,
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null,
+          "SceneTags": "",
+          "Title": "walker_example",
+          "Version": null
+        }
+      ],
+      "Children": []
+    },
+    {
+      "__guid": "048573b1-fa80-406a-a30d-93881e2b19c9",
+      "__version": 1,
       "__Prefab": "prefabs/debug_world.prefab",
-      "__PrefabVariables": {}
+      "__PrefabInstancePatch": {
+        "AddedObjects": [],
+        "RemovedObjects": [],
+        "PropertyOverrides": [
+          {
+            "Target": {
+              "Type": "GameObject",
+              "IdValue": "4394baf9-ce1d-473e-ae63-4155539450ca"
+            },
+            "Property": "NetworkInterpolation",
+            "Value": false
+          }
+        ],
+        "MovedObjects": []
+      },
+      "__PrefabIdToInstanceId": {
+        "4394baf9-ce1d-473e-ae63-4155539450ca": "048573b1-fa80-406a-a30d-93881e2b19c9",
+        "33b9efb7-0745-46cc-ba2f-711bca9e4844": "083cf1f4-2fb2-4a22-967b-ff8f3a45027d",
+        "2023f92b-ff0f-4294-861e-e9cdebb650e3": "71aa023b-e423-41ff-af83-fa3e62500efd",
+        "73f6b26e-3c94-4098-ae2c-111146abd5c6": "2259ca38-3a57-49cd-bb84-34336b4fc481",
+        "a8ff0d76-5e33-40eb-a8fe-0d97930b3502": "64dbdcf4-dc24-47d5-b35c-31ea597b872b",
+        "8da86558-8600-4a78-9b24-ee2e9ab0e4ce": "143dad29-171b-4b2a-ab90-7bf97ec2566d",
+        "5b6ded8c-199f-4c81-9299-a0cbec5144c2": "c6984226-51c6-4f2e-bbcf-8cb88660e98a",
+        "1109bc0b-e617-4a99-ba9b-c95f544062e4": "6d0eb34e-b8e7-4fcc-bdeb-0eca86ab39a7",
+        "ca85e1ae-afcf-4ac9-a696-fe00ed8f7163": "b0db5957-2a38-4f9d-9624-8091a601af13",
+        "84a1a411-7369-4e1a-846b-06afa0b20373": "d181b7a4-0063-48d0-9302-a1ec1c8ec723",
+        "10ec9819-a4c7-4d60-b47c-014ab7c3d4e5": "c35e7233-404d-47ec-86a3-41e58b4799ef",
+        "a6898d11-084d-4545-9608-a1aad6809410": "992ad37e-33b4-4360-a9c0-a181de519ab7",
+        "028cc6c4-69b3-4fbc-af78-a432ad5671c2": "7afdc7cf-35a8-4b98-8af6-e21f1ae58e89",
+        "b6de8a59-40a8-40df-97f2-fc366a18fba5": "cafc6e53-50a6-47bb-8e6e-d257be60e058",
+        "80a8e188-7661-42ba-b0f5-9edb53ddfdfc": "0a9676e4-0b2c-4b49-9c5f-2177b1e63e43",
+        "ff38acf4-f4b2-482d-ae15-d088c8051225": "73ac74c9-c3ad-4d54-a383-0b0580208d76",
+        "f65187b9-899b-45b8-983e-f7f8fe9fbecd": "e8ad010c-06fa-49aa-8c5a-a5a4ab711df9",
+        "0e610f60-6ab0-406a-90b0-754755656825": "75f0b357-4904-426b-870e-2baaed941a87",
+        "810a6aa4-e6c1-4dc7-9390-564313f40665": "d48fe9d6-b850-4766-82b9-064e43b5259d",
+        "522e06b0-f374-48e4-af5b-14fdf38ae48c": "8761f2fa-6e14-4108-8290-e7089e138d6e",
+        "f7a8ef01-392a-4ead-b429-2ee5d70753f1": "60d7130f-f45d-4aac-87ed-f75bd7c40277",
+        "c4806076-e97e-4b95-bd62-1eed2feabe93": "7de5c0f8-d8dd-46b3-8a76-29df376999a3",
+        "90923983-11c0-4673-bbcf-a913343fa568": "147e121f-2415-40ed-87e6-736a500bdb3a",
+        "1a9f7225-cebd-419b-90bf-eee8647f45ef": "76126afe-cb9a-4fac-aabc-8c8467e67b18",
+        "adf48280-a881-4326-a924-c155e0b9d5f7": "038c35a4-fd2f-4293-abc0-53374390e452",
+        "b9573362-9530-4ab3-92dc-f6198613a1ab": "debd4e41-820c-4e96-8365-4027c39567f9",
+        "a036c1e5-c2da-4335-95f8-58c2c6d812aa": "1539dcbc-c957-4d2f-87b4-56809a81e563",
+        "7e8afa67-88c0-4b16-b3a3-37134119a298": "41d4b9a3-43ce-4507-af1a-34d7a87a86d8",
+        "615d060f-340d-4f5e-8f31-406e904ba166": "b61771d9-0bc7-4b06-8173-9dcbfadacfbc",
+        "b5237d22-5cb8-4f64-86a6-1eaa684aba25": "00024d59-acf6-44f8-9cba-c5ee5a745406",
+        "a6a84832-032f-4774-95c0-2af6ab92b615": "726560cc-5be5-4f13-9994-7299fe6f7ecf",
+        "71d5eb25-c0c2-4b69-8f27-e3abade55230": "b75a98fc-4a74-4d19-ba84-162e8cb877ca",
+        "cfe2083a-a41f-4593-bc56-e27bbc38c9f1": "132c713c-d2f7-4c83-8386-5738a19c8aa4",
+        "c8f6885a-287d-4ba3-adb4-50d3a2aac439": "7f379d5d-7714-43b7-9d5c-799e3b0186ca",
+        "6eb4fc43-577c-4bc2-bbfd-55108448ec99": "3e285138-9112-46a9-83ed-b6db621ea7a7",
+        "82356b03-156f-49ee-82d5-35a6032b900a": "9cd6d953-595e-4486-9934-8d681d12f62e",
+        "57923a42-f189-49bc-8123-1edc27d0ceba": "09f2e2b0-0dbc-4f14-886f-1604e7ca8f28",
+        "61693a75-2ffa-4fa0-bd9a-8ad54cd81575": "1f43c2f3-6f68-4f9e-8482-7fe2e84d0770",
+        "162d7274-5ce8-4ecd-830b-2661dca5e060": "a0c2d3eb-cede-4543-862d-79de77e7fcaf",
+        "011d47eb-fe07-4e63-bc20-0a8fe9d3592f": "77649256-67e5-43d8-a787-b6d28abf4132",
+        "6a9c50a4-3491-46e8-bafb-91cf3e44443c": "447c6c94-aeca-4a6a-807a-f406e5d1b316",
+        "53ea91f7-ce82-400e-b3fc-63941286b214": "8192f8ff-f82d-4b2a-b364-79c1a453fb0d",
+        "ee983afc-e4bf-4ede-b03a-f6bf3f8d1f36": "e8a2669a-94a5-43b1-a73e-cd979003049e",
+        "65c3ef68-4e8f-47e0-bd16-c5e09d21de01": "b1e3b28c-3aa6-46c7-a989-28dc84148f48",
+        "748fb9dc-2314-41f7-bcdb-6c7581495203": "7e982887-80a3-4272-a3e0-e81b1c53bb93",
+        "d13b0133-c539-4927-a656-8fdb1ca9d6ea": "f29f899d-51ce-467f-ad44-9ba4a809b3e6",
+        "6ef2d779-49d7-4a14-8ff4-908ca03feca4": "7180fef4-3ed9-4796-a6e1-17b2f68b2eeb",
+        "478b814f-8c61-4096-92e1-b692c3d5d14c": "c33e20bb-2628-4eab-8154-b72a9df03d0f",
+        "e4ca59d3-eab0-4d28-a5cc-b556dcaa79ee": "313debf2-2616-42ca-a140-5c4bdd0eac8c",
+        "0734af46-4618-44b9-8c79-05744ca60dac": "ff9db1d9-fc4c-4683-84d7-2af861c77cd1",
+        "b93d7668-3c39-4b93-bdc5-4d80685011c7": "9a53282f-03b2-49a4-a917-90df3697a0e9",
+        "b31c3db9-5ba2-49ba-841b-389b9023493b": "5cac7386-8f16-4441-8ad8-29fad2fe9242",
+        "0899c6ba-e4a7-44c3-b950-e032d21ebf8c": "26f322f4-2ab0-4e23-8eab-a2f23f06a409",
+        "2fef4639-4d3c-4126-85f8-5d0ffaf96b8b": "16068115-6f70-4b79-ba69-388a51a998a4",
+        "22a502e8-301c-4e3e-ab91-bb5f2ebf43c0": "dfca6bc2-5a06-412d-9dac-bbac229ce85c",
+        "743cfec4-ed39-4b9c-831e-5b269e81ad61": "9399a955-b4e9-4d54-919b-1b39527d2b3b",
+        "6f22e75b-ceca-4baf-8252-332d00233223": "969a159e-abdf-423b-8e6d-0c879dbbe0fc",
+        "4b473107-5fe8-4b9e-a178-01aa9bc25ce5": "4e6235c1-e1ac-4323-9a6a-5bbf585c9d48",
+        "a5804729-a3db-476b-9c27-22ed9b08bcbc": "ce058229-38be-4d83-9fb5-16d81e3ac620",
+        "990bee69-f1f0-44a2-a050-3d5407b068f9": "194de0be-659e-4fb5-af67-5950edfde06a",
+        "c16cc358-fcbb-48bf-b558-8820bbca8f3e": "20f634a8-d6c2-44c3-8c74-d2ed334ae3fe",
+        "9714555c-9247-4f0c-bca2-9050e67a0f6a": "bd1cd1ee-7292-4777-a972-faeef3526004",
+        "fa0497e7-db5a-42c9-906a-2d13127d71b8": "8f7f5d04-db34-4e75-ad0b-55745e2fb996",
+        "fb258144-56fa-4589-8496-0c3829df3260": "95612be9-3240-4510-b25e-edb9ad8d6329",
+        "79b6f967-b8b5-40b1-94eb-4f804fc018a2": "f43349fb-1aab-488b-9f66-399ca041f7e7",
+        "84a469a4-02d6-40c3-9cb6-51a9ffbea30c": "198005bc-86b6-43bf-9353-63baf49c2349",
+        "2cd9d196-035e-4c23-80a9-babf553542c2": "1ce4a9af-857c-46d8-be14-e109a4a1cfab",
+        "16d2ffbd-c6a5-4d5f-ac2f-f91787fd3de2": "63a3c0db-d20e-42a8-a48b-585994c98237",
+        "95c1ae7d-1ab7-4373-92a7-b751747459b8": "6a4b0ecc-cf36-48af-8005-cab59a4af8de",
+        "da7e65e6-f2e2-4022-b274-145073a8f3a0": "bd1bcb80-a25f-4b47-9e60-e1d6cceadf47",
+        "b20f5bb8-3ecb-49bf-ac33-678b8869fd3a": "de6e428d-1152-4c3c-8f3e-5cf3d75fe075",
+        "62f42ec5-963a-40f4-a7d0-825985b095d4": "0d139779-156b-4fad-8744-36add2242db5",
+        "b6844b97-8481-4510-9437-f528023e100f": "fef639b3-8e36-4b00-be04-7697b78a03c3",
+        "35094be6-123a-42c7-9b22-e120409bf731": "1a80a420-8bc8-476f-9ceb-aa6498696cc0",
+        "237a6783-f9c3-4e86-8479-0d26a40281e4": "0856155d-60ea-4d68-b877-19e6b6638c87",
+        "10a28b8b-8b3d-4290-b4c3-55bc456a6ef1": "052e4ccf-9418-4267-ad23-323b298cb5da",
+        "e96debf5-dc64-4579-86d6-28d650db0bf4": "ce47ebe1-ac4e-4acc-9b36-56669ff1c976",
+        "e19d1577-2807-40e6-a666-6ae8dd3d3e2d": "3bc9b5e1-8c31-4648-8733-e53c767e1249",
+        "560a4ef6-c814-4aa8-b262-e81a37a83919": "c792f323-5946-4179-be60-7806ca692449",
+        "0b4a0e05-7db3-4e6a-80bd-3ded0ad4d696": "3a825630-f2fb-4a30-8100-f740b4d7ff29",
+        "a0a6dc3a-4c1f-451f-8348-1188779314ff": "93644ac1-2631-4498-8461-25a7822c6693",
+        "96c09548-cf15-4c2d-be73-b9835551c669": "308c4d07-cffe-4eac-8e49-cba787fa00ce",
+        "69a3622c-c36a-444e-a29f-3e32cacff0fa": "b01060c5-a878-4685-895c-4d3c986fec2a",
+        "489fc011-d387-4cd6-8d24-faf03184b859": "1584b5ff-55f0-4fda-84a4-60479dcf3a00",
+        "9f56fe28-c79f-4a83-b202-dfca981b71e7": "acadd1c1-9099-4c33-b97f-829a876bab37",
+        "06bad066-87a9-4cf0-bbda-e5b91bd151f5": "dffeab9a-bba7-4a29-a6b0-af94039f917d",
+        "6fb1a805-f088-48a7-b2bd-d5592aa68ef0": "b423ad97-0a72-4c84-bb5f-8a23f61345e2",
+        "3729d95e-a8c8-40ed-8d65-3d3a1f18ab17": "13a59155-8361-4c49-a022-5518349a1ed9",
+        "d25b0513-357f-4eb8-adf8-c81605c8123f": "2f740fb7-6136-4b1e-9f94-a364cf567602",
+        "cde10d6c-5f45-4897-8577-8ba73ac82a71": "af27e893-dc69-4e1b-87a2-cfcf54c30925",
+        "eb67d4fc-1cf4-4558-9195-ec46a5967194": "caad5c34-c7ce-4970-86db-a97969b8c398",
+        "4a047674-00c7-4f7e-9e68-3c4733457266": "3c9260f4-5929-4968-a34f-aec78d668863",
+        "ca7b8ce8-ac39-48ce-9815-739528a18a94": "3142ca04-3e20-4369-9090-94c70ed93d83",
+        "b6373d95-68c4-4846-b62b-d8e99c8cf30c": "01f1be2f-e8f7-438d-be99-7ab16c191c7d",
+        "2e7c5aac-cf92-4be6-94b5-ce3dea4b7fba": "4c5dbd50-02ff-48c7-ad59-6c3d54b576ea",
+        "66e0226c-f02c-4167-ba1b-3229be3ba6fe": "d82de88d-cf07-4bbf-a5e8-d5e1df2d4aae",
+        "50767c25-b211-45a3-a398-d76d95b2b263": "00355b8f-6898-4b2f-aa01-6f832d341698",
+        "841ff70c-ca86-456e-b268-e3fc3db36c47": "94432f11-d3c0-4daa-b26f-9e86db649201",
+        "240e089f-32d3-4675-b6e3-e9e4db40fe06": "478428e8-b459-4547-81e9-36fcf0d9d892"
+      }
     },
     {
       "__guid": "dad296d6-935e-4779-b5ae-67a3a0d28ab6",
+      "__version": 1,
       "Flags": 0,
       "Name": "Player",
       "Position": "0,-49.46404,176.2773",
+      "Rotation": "0,0,0,1",
+      "Scale": "1,1,1",
+      "Tags": "",
       "Enabled": true,
+      "NetworkMode": 2,
+      "NetworkInterpolation": true,
+      "NetworkOrphaned": 0,
+      "OwnerTransfer": 1,
       "Components": [
         {
           "__type": "ShrimpleCharacterController.ShrimpleCharacterController",
           "__guid": "fa127e8d-b05d-4e14-894d-d2977361591d",
+          "__enabled": true,
+          "__version": 1,
+          "AccelerationCurve": {
+            "rangex": "0,500",
+            "frames": [
+              {
+                "x": 0,
+                "y": 0.2,
+                "in": 0,
+                "out": 1.5,
+                "mode": "Mirrored"
+              },
+              {
+                "x": 1,
+                "y": 1,
+                "in": 0,
+                "out": 0,
+                "mode": "Mirrored"
+              }
+            ]
+          },
+          "AccelerationEnabled": true,
           "AirAcceleration": 250,
           "AirDeceleration": 100,
+          "CylinderTrace": false,
+          "DecelerationCurve": {
+            "rangex": "0,500",
+            "frames": [
+              {
+                "x": 0,
+                "y": 1,
+                "in": 0,
+                "out": -2.5,
+                "mode": "Mirrored"
+              },
+              {
+                "x": 1,
+                "y": 0.2,
+                "in": 0,
+                "out": 0,
+                "mode": "Mirrored"
+              }
+            ]
+          },
+          "Elasticity": 1,
+          "ElasticityThreshold": 30,
+          "FixedAcceleration": true,
+          "FixedDeceleration": true,
           "Gravity": -850,
           "GravityEnabled": true,
+          "GripFactorReduction": 1,
           "GroundAcceleration": 1000,
           "GroundDeceleration": 2000,
           "GroundStickDistance": 12,
@@ -31,27 +235,47 @@
           "IgnoreTags": "",
           "IgnoreZ": true,
           "IgnoreZWhenZero": true,
+          "IncludeGroundElasticity": false,
           "ManuallyUpdate": true,
           "MaxBounces": 5,
           "MaxGroundAngle": 60,
           "MaxUnstuckTries": 20,
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null,
+          "PseudoStepsEnabled": true,
           "PushEnabled": false,
           "PushTagsWeight": {
             "player": 1
           },
+          "RotateWithGameObject": true,
           "ScaleAgainstWalls": true,
           "StepDepth": 2,
           "StepHeight": 12,
           "StepsEnabled": true,
+          "StepTolerance": 1,
           "TraceHeight": 64,
           "TraceWidth": 64,
           "UnstuckEnabled": true,
-          "UseSceneGravity": true
+          "UseSceneGravity": true,
+          "UseVectorGravity": false,
+          "VectorGravity": "0,0,-850",
+          "WallTolerance": 1
         },
         {
           "__type": "ShrimpleCharacterController.ShrimpleRoller",
           "__guid": "c557f267-05dd-4185-be90-7d60757118ef",
+          "__enabled": true,
           "JumpStrength": 350,
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null,
           "RunSpeed": 3000,
           "WalkSpeed": 1000
         }
@@ -59,28 +283,55 @@
       "Children": [
         {
           "__guid": "768529ee-5ecc-4ddb-a81e-73fdb775baec",
+          "__version": 1,
           "Flags": 0,
           "Name": "Model",
           "Position": "0,0,32",
+          "Rotation": "0,0,0,1",
+          "Scale": "1,1,1",
+          "Tags": "",
           "Enabled": true,
+          "NetworkMode": 2,
+          "NetworkInterpolation": true,
+          "NetworkOrphaned": 0,
+          "OwnerTransfer": 1,
           "Components": [
             {
               "__type": "Sandbox.ModelRenderer",
               "__guid": "13202fec-761f-46b0-9517-21a8662c39f3",
+              "__enabled": true,
               "BodyGroups": 18446744073709551615,
+              "CreateAttachments": false,
+              "MaterialGroup": null,
               "MaterialOverride": "materials/editor/black_grid_8_doublesided.vmat",
+              "Materials": null,
               "Model": "models/dev/sphere.vmdl",
+              "OnComponentDestroy": null,
+              "OnComponentDisabled": null,
+              "OnComponentEnabled": null,
+              "OnComponentFixedUpdate": null,
+              "OnComponentStart": null,
+              "OnComponentUpdate": null,
+              "RenderOptions": {
+                "GameLayer": true,
+                "OverlayLayer": false,
+                "BloomLayer": false,
+                "AfterUILayer": false
+              },
               "RenderType": "On",
               "Tint": "1,1,1,1"
             },
             {
               "__type": "Sandbox.TrailRenderer",
               "__guid": "0c954483-095d-48f1-bb1c-47d90bbb6ae6",
+              "__enabled": true,
               "BlendMode": "Normal",
               "CastShadows": false,
               "Color": {
+                "blend": "Linear",
                 "color": [
                   {
+                    "t": 0,
                     "c": "1,1,1,0.5"
                   },
                   {
@@ -90,41 +341,67 @@
                 ],
                 "alpha": []
               },
+              "Emitting": true,
+              "Face": "Camera",
               "LifeTime": 3,
               "MaxPoints": 256,
+              "OnComponentDestroy": null,
+              "OnComponentDisabled": null,
+              "OnComponentEnabled": null,
+              "OnComponentFixedUpdate": null,
+              "OnComponentStart": null,
+              "OnComponentUpdate": null,
               "Opaque": false,
               "PointDistance": 4,
+              "RenderOptions": {
+                "GameLayer": true,
+                "OverlayLayer": false,
+                "BloomLayer": false,
+                "AfterUILayer": false
+              },
               "Texturing": {
+                "Texture": null,
                 "WorldSpace": true,
                 "UnitsPerTexture": 10,
-                "Scale": 1
+                "Scale": 1,
+                "Offset": 0,
+                "Scroll": 0,
+                "Clamp": false
               },
               "Width": {
                 "rangey": "0,64",
                 "frames": [
                   {
-                    "y": 1
+                    "x": 0,
+                    "y": 1,
+                    "in": 0,
+                    "out": 0,
+                    "mode": "Mirrored"
                   },
                   {
-                    "x": 1
+                    "x": 1,
+                    "y": 0,
+                    "in": 0,
+                    "out": 0,
+                    "mode": "Mirrored"
                   }
                 ]
               },
               "Wireframe": false
             }
-          ]
+          ],
+          "Children": []
         }
       ]
     }
   ],
   "SceneProperties": {
-    "FixedUpdateFrequency": 50,
-    "MaxFixedUpdates": 5,
-    "NetworkFrequency": 30,
     "NetworkInterpolation": true,
-    "ThreadedAnimation": true,
     "TimeScale": 1,
-    "UseFixedUpdate": true,
+    "WantsSystemScene": true,
+    "Metadata": {
+      "Title": "walker_example"
+    },
     "NavMesh": {
       "Enabled": false,
       "IncludeStaticBodies": true,
@@ -138,9 +415,9 @@
       "IncludedBodies": ""
     }
   },
+  "ResourceVersion": 3,
   "Title": "walker_example",
-  "Description": "",
-  "ResourceVersion": 1,
+  "Description": null,
   "__references": [],
-  "__version": 1
+  "__version": 3
 }
