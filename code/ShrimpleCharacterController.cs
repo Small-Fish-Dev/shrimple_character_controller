@@ -19,6 +19,36 @@ public class ShrimpleCharacterController : Component
     [Group("Options")]
     public bool ScaleAgainstWalls { get; set; } = true;
 
+    /// <summary>
+    /// Rotate the trace with the gameobject
+    /// </summary>
+    [Property]
+    [Group("Trace")]
+    public bool RotateWithGameObject { get; set; } = true;
+
+    public enum TraceType
+    {
+        /// <summary>
+        /// This has no drawback, enjoy!
+        /// </summary>
+        [Icon("📦")]
+        Box,
+        /// <summary>
+        /// This is a PHYSICAL TRACE, so it's more expensive than the normal box or sphere trace
+        /// </summary>
+        [Icon("🛢")]
+        Cylinder,
+        /// <summary>
+        /// This will disable <see cref="StepsEnabled"/> as it's impossible to get the angle reliable
+        /// </summary>
+        [Icon("🏐")]
+        Sphere
+    }
+
+    [Property]
+    [Group("Trace")]
+    public TraceType TraceShape { get; set; } = TraceType.Box;
+
     [Sync]
     float _traceWidth { get; set; } = 16f;
 
@@ -27,7 +57,7 @@ public class ShrimpleCharacterController : Component
     /// </summary>
     [Property]
     [Group("Trace")]
-    [Range(1f, 64f, true, true)]
+    [Range(1f, 128f, false, true)]
     public float TraceWidth
     {
         get => _traceWidth;
@@ -47,7 +77,8 @@ public class ShrimpleCharacterController : Component
     /// </summary>
     [Property]
     [Group("Trace")]
-    [Range(1f, 256f, true, true)]
+    [HideIf("TraceShape", TraceType.Sphere)] // Sphere doesn't have height
+    [Range(1f, 256f, false, true)]
     public float TraceHeight
     {
         get => _traceHeight;
@@ -58,21 +89,6 @@ public class ShrimpleCharacterController : Component
             _shrunkenBounds = Bounds.Grow(-SkinWidth);
         }
     }
-
-    /// <summary>
-    /// Rotate the trace with the gameobject
-    /// </summary>
-    [Property]
-    [Group("Trace")]
-    public bool RotateWithGameObject { get; set; } = true;
-
-    /// <summary>
-    /// Use a cylinder trace instead of a box trace<br/>
-    /// [WARNING] This is a PHYSICAL TRACE, so it's more expensive than the normal box trace
-    /// </summary>
-    [Property]
-    [Group("Trace")]
-    public bool CylinderTrace { get; set; } = false;
 
     /// <summary>
     /// Which tags it should ignore
@@ -525,8 +541,8 @@ public class ShrimpleCharacterController : Component
 
     public float AppliedWidth => TraceWidth / 2f * WorldScale.x; // The width of the MoveHelper in world units
     public float AppliedDepth => TraceWidth / 2f * WorldScale.y; // The depth of the MoveHelper in world units
-    public float AppliedHeight => TraceHeight / 2f * WorldScale.z; // The height of the MoveHelper in world units
-    private Vector3 _offset => (RotateWithGameObject ? WorldRotation.Up : Vector3.Up) * AppliedHeight; // The position of the MoveHelper in world units
+    public float AppliedHeight => TraceShape == TraceType.Sphere ? AppliedWidth : TraceHeight / 2f * WorldScale.z; // The height of the MoveHelper in world units
+    private Vector3 _offset => (RotateWithGameObject ? WorldRotation.Up : Vector3.Up) * (TraceShape == TraceType.Sphere ? 0f : AppliedHeight); // The position of the MoveHelper in world units
 
     /// <summary>
     /// The bounds of this MoveHelper generated from the TraceWidth and TraceHeight
@@ -541,8 +557,6 @@ public class ShrimpleCharacterController : Component
     /// If another MoveHelper moved at the same time and they're stuck, let this one know that the other already unstuck for us
     /// </summary>
     public ShrimpleCharacterController UnstuckTarget;
-
-    public override int ComponentVersion => 1;
 
     protected override void OnStart()
     {
@@ -560,10 +574,12 @@ public class ShrimpleCharacterController : Component
             draw.Color = Color.Blue;
             var bounds = BuildBounds();
 
-            if (CylinderTrace)
-                draw.LineCylinder(Vector3.Zero, WorldRotation.Up * (bounds.Maxs.z - bounds.Mins.z), bounds.Maxs.x, bounds.Maxs.x, 24);
-            else
+            if (TraceShape == TraceType.Box)
                 draw.LineBBox(bounds.Translate(Vector3.Up * TraceHeight / 2f * GameObject.WorldScale.z));
+            if (TraceShape == TraceType.Cylinder)
+                draw.LineCylinder(Vector3.Zero, WorldRotation.Up * (bounds.Maxs.z - bounds.Mins.z), bounds.Maxs.x, bounds.Maxs.x, 24);
+            if (TraceShape == TraceType.Sphere)
+                draw.LineSphere(Vector3.Up * bounds.Maxs.x, bounds.Maxs.x);
         }
     }
 
@@ -598,10 +614,12 @@ public class ShrimpleCharacterController : Component
     {
         SceneTrace builder = new SceneTrace(); // Empty trace builder
 
-        if (CylinderTrace)
-            builder = Game.SceneTrace.Cylinder(bounds.Maxs.z - bounds.Mins.z, bounds.Maxs.x, from, to);
-        else
+        if (TraceShape == TraceType.Box)
             builder = Game.SceneTrace.Box(bounds, from, to);
+        if (TraceShape == TraceType.Cylinder)
+            builder = Game.SceneTrace.Cylinder(bounds.Maxs.z - bounds.Mins.z, bounds.Maxs.x, from, to);
+        if (TraceShape == TraceType.Sphere)
+            builder = Game.SceneTrace.Sphere(bounds.Maxs.x, from + WorldRotation.Up * bounds.Maxs.x, to + WorldRotation.Up * bounds.Maxs.x);
 
         builder = builder
             .IgnoreGameObjectHierarchy(GameObject)
@@ -617,10 +635,12 @@ public class ShrimpleCharacterController : Component
     {
         SceneTrace builder = new SceneTrace(); // Empty trace builder
 
-        if (CylinderTrace)
-            builder = Game.SceneTrace.Cylinder(bounds.Maxs.z - bounds.Mins.z, bounds.Maxs.x, from, to);
-        else
+        if (TraceShape == TraceType.Box)
             builder = Game.SceneTrace.Box(bounds, from, to);
+        if (TraceShape == TraceType.Cylinder)
+            builder = Game.SceneTrace.Cylinder(bounds.Maxs.z - bounds.Mins.z, bounds.Maxs.x, from, to);
+        if (TraceShape == TraceType.Sphere)
+            builder = Game.SceneTrace.Sphere(bounds.Maxs.x, from, to);
 
         builder = builder
             .IgnoreGameObjectHierarchy(GameObject)
@@ -1040,5 +1060,16 @@ public class ShrimpleCharacterController : Component
 
         if (!ManuallyUpdate && Active)
             Move();
+    }
+
+    public override int ComponentVersion => 3;
+
+    [JsonUpgrader(typeof(ShrimpleCharacterController), 3)]
+    private static void UpdateTraceShape(JsonObject json)
+    {
+        if (json.Remove("CylinderTrace", out var newNode) && newNode is JsonValue boolNode && boolNode.TryGetValue<bool>(out var isCylinder))
+            json["TraceShape"] = isCylinder ? "Cylinder" : "Box";
+        else
+            json["TraceShape"] = "Box";
     }
 }

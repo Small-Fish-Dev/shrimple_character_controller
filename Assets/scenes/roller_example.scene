@@ -177,7 +177,7 @@
           "__type": "ShrimpleCharacterController.ShrimpleCharacterController",
           "__guid": "fa127e8d-b05d-4e14-894d-d2977361591d",
           "__enabled": true,
-          "__version": 1,
+          "__version": 3,
           "AccelerationCurve": {
             "rangex": "0,500",
             "frames": [
@@ -201,7 +201,6 @@
           "AirAcceleration": 200,
           "AirDeceleration": 100,
           "BouncingEnabled": true,
-          "CylinderTrace": false,
           "DecelerationCurve": {
             "rangex": "0,500",
             "frames": [
@@ -259,6 +258,7 @@
           "StepsEnabled": true,
           "StepTolerance": 1,
           "TraceHeight": 64,
+          "TraceShape": "Sphere",
           "TraceWidth": 64,
           "UnstuckEnabled": true,
           "UseSceneGravity": true,
@@ -363,6 +363,7 @@
               },
               "Texturing": {
                 "Texture": null,
+                "Material": null,
                 "WorldSpace": true,
                 "UnitsPerTexture": 10,
                 "Scale": 1,
