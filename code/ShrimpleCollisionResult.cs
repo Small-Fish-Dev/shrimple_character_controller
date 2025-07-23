@@ -10,6 +10,8 @@ public struct ShrimpleCollisionResult
     public GameObject HitObject;
     public Surface HitSurface;
 
+    public ShrimpleCollisionResult() { }
+
     public ShrimpleCollisionResult(Vector3 hitPosition, Vector3 hitNormal, Vector3 hitVelocityBefore, Vector3 hitVelocityAfter, float angle, GameObject hitObject, Surface hitSurface)
     {
         HitPosition = hitPosition;
@@ -20,6 +22,7 @@ public struct ShrimpleCollisionResult
         HitObject = hitObject;
         HitSurface = hitSurface;
     }
+
     public ShrimpleCollisionResult WithHitPosition(Vector3 hitPosition)
     {
         var result = this;

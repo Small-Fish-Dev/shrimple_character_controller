@@ -558,6 +558,8 @@ public class ShrimpleCharacterController : Component
     /// </summary>
     public ShrimpleCharacterController UnstuckTarget;
 
+    public Action<ShrimpleCollisionResult> OnCollide { get; set; }
+
     protected override void OnStart()
     {
         SkinWidth = Math.Min(Math.Max(0.1f, TraceWidth * 0.05f), GroundStickDistance); // SkinWidth is 5% of the total width
@@ -938,6 +940,7 @@ public class ShrimpleCharacterController : Component
 
             }
 
+            var previousVelocity = velocity;
             var leftoverSpeed = leftover.Length / speed; // How much speed we had left after the collision
             velocity = leftover.Normal * velocity.Length * leftoverSpeed;
 
@@ -947,7 +950,23 @@ public class ShrimpleCharacterController : Component
             if (elasticity > 0)
                 _bounced = true;
 
-            return CollideAndSlide(new MoveHelperResult(position + travelled, velocity / delta, leftover.Length / velocity.Length), delta, depth + 1, gravityPass); // Simulate another bounce for the leftover velocity from the latest position
+            var newResult = CollideAndSlide(new MoveHelperResult(position + travelled, velocity / delta, leftover.Length / velocity.Length), delta, depth + 1, gravityPass); // Simulate another bounce for the leftover velocity from the latest position
+
+            if (depth == 0 && !gravityPass)
+            {
+                var collision = new ShrimpleCollisionResult()
+                    .WithHitNormal(travelTrace.Normal)
+                    .WithHitPosition(travelTrace.HitPosition)
+                    .WithAngle(angle)
+                    .WithHitObject(travelTrace.GameObject)
+                    .WithHitSurface(travelTrace.Surface)
+                    .WithHitVelocityBefore(previousVelocity / delta)
+                    .WithHitVelocityAfter(newResult.Velocity);
+
+                OnCollide?.Invoke(collision);
+            }
+
+            return newResult;
         }
 
         if (depth == 0 && !gravityPass)
