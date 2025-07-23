@@ -1,0 +1,248 @@
+{
+  "RootObject": {
+    "__guid": "1f052b3f-4d04-4e77-be6b-abdf5cce13eb",
+    "__version": 1,
+    "Flags": 0,
+    "Name": "Player",
+    "Position": "0,0,0",
+    "Rotation": "0,0,0,1",
+    "Scale": "1,1,1",
+    "Tags": "",
+    "Enabled": true,
+    "NetworkMode": 2,
+    "NetworkInterpolation": true,
+    "NetworkOrphaned": 0,
+    "OwnerTransfer": 1,
+    "Components": [
+      {
+        "__type": "ShrimpleCharacterController.ShrimpleCharacterController",
+        "__guid": "ef8102b0-267b-4cc4-aaf7-aee0968702e3",
+        "__enabled": true,
+        "__version": 3,
+        "AccelerationCurve": {
+          "rangex": "0,500",
+          "frames": [
+            {
+              "x": 0,
+              "y": 0.2,
+              "in": 0,
+              "out": 1.5,
+              "mode": "Mirrored"
+            },
+            {
+              "x": 1,
+              "y": 1,
+              "in": 0,
+              "out": 0,
+              "mode": "Mirrored"
+            }
+          ]
+        },
+        "AccelerationEnabled": true,
+        "AirAcceleration": 200,
+        "AirDeceleration": 100,
+        "BouncingEnabled": true,
+        "DecelerationCurve": {
+          "rangex": "0,500",
+          "frames": [
+            {
+              "x": 0,
+              "y": 1,
+              "in": 0,
+              "out": -2.5,
+              "mode": "Mirrored"
+            },
+            {
+              "x": 1,
+              "y": 0.2,
+              "in": 0,
+              "out": 0,
+              "mode": "Mirrored"
+            }
+          ]
+        },
+        "ElasticityThreshold": 30,
+        "FixedAcceleration": false,
+        "FixedDeceleration": false,
+        "Gravity": -850,
+        "GravityEnabled": true,
+        "GripFactorReduction": 1,
+        "GroundAcceleration": 1000,
+        "GroundDeceleration": 600,
+        "GroundStickDistance": 12,
+        "GroundStickEnabled": false,
+        "HorizontalElasticity": 0.4,
+        "IgnoreGroundSurface": false,
+        "IgnoreTags": "",
+        "IgnoreZ": true,
+        "IgnoreZWhenZero": true,
+        "IncludeGroundElasticity": false,
+        "ManuallyUpdate": true,
+        "MaxBounces": 5,
+        "MaxGroundAngle": 60,
+        "MaxUnstuckTries": 20,
+        "OnComponentDestroy": null,
+        "OnComponentDisabled": null,
+        "OnComponentEnabled": null,
+        "OnComponentFixedUpdate": null,
+        "OnComponentStart": null,
+        "OnComponentUpdate": null,
+        "PseudoStepsEnabled": true,
+        "PushEnabled": false,
+        "PushTagsWeight": {
+          "player": 1
+        },
+        "RotateWithGameObject": true,
+        "ScaleAgainstWalls": true,
+        "StepDepth": 2,
+        "StepHeight": 12,
+        "StepsEnabled": true,
+        "StepTolerance": 1,
+        "TraceHeight": 64,
+        "TraceShape": "Sphere",
+        "TraceWidth": 64,
+        "UnstuckEnabled": true,
+        "UseSceneGravity": true,
+        "UseVectorGravity": false,
+        "VectorGravity": "0,0,-850",
+        "VerticalElasticity": 0.8,
+        "WallTolerance": 1
+      },
+      {
+        "__type": "ShrimpleCharacterController.ShrimpleRoller",
+        "__guid": "03e527ef-2375-4be0-8597-d32c56e5fabc",
+        "__enabled": true,
+        "JumpStrength": 350,
+        "OnComponentDestroy": null,
+        "OnComponentDisabled": null,
+        "OnComponentEnabled": null,
+        "OnComponentFixedUpdate": null,
+        "OnComponentStart": null,
+        "OnComponentUpdate": null,
+        "RunSpeed": 3000,
+        "WalkSpeed": 1000
+      }
+    ],
+    "Children": [
+      {
+        "__guid": "d566b30a-a123-4ab5-a3f3-4933340ce825",
+        "__version": 1,
+        "Flags": 0,
+        "Name": "Model",
+        "Position": "0,0,32",
+        "Rotation": "0,0,0,1",
+        "Scale": "1,1,1",
+        "Tags": "",
+        "Enabled": true,
+        "NetworkMode": 2,
+        "NetworkInterpolation": true,
+        "NetworkOrphaned": 0,
+        "OwnerTransfer": 1,
+        "Components": [
+          {
+            "__type": "Sandbox.ModelRenderer",
+            "__guid": "96de7fe3-2b5a-46d0-8b36-9b395820b603",
+            "__enabled": true,
+            "BodyGroups": 18446744073709551615,
+            "CreateAttachments": false,
+            "MaterialGroup": null,
+            "MaterialOverride": "materials/editor/black_grid_8_doublesided.vmat",
+            "Materials": null,
+            "Model": "models/dev/sphere.vmdl",
+            "OnComponentDestroy": null,
+            "OnComponentDisabled": null,
+            "OnComponentEnabled": null,
+            "OnComponentFixedUpdate": null,
+            "OnComponentStart": null,
+            "OnComponentUpdate": null,
+            "RenderOptions": {
+              "GameLayer": true,
+              "OverlayLayer": false,
+              "BloomLayer": false,
+              "AfterUILayer": false
+            },
+            "RenderType": "On",
+            "Tint": "1,1,1,1"
+          },
+          {
+            "__type": "Sandbox.TrailRenderer",
+            "__guid": "110814da-e098-42a3-975f-de715db69d50",
+            "__enabled": true,
+            "BlendMode": "Normal",
+            "CastShadows": false,
+            "Color": {
+              "blend": "Linear",
+              "color": [
+                {
+                  "t": 0,
+                  "c": "1,1,1,0.5"
+                },
+                {
+                  "t": 1,
+                  "c": "1,1,1,0"
+                }
+              ],
+              "alpha": []
+            },
+            "Emitting": true,
+            "Face": "Camera",
+            "LifeTime": 3,
+            "MaxPoints": 256,
+            "OnComponentDestroy": null,
+            "OnComponentDisabled": null,
+            "OnComponentEnabled": null,
+            "OnComponentFixedUpdate": null,
+            "OnComponentStart": null,
+            "OnComponentUpdate": null,
+            "Opaque": false,
+            "PointDistance": 4,
+            "RenderOptions": {
+              "GameLayer": true,
+              "OverlayLayer": false,
+              "BloomLayer": false,
+              "AfterUILayer": false
+            },
+            "Texturing": {
+              "Texture": null,
+              "Material": null,
+              "WorldSpace": true,
+              "UnitsPerTexture": 10,
+              "Scale": 1,
+              "Offset": 0,
+              "Scroll": 0,
+              "Clamp": false
+            },
+            "Width": {
+              "rangey": "0,64",
+              "frames": [
+                {
+                  "x": 0,
+                  "y": 1,
+                  "in": 0,
+                  "out": 0,
+                  "mode": "Mirrored"
+                },
+                {
+                  "x": 1,
+                  "y": 0,
+                  "in": 0,
+                  "out": 0,
+                  "mode": "Mirrored"
+                }
+              ]
+            },
+            "Wireframe": false
+          }
+        ],
+        "Children": []
+      }
+    ]
+  },
+  "ResourceVersion": 2,
+  "ShowInMenu": true,
+  "MenuPath": "Shrimple Controllers/Ball Controller",
+  "MenuIcon": "sports_basketball",
+  "DontBreakAsTemplate": false,
+  "__references": [],
+  "__version": 2
+}
