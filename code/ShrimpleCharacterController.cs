@@ -725,12 +725,13 @@ public class ShrimpleCharacterController : Component
             finalPosition = CollideAndSlide(ExternalVelocity, finalPosition, delta).Position;
         }
 
+        finalPosition -= _offset; // Compensate for the offset we added at the beginning
         _lastVelocity = Velocity * delta;
 
         if (!manualUpdate)
         {
             Velocity = finalVelocity;
-            WorldPosition = finalPosition - _offset; // Actually updating the position is "expensive" so we only do it once at the end
+            WorldPosition = finalPosition; // Actually updating the position is "expensive" so we only do it once at the end
         }
 
         return new MoveHelperResult(finalPosition, finalVelocity);
