@@ -7,9 +7,7 @@ public sealed class ShrimpleWalker : Component
 {
     [RequireComponent]
     public ShrimpleCharacterController Controller { get; set; }
-
-    [RequireComponent]
-    public CitizenAnimationHelper AnimationHelper { get; set; }
+    [Property]
     public SkinnedModelRenderer Renderer { get; set; }
     public GameObject Camera { get; set; }
 
@@ -58,15 +56,27 @@ public sealed class ShrimpleWalker : Component
         if (Input.Pressed("Jump") && Controller.IsOnGround)
         {
             Controller.Punch(-Controller.AppliedGravity.Normal * JumpStrength);
-            AnimationHelper?.TriggerJump();
+            Renderer?.Set("b_jump", true);
         }
 
-        if (!AnimationHelper.IsValid()) return;
+        if (!Renderer.IsValid()) return;
 
-        AnimationHelper.WithWishVelocity(Controller.WishVelocity);
-        AnimationHelper.WithVelocity(Controller.Velocity);
-        AnimationHelper.DuckLevel = isDucking ? 1f : 0f;
-        AnimationHelper.IsGrounded = Controller.IsOnGround;
+        var oldX = Renderer.GetFloat("move_x");
+        var oldY = Renderer.GetFloat("move_y");
+
+        var velocity = Controller.Velocity;
+        var runScale = 1f / Renderer.Transform.World.UniformScale;
+        var moveX = Vector3.Dot(velocity, Renderer.WorldRotation.Forward) * runScale;
+        var moveY = Vector3.Dot(velocity, Renderer.WorldRotation.Right) * runScale;
+
+        var newX = MathX.Lerp(oldX, moveX, Time.Delta * 10f);
+        var newY = MathX.Lerp(oldY, moveY, Time.Delta * 10f);
+
+        Renderer.Set("move_x", newX);
+        Renderer.Set("move_y", newY);
+
+        Renderer.Set("b_grounded", Controller.IsOnGround);
+        Renderer.Set("duck", isDucking ? 1f : 0f);
     }
 
     protected override void OnUpdate()
@@ -75,7 +85,7 @@ public sealed class ShrimpleWalker : Component
 
         EyeAngles += Input.AnalogLook;
         EyeAngles = EyeAngles.WithPitch(MathX.Clamp(EyeAngles.pitch, -10f, 40f));
-        // Renderer.WorldRotation = Rotation.Slerp(Renderer.WorldRotation, Rotation.FromYaw(EyeAngles.yaw), Time.Delta * 5f);
+        Renderer.WorldRotation = Rotation.Slerp(Renderer.WorldRotation, Rotation.FromYaw(EyeAngles.yaw), 1f);
 
         var cameraOffset = Vector3.Up * 70f + Vector3.Backward * 220f;
         Camera.LocalRotation = EyeAngles.ToRotation();
