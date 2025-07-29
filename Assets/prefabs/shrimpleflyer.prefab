@@ -1,0 +1,180 @@
+{
+  "RootObject": {
+    "__guid": "c4460a44-d5f8-4633-bc14-19079f66c3e6",
+    "__version": 1,
+    "Flags": 0,
+    "Name": "Player",
+    "Position": "0,0,0",
+    "Rotation": "0,0,0,1",
+    "Scale": "1,1,1",
+    "Tags": "",
+    "Enabled": true,
+    "NetworkMode": 2,
+    "NetworkInterpolation": true,
+    "NetworkOrphaned": 0,
+    "OwnerTransfer": 1,
+    "Components": [
+      {
+        "__type": "ShrimpleCharacterController.ShrimpleCharacterController",
+        "__guid": "268b83b1-d731-4eae-8a67-95f3b2a37d4b",
+        "__enabled": true,
+        "__version": 3,
+        "AccelerationCurve": {
+          "rangex": "0,500",
+          "frames": [
+            {
+              "x": 0,
+              "y": 0.2,
+              "in": 0,
+              "out": 1.5,
+              "mode": "Mirrored"
+            },
+            {
+              "x": 1,
+              "y": 1,
+              "in": 0,
+              "out": 0,
+              "mode": "Mirrored"
+            }
+          ]
+        },
+        "AccelerationEnabled": true,
+        "AirAcceleration": 1500,
+        "AirDeceleration": 700,
+        "BouncingEnabled": false,
+        "DecelerationCurve": {
+          "rangex": "0,500",
+          "frames": [
+            {
+              "x": 0,
+              "y": 1,
+              "in": 0,
+              "out": -2.5,
+              "mode": "Mirrored"
+            },
+            {
+              "x": 1,
+              "y": 0.2,
+              "in": 0,
+              "out": 0,
+              "mode": "Mirrored"
+            }
+          ]
+        },
+        "ElasticityThreshold": 30,
+        "FixedAcceleration": true,
+        "FixedDeceleration": true,
+        "Gravity": -200,
+        "GravityEnabled": true,
+        "GripFactorReduction": 1,
+        "GroundAcceleration": 1000,
+        "GroundDeceleration": 1500,
+        "GroundStickDistance": 12,
+        "GroundStickEnabled": false,
+        "HorizontalElasticity": 0,
+        "IgnoreGroundSurface": false,
+        "IgnoreTags": "",
+        "IgnoreZ": false,
+        "IgnoreZWhenZero": true,
+        "IncludeGroundElasticity": false,
+        "ManuallyUpdate": true,
+        "MaxBounces": 5,
+        "MaxGroundAngle": 60,
+        "MaxUnstuckTries": 20,
+        "OnComponentDestroy": null,
+        "OnComponentDisabled": null,
+        "OnComponentEnabled": null,
+        "OnComponentFixedUpdate": null,
+        "OnComponentStart": null,
+        "OnComponentUpdate": null,
+        "PseudoStepsEnabled": true,
+        "PushEnabled": false,
+        "PushTagsWeight": {
+          "player": 1
+        },
+        "RotateWithGameObject": true,
+        "ScaleAgainstWalls": true,
+        "StepDepth": 2,
+        "StepHeight": 12,
+        "StepsEnabled": false,
+        "StepTolerance": 1,
+        "TraceHeight": 80,
+        "TraceShape": "Cylinder",
+        "TraceWidth": 350,
+        "UnstuckEnabled": true,
+        "UseSceneGravity": false,
+        "UseVectorGravity": false,
+        "VectorGravity": "0,0,-850",
+        "VerticalElasticity": 0,
+        "WallTolerance": 1
+      },
+      {
+        "__type": "ShrimpleCharacterController.ShrimpleFlyer",
+        "__guid": "023f71d5-39f3-4487-8834-8b90289e3291",
+        "__enabled": true,
+        "OnComponentDestroy": null,
+        "OnComponentDisabled": null,
+        "OnComponentEnabled": null,
+        "OnComponentFixedUpdate": null,
+        "OnComponentStart": null,
+        "OnComponentUpdate": null,
+        "RunSpeed": 2400,
+        "WalkSpeed": 800
+      }
+    ],
+    "Children": [
+      {
+        "__guid": "dc69a438-1444-4045-8f63-4ad33ad29bc0",
+        "__version": 1,
+        "Flags": 0,
+        "Name": "Model",
+        "Position": "0,0,20",
+        "Rotation": "0,0,0,1",
+        "Scale": "1,1,1",
+        "Tags": "",
+        "Enabled": true,
+        "NetworkMode": 2,
+        "NetworkInterpolation": true,
+        "NetworkOrphaned": 0,
+        "OwnerTransfer": 1,
+        "Components": [
+          {
+            "__type": "Sandbox.ModelRenderer",
+            "__guid": "fa020faf-80a8-46b2-b667-6ed276e3c303",
+            "__enabled": true,
+            "BodyGroups": 18446744073709551615,
+            "CreateAttachments": false,
+            "MaterialGroup": null,
+            "MaterialOverride": null,
+            "Materials": null,
+            "Model": "models/ufo/ufo.vmdl",
+            "OnComponentDestroy": null,
+            "OnComponentDisabled": null,
+            "OnComponentEnabled": null,
+            "OnComponentFixedUpdate": null,
+            "OnComponentStart": null,
+            "OnComponentUpdate": null,
+            "RenderOptions": {
+              "GameLayer": true,
+              "OverlayLayer": false,
+              "BloomLayer": false,
+              "AfterUILayer": false
+            },
+            "RenderType": "On",
+            "Tint": "1,1,1,1"
+          }
+        ],
+        "Children": []
+      }
+    ]
+  },
+  "ResourceVersion": 2,
+  "ShowInMenu": true,
+  "MenuPath": "Shrimple Controllers/Flyer",
+  "MenuIcon": "airplanemode_active",
+  "DontBreakAsTemplate": false,
+  "__references": [
+    "fish.ufo#105349"
+  ],
+  "__version": 2
+}

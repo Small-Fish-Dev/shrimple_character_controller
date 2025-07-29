@@ -7,10 +7,6 @@ public sealed class ShrimpleFlyer : Component
 {
     [RequireComponent]
     public ShrimpleCharacterController Controller { get; set; }
-
-    [RequireComponent]
-    public CitizenAnimationHelper AnimationHelper { get; set; }
-    public SkinnedModelRenderer Renderer { get; set; }
     public GameObject Camera { get; set; }
 
     [Property]
@@ -27,7 +23,6 @@ public sealed class ShrimpleFlyer : Component
     {
         base.OnStart();
 
-        Renderer = AnimationHelper.Target;
         Camera = new GameObject(true, "Camera");
         Camera.SetParent(GameObject);
         var cameraComponent = Camera.Components.Create<CameraComponent>();
@@ -47,10 +42,6 @@ public sealed class ShrimpleFlyer : Component
 
         Controller.WishVelocity = wishDirection * wishSpeed;
         Controller.Move();
-
-        AnimationHelper.WithWishVelocity(Controller.WishVelocity);
-        AnimationHelper.WithVelocity(Controller.Velocity);
-        AnimationHelper.IsGrounded = Controller.IsOnGround;
     }
 
     protected override void OnUpdate()
@@ -58,10 +49,9 @@ public sealed class ShrimpleFlyer : Component
         base.OnUpdate();
 
         EyeAngles += Input.AnalogLook;
-        EyeAngles = EyeAngles.WithPitch(MathX.Clamp(EyeAngles.pitch, -10f, 40f));
-        Renderer.WorldRotation = Rotation.Slerp(Renderer.WorldRotation, Rotation.FromYaw(EyeAngles.yaw), Time.Delta * 5f);
+        EyeAngles = EyeAngles.WithPitch(MathX.Clamp(EyeAngles.pitch, -40f, 40f));
 
-        var cameraOffset = Vector3.Up * 70f + Vector3.Backward * 220f;
+        var cameraOffset = Vector3.Up * 70f + Vector3.Backward * 760f;
         Camera.WorldRotation = EyeAngles.ToRotation();
         Camera.LocalPosition = cameraOffset * Camera.WorldRotation;
     }
