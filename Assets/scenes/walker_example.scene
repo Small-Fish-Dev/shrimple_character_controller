@@ -161,191 +161,29 @@
     {
       "__guid": "dad296d6-935e-4779-b5ae-67a3a0d28ab6",
       "__version": 1,
-      "Flags": 0,
-      "Name": "Player",
-      "Position": "-171.0225,-113.5377,171.9933",
-      "Rotation": "0,0,0,1",
-      "Scale": "1,1,1",
-      "Tags": "",
-      "Enabled": true,
-      "NetworkMode": 2,
-      "NetworkInterpolation": true,
-      "NetworkOrphaned": 0,
-      "OwnerTransfer": 1,
-      "Components": [
-        {
-          "__type": "ShrimpleCharacterController.ShrimpleCharacterController",
-          "__guid": "fa127e8d-b05d-4e14-894d-d2977361591d",
-          "__enabled": true,
-          "__version": 3,
-          "AccelerationCurve": {
-            "rangex": "0,500",
-            "frames": [
-              {
-                "x": 0,
-                "y": 0.2,
-                "in": 0,
-                "out": 1.5,
-                "mode": "Mirrored"
-              },
-              {
-                "x": 1,
-                "y": 1,
-                "in": 0,
-                "out": 0,
-                "mode": "Mirrored"
-              }
-            ]
-          },
-          "AccelerationEnabled": true,
-          "AirAcceleration": 300,
-          "AirDeceleration": 0,
-          "BouncingEnabled": false,
-          "DecelerationCurve": {
-            "rangex": "0,500",
-            "frames": [
-              {
-                "x": 0,
-                "y": 1,
-                "in": 0,
-                "out": -2.5,
-                "mode": "Mirrored"
-              },
-              {
-                "x": 1,
-                "y": 0.2,
-                "in": 0,
-                "out": 0,
-                "mode": "Mirrored"
-              }
-            ]
-          },
-          "ElasticityThreshold": 30,
-          "FixedAcceleration": true,
-          "FixedDeceleration": true,
-          "Gravity": -850,
-          "GravityEnabled": true,
-          "GripFactorReduction": 1,
-          "GroundAcceleration": 1000,
-          "GroundDeceleration": 1500,
-          "GroundStickDistance": 12,
-          "GroundStickEnabled": true,
-          "HorizontalElasticity": 0,
-          "IgnoreGroundSurface": false,
-          "IgnoreTags": "",
-          "IgnoreZ": true,
-          "IgnoreZWhenZero": true,
-          "IncludeGroundElasticity": false,
-          "ManuallyUpdate": true,
-          "MaxBounces": 5,
-          "MaxGroundAngle": 60,
-          "MaxUnstuckTries": 20,
-          "OnComponentDestroy": null,
-          "OnComponentDisabled": null,
-          "OnComponentEnabled": null,
-          "OnComponentFixedUpdate": null,
-          "OnComponentStart": null,
-          "OnComponentUpdate": null,
-          "PseudoStepsEnabled": true,
-          "PushEnabled": false,
-          "PushTagsWeight": {
-            "player": 1
-          },
-          "RotateWithGameObject": true,
-          "ScaleAgainstWalls": true,
-          "StepDepth": 2,
-          "StepHeight": 12,
-          "StepsEnabled": true,
-          "StepTolerance": 1,
-          "TraceHeight": 72,
-          "TraceShape": "Cylinder",
-          "TraceWidth": 24,
-          "UnstuckEnabled": true,
-          "UseSceneGravity": true,
-          "UseVectorGravity": false,
-          "VectorGravity": "0,0,-850",
-          "VerticalElasticity": 0,
-          "WallTolerance": 1
-        },
-        {
-          "__type": "ShrimpleCharacterController.ShrimpleWalker",
-          "__guid": "21e48f2b-e808-42b7-83e6-83282972f187",
-          "__enabled": true,
-          "DuckSpeed": 50,
-          "JumpStrength": 350,
-          "OnComponentDestroy": null,
-          "OnComponentDisabled": null,
-          "OnComponentEnabled": null,
-          "OnComponentFixedUpdate": null,
-          "OnComponentStart": null,
-          "OnComponentUpdate": null,
-          "RunSpeed": 300,
-          "WalkSpeed": 100
-        }
-      ],
-      "Children": [
-        {
-          "__guid": "768529ee-5ecc-4ddb-a81e-73fdb775baec",
-          "__version": 1,
-          "Flags": 0,
-          "Name": "Model",
-          "Position": "0,0,0",
-          "Rotation": "0,0,0,1",
-          "Scale": "1,1,1",
-          "Tags": "",
-          "Enabled": true,
-          "NetworkMode": 2,
-          "NetworkInterpolation": true,
-          "NetworkOrphaned": 0,
-          "OwnerTransfer": 1,
-          "Components": [
-            {
-              "__type": "Sandbox.SkinnedModelRenderer",
-              "__guid": "75a0dedf-07bc-4a29-9027-9e88625f7ba0",
-              "__enabled": true,
-              "AnimationGraph": null,
-              "BodyGroups": 341,
-              "BoneMergeTarget": null,
-              "CreateAttachments": false,
-              "CreateBoneObjects": false,
-              "MaterialGroup": null,
-              "MaterialOverride": null,
-              "Materials": null,
-              "Model": "models/citizen/citizen.vmdl",
-              "Morphs": {},
-              "OnComponentDestroy": null,
-              "OnComponentDisabled": null,
-              "OnComponentEnabled": null,
-              "OnComponentFixedUpdate": null,
-              "OnComponentStart": null,
-              "OnComponentUpdate": null,
-              "Parameters": {
-                "bools": {},
-                "ints": {},
-                "floats": {},
-                "vectors": {},
-                "rotations": {}
-              },
-              "PlaybackRate": 1,
-              "RenderOptions": {
-                "GameLayer": true,
-                "OverlayLayer": false,
-                "BloomLayer": false,
-                "AfterUILayer": false
-              },
-              "RenderType": "On",
-              "Sequence": {
-                "Name": null,
-                "Looping": true,
-                "Blending": false
-              },
-              "Tint": "1,1,1,1",
-              "UseAnimGraph": true
-            }
-          ],
-          "Children": []
-        }
-      ]
+      "__Prefab": "prefabs/shrimplewalker.prefab",
+      "__PrefabInstancePatch": {
+        "AddedObjects": [],
+        "RemovedObjects": [],
+        "PropertyOverrides": [
+          {
+            "Target": {
+              "Type": "GameObject",
+              "IdValue": "74bb872c-c7e7-4227-85d3-9108a4460ee0"
+            },
+            "Property": "Position",
+            "Value": "-171.0225,-113.5377,171.9933"
+          }
+        ],
+        "MovedObjects": []
+      },
+      "__PrefabIdToInstanceId": {
+        "74bb872c-c7e7-4227-85d3-9108a4460ee0": "dad296d6-935e-4779-b5ae-67a3a0d28ab6",
+        "8d28351d-303a-4961-9b16-b56f86df43b3": "fa127e8d-b05d-4e14-894d-d2977361591d",
+        "5e617673-50db-45ac-ab64-9fe9a91cdcff": "21e48f2b-e808-42b7-83e6-83282972f187",
+        "bed08f3b-d6c2-418f-a61f-4acfe61be6f9": "768529ee-5ecc-4ddb-a81e-73fdb775baec",
+        "abcba5c6-9e0a-4462-83c4-ee69366aa595": "75a0dedf-07bc-4a29-9027-9e88625f7ba0"
+      }
     }
   ],
   "SceneProperties": {
