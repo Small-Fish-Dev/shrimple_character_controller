@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Nodes;
+using static Sandbox.VertexLayout;
 
 namespace ShrimpleCharacterController;
 
@@ -702,9 +703,16 @@ public class ShrimpleCharacterController : Component
             }
         }
 
-        var moveHelperResult = CollideAndSlide(goalVelocity, WorldPosition + _offset, delta); // Simulate the MoveHelper
+        var finalPosition = WorldPosition;
 
-        var finalPosition = moveHelperResult.Position;
+        if (IsOnGround && GroundStickEnabled && !IsSlipping)
+        {
+            finalPosition += GroundObject.GetComponent<Collider>()?.GetVelocityAtPoint(finalPosition) * delta ?? Vector3.Zero; // Add the velocity of the ground we're on (If it has a collider)
+        }
+
+        var moveHelperResult = CollideAndSlide(goalVelocity, finalPosition + _offset, delta); // Simulate the MoveHelper
+
+        finalPosition = moveHelperResult.Position;
         var finalVelocity = moveHelperResult.Velocity;
 
         // SIMULATE GRAVITY //
