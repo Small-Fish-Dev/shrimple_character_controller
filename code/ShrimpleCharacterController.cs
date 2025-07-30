@@ -1,10 +1,11 @@
-﻿using System.Text.Json.Nodes;
+﻿using Sandbox.Internal;
+using System.Text.Json.Nodes;
 using static Sandbox.VertexLayout;
 
 namespace ShrimpleCharacterController;
 
 [Icon("nordic_walking")]
-public class ShrimpleCharacterController : Component
+public class ShrimpleCharacterController : Component, IScenePhysicsEvents, ISceneEvent<IScenePhysicsEvents>, Component.ExecuteInEditor
 {
     /// <summary>
     /// Manually update this by calling Move() or let it always be simulated
@@ -302,6 +303,13 @@ public class ShrimpleCharacterController : Component
     [Feature("GroundStick")]
     [Range(1f, 32f, false)]
     public float GroundStickDistance { get; set; } = 12f;
+
+    /// <summary>
+    /// Stick to any <see cref="GroundObject"/> when standing on it
+    /// </summary>
+    [Property]
+    [Feature("GroundStick")]
+    public bool StickToPlatforms { get; set; } = true;
 
     /// <summary>
     /// Enable steps climbing (+1 Trace call)
@@ -705,10 +713,8 @@ public class ShrimpleCharacterController : Component
 
         var finalPosition = WorldPosition;
 
-        if (IsOnGround && GroundStickEnabled && !IsSlipping)
-        {
-            finalPosition += GroundObject.GetComponent<Collider>()?.GetVelocityAtPoint(finalPosition) * delta ?? Vector3.Zero; // Add the velocity of the ground we're on (If it has a collider)
-        }
+        if (IsOnGround && GroundStickEnabled && !IsSlipping && StickToPlatforms)
+            finalPosition += GroundObject.GetComponent<Collider>()?.GetVelocityAtPoint(finalPosition) * delta ?? Vector3.Zero;
 
         var moveHelperResult = CollideAndSlide(goalVelocity, finalPosition + _offset, delta); // Simulate the MoveHelper
 
