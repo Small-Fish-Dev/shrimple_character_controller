@@ -568,6 +568,8 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     public ShrimpleCharacterController UnstuckTarget;
 
     public Action<ShrimpleCollisionResult> OnCollide { get; set; }
+    public Rigidbody Body { get; private set; }
+    public Collider Collider { get; private set; }
 
     protected override void OnStart()
     {
@@ -575,6 +577,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         Bounds = BuildBounds();
         _shrunkenBounds = Bounds.Grow(-SkinWidth);
         _pushTags = BuildPushTags();
+        CreateBody();
     }
 
     protected override void DrawGizmos()
@@ -671,6 +674,68 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     {
         IsOnGround = false;
         Velocity += amount;
+    }
+
+    protected void CreateBody()
+    {
+        CreateCollider();
+        CreateRigidbody();
+    }
+
+    protected void CreateCollider()
+    {
+        if (Collider.IsValid())
+            Collider.Destroy();
+
+        if (TraceShape == TraceType.Box)
+        {
+            var collider = GameObject.AddComponent<BoxCollider>();
+            collider.Scale = BuildBounds().Size - Vector3.Up;
+            collider.Center = Vector3.Up; // Move it up a bit so it doesn't snag
+            Collider = collider;
+        }
+        else if (TraceShape == TraceType.Cylinder)
+        {
+            var collider = GameObject.AddComponent<HullCollider>();
+            collider.Type = HullCollider.PrimitiveType.Cylinder;
+            collider.Height = TraceHeight - 1f;
+            collider.Radius = TraceWidth / 2f;
+            collider.Center = Vector3.Up * (TraceHeight / 2f + 1f); // Move it up a bit so it doesn't snag
+            Collider = collider;
+        }
+        else if (TraceShape == TraceType.Sphere)
+        {
+            var collider = GameObject.AddComponent<SphereCollider>();
+            collider.Radius = TraceWidth / 2f;
+            collider.Center = Vector3.Up; // Move it up a bit so it doesn't snag
+            Collider = collider;
+        }
+    }
+
+    protected void CreateRigidbody()
+    {
+        if (Body.IsValid())
+            Body.Destroy();
+        Body = GameObject.AddComponent<Rigidbody>();
+        Body.Locking = new PhysicsLock()
+        {
+            Pitch = true,
+            Roll = true,
+            Yaw = true,
+        };
+        Body.Gravity = false;
+        Body.MassOverride = 500f;
+    }
+
+    void IScenePhysicsEvents.PrePhysicsStep()
+    {
+        if (!Body.IsValid()) return;
+        Body.Velocity = Velocity;
+    }
+    void IScenePhysicsEvents.PostPhysicsStep()
+    {
+        if (!Body.IsValid()) return;
+        Velocity = Body.Velocity;
     }
 
     /// <summary>
