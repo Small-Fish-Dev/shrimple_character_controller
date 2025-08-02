@@ -2,8 +2,9 @@ using Sandbox;
 
 public sealed class PlatformTest : Component
 {
-    protected override void OnUpdate()
+    protected override void OnFixedUpdate()
     {
-        WorldPosition += Vector3.Right * (float)Math.Sin(Time.Now / 2f) * 100f * Time.Delta;
+        WorldPosition += Vector3.Right * (float)Math.Sin(Time.Now * 2f) * 400f * Time.Delta;
+        //WorldPosition += Vector3.Up * (float)Math.Sin(Time.Now * 2f) * 200f * Time.Delta;
     }
 }
