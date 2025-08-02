@@ -570,6 +570,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     public Action<ShrimpleCollisionResult> OnCollide { get; set; }
     public Rigidbody Body { get; private set; }
     public Collider Collider { get; private set; }
+    public bool PhysicallySimulated => Body.IsValid() && Body.Active && Collider.IsValid() && Collider.Active;
 
     protected override void OnStart()
     {
@@ -672,8 +673,12 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     /// <param name="amount"></param>
     public void Punch(in Vector3 amount)
     {
+        if (IsOnGround && GroundStickEnabled && !IsSlipping && StickToPlatforms)
+            Velocity += GroundObject.GetComponent<Collider>()?.GetVelocityAtPoint(WorldPosition) / 2f ?? Vector3.Zero;
+
         IsOnGround = false;
         Velocity += amount;
+
     }
 
     protected void CreateBody()
@@ -689,14 +694,14 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
         if (TraceShape == TraceType.Box)
         {
-            var collider = GameObject.AddComponent<BoxCollider>();
+            var collider = GameObject.GetOrAddComponent<BoxCollider>();
             collider.Scale = BuildBounds().Size - Vector3.Up;
             collider.Center = Vector3.Up; // Move it up a bit so it doesn't snag
             Collider = collider;
         }
         else if (TraceShape == TraceType.Cylinder)
         {
-            var collider = GameObject.AddComponent<HullCollider>();
+            var collider = GameObject.GetOrAddComponent<HullCollider>();
             collider.Type = HullCollider.PrimitiveType.Cylinder;
             collider.Height = TraceHeight - 1f;
             collider.Radius = TraceWidth / 2f;
@@ -705,18 +710,20 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         }
         else if (TraceShape == TraceType.Sphere)
         {
-            var collider = GameObject.AddComponent<SphereCollider>();
+            var collider = GameObject.GetOrAddComponent<SphereCollider>();
             collider.Radius = TraceWidth / 2f;
             collider.Center = Vector3.Up; // Move it up a bit so it doesn't snag
             Collider = collider;
         }
+        //Collider.Flags |= ComponentFlags.Hidden;
     }
 
     protected void CreateRigidbody()
     {
         if (Body.IsValid())
             Body.Destroy();
-        Body = GameObject.AddComponent<Rigidbody>();
+        Body = GameObject.GetOrAddComponent<Rigidbody>();
+        // Body.Flags |= ComponentFlags.Hidden;
         Body.Locking = new PhysicsLock()
         {
             Pitch = true,
@@ -729,12 +736,19 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
     void IScenePhysicsEvents.PrePhysicsStep()
     {
-        if (!Body.IsValid()) return;
+        if (!PhysicallySimulated) return;
+        if (!ManuallyUpdate && Active)
+            Move();
+
         Body.Velocity = Velocity;
     }
     void IScenePhysicsEvents.PostPhysicsStep()
     {
-        if (!Body.IsValid()) return;
+        if (IsOnGround && GroundStickEnabled && !IsSlipping && StickToPlatforms) // Apply platform changes after physics
+            WorldPosition += GroundObject.GetComponent<Collider>()?.GetVelocityAtPoint(WorldPosition) * Time.Delta ?? Vector3.Zero;
+
+        if (!PhysicallySimulated) return;
+
         Velocity = Body.Velocity;
     }
 
@@ -778,14 +792,10 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
         var finalPosition = WorldPosition;
 
-        if (IsOnGround && GroundStickEnabled && !IsSlipping && StickToPlatforms)
-            finalPosition += GroundObject.GetComponent<Collider>()?.GetVelocityAtPoint(finalPosition) * delta ?? Vector3.Zero;
-
         var moveHelperResult = CollideAndSlide(goalVelocity, finalPosition + _offset, delta); // Simulate the MoveHelper
 
         finalPosition = moveHelperResult.Position;
         var finalVelocity = moveHelperResult.Velocity;
-
         // SIMULATE GRAVITY //
         if (GravityEnabled && Gravity != 0f)
         {
@@ -1157,7 +1167,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     {
         base.OnFixedUpdate();
 
-        if (!ManuallyUpdate && Active)
+        if (!ManuallyUpdate && Active && !PhysicallySimulated)
             Move();
     }
 
