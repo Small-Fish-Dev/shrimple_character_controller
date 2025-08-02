@@ -51,7 +51,6 @@ public sealed class ShrimpleWalker : Component
             isRunning ? RunSpeed : WalkSpeed;
 
         Controller.WishVelocity = wishDirection * wishSpeed;
-        Controller.Move();
 
         if (Input.Pressed("Jump") && Controller.IsOnGround)
         {
