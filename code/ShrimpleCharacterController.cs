@@ -966,7 +966,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
                     {
                         if (IsOnGround) // Stairs VVV
                         {
-                            var stepHorizontal = Vector3.VectorPlaneProject(velocity, AppliedGravity).Normal * StepDepth; // How far in front we're looking for steps
+                            var stepHorizontal = Vector3.VectorPlaneProject(velocity.Normal, AppliedGravity.Normal).Normal * StepDepth; // How far in front we're looking for steps
                             var stepVertical = -AppliedGravity.Normal * (StepHeight + SkinWidth); // How high we're looking for steps + Some to compensate for floating inaccuracy
                             var stepTrace = BuildTrace(_shrunkenBounds, travelTrace.EndPosition + stepHorizontal + stepVertical, travelTrace.EndPosition + stepHorizontal);
                             var stepAngle = Vector3.GetAngle(stepTrace.Normal, -AppliedGravity.Normal);
