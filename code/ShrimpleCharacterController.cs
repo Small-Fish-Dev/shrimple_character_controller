@@ -571,6 +571,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     public Rigidbody Body { get; private set; }
     public Collider Collider { get; private set; }
     public bool PhysicallySimulated => Body.IsValid() && Body.Active && Collider.IsValid() && Collider.Active;
+    public bool IsOnPlatform => IsOnGround && GroundStickEnabled && !IsSlipping && StickToPlatforms && GroundObject.IsValid();
 
     protected override void OnStart()
     {
@@ -673,12 +674,11 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     /// <param name="amount"></param>
     public void Punch(in Vector3 amount)
     {
-        if (IsOnGround && GroundStickEnabled && !IsSlipping && StickToPlatforms)
+        if (IsOnPlatform)
             Velocity += GroundObject.GetComponent<Collider>()?.GetVelocityAtPoint(WorldPosition) / 2f ?? Vector3.Zero;
 
         IsOnGround = false;
         Velocity += amount;
-
     }
 
     protected void CreateBody()
@@ -744,7 +744,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     }
     void IScenePhysicsEvents.PostPhysicsStep()
     {
-        if (IsOnGround && GroundStickEnabled && !IsSlipping && StickToPlatforms) // Apply platform changes after physics
+        if (IsOnPlatform) // Apply platform changes after physics
             WorldPosition += GroundObject.GetComponent<Collider>()?.GetVelocityAtPoint(WorldPosition) * Time.Delta ?? Vector3.Zero;
 
         if (!PhysicallySimulated) return;
