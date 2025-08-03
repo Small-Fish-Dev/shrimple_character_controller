@@ -12,7 +12,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     /// </summary>
     [Property]
     [Group("Options")]
-    [Validate(nameof(physicalAndManual), "Can't manually update and physically update at the same time.", LogLevel.Error)]
+    [Validate(nameof(physicalAndManual), "When physically updating make sure to call Move() before the physics step!", LogLevel.Warn)]
     public bool ManuallyUpdate { get; set; } = true;
 
     private bool physicalAndManual(bool manual) => !manual && PhysicallySimulated;
