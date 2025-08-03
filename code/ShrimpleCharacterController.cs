@@ -737,19 +737,28 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     void IScenePhysicsEvents.PrePhysicsStep()
     {
         if (!PhysicallySimulated) return;
-        if (!ManuallyUpdate && Active)
-            Move();
 
+        //Log.Info("1: " + WorldPosition);
+        if (!ManuallyUpdate && Active)
+        {
+            var move = Move();
+            Log.Info(move.Offset);
+            WorldPosition += move.Offset;
+        }
+
+        //Log.Info("2: " + WorldPosition);
         Body.Velocity = Velocity;
     }
     void IScenePhysicsEvents.PostPhysicsStep()
     {
+        //Log.Info("3: " + WorldPosition);
         if (IsOnPlatform) // Apply platform changes after physics
             WorldPosition += GroundObject.GetComponent<Collider>()?.GetVelocityAtPoint(WorldPosition) * Time.Delta ?? Vector3.Zero;
 
         if (!PhysicallySimulated) return;
 
         Velocity = Body.Velocity;
+        //Log.Info("4: " + WorldPosition);
     }
 
     /// <summary>
@@ -811,19 +820,19 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
         if (!ExternalVelocity.IsNearZeroLength)
         {
-            finalPosition = CollideAndSlide(ExternalVelocity, finalPosition, delta).Position;
+            moveHelperResult = CollideAndSlide(ExternalVelocity, finalPosition, delta);
         }
 
-        finalPosition -= _offset; // Compensate for the offset we added at the beginning
+        finalPosition = moveHelperResult.Position - _offset; // Compensate for the offset we added at the beginning
         _lastVelocity = Velocity * delta;
 
         if (!manualUpdate)
         {
             Velocity = finalVelocity;
-            WorldPosition = finalPosition; // Actually updating the position is "expensive" so we only do it once at the end
+            //WorldPosition = finalPosition; // Actually updating the position is "expensive" so we only do it once at the end
         }
 
-        return new MoveHelperResult(finalPosition, finalVelocity);
+        return new MoveHelperResult(finalPosition, finalVelocity, moveHelperResult.Offset);
     }
 
     /// <summary>
@@ -833,6 +842,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     {
         public Vector3 Position;
         public Vector3 Velocity;
+        internal Vector3 Offset;
         internal float Leftover = 1f;
 
         public MoveHelperResult(Vector3 position, Vector3 velocity)
@@ -841,10 +851,11 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             Velocity = velocity;
         }
 
-        internal MoveHelperResult(Vector3 position, Vector3 velocity, float leftover)
+        internal MoveHelperResult(Vector3 position, Vector3 velocity, Vector3 offset, float leftover = 1f)
         {
             Position = position;
             Velocity = velocity;
+            Offset = offset;
             Leftover = leftover;
         }
     }
@@ -921,7 +932,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
         if (velocity.IsNearlyZero(_minimumTolerance)) // Not worth continuing, reduces small stutter
         {
-            return new MoveHelperResult(position, Vector3.Zero);
+            return new MoveHelperResult(position, Vector3.Zero, current.Offset);
         }
 
         var toTravel = velocity.Length * current.Leftover + SkinWidth;
@@ -1035,12 +1046,13 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             velocity = leftover.Normal * velocity.Length * leftoverSpeed;
 
             if (travelled.Length <= _minimumTolerance && leftover.Length <= _minimumTolerance)
-                return new MoveHelperResult(position + travelled, velocity / delta);
+                return new MoveHelperResult(position + travelled, velocity / delta, current.Offset);
 
             if (elasticity > 0)
                 _bounced = true;
 
-            var newResult = CollideAndSlide(new MoveHelperResult(position + travelled, velocity / delta, leftover.Length / velocity.Length), delta, depth + 1, gravityPass); // Simulate another bounce for the leftover velocity from the latest position
+            var offset = position - current.Position;
+            var newResult = CollideAndSlide(new MoveHelperResult(position + travelled, velocity / delta, offset, leftover.Length / velocity.Length), delta, depth + 1, gravityPass); // Simulate another bounce for the leftover velocity from the latest position
 
             if (depth == 0 && !gravityPass)
             {
@@ -1071,7 +1083,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             velocity -= AppliedGravity * delta * delta * 1.4f; // Evil hack so it doesn't lose velocity due to gravity passes after each bounce
         }
 
-        return new MoveHelperResult(position + velocity, velocity / delta); // We didn't hit anything? Ok just keep going then :-)
+        return new MoveHelperResult(position + velocity, velocity / delta, current.Offset); // We didn't hit anything? Ok just keep going then :-)
     }
 
     private float CalculateGoalSpeed(Vector3 wishVelocity, Vector3 velocity, bool isAccelerating, float delta)
