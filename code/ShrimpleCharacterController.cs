@@ -741,26 +741,19 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     {
         if (!PhysicallySimulated) return;
 
-        //Log.Info("1: " + WorldPosition);
-        if (!ManuallyUpdate && Active)
-        {
-            var move = Move();
-            WorldPosition += move.Offset;
-        }
+        if (!ManuallyUpdate && Active) // If we're physically simulated we move before the physics step
+            Move();
 
-        //Log.Info("2: " + WorldPosition);
         Body.Velocity = Velocity;
     }
     void IScenePhysicsEvents.PostPhysicsStep()
     {
-        //Log.Info("3: " + WorldPosition);
         if (IsOnPlatform) // Apply platform changes after physics
             WorldPosition += GroundObject.GetComponent<Collider>()?.GetVelocityAtPoint(WorldPosition) * Time.Delta ?? Vector3.Zero;
 
         if (!PhysicallySimulated) return;
 
         Velocity = Body.Velocity;
-        //Log.Info("4: " + WorldPosition);
     }
 
     /// <summary>
@@ -833,6 +826,9 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             Velocity = finalVelocity;
             //WorldPosition = finalPosition; // Actually updating the position is "expensive" so we only do it once at the end
         }
+
+        if (PhysicallySimulated && !ManuallyUpdate && Active)
+            WorldPosition += moveHelperResult.Offset;
 
         return new MoveHelperResult(finalPosition, finalVelocity, moveHelperResult.Offset);
     }
@@ -1181,7 +1177,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     {
         base.OnFixedUpdate();
 
-        if (!ManuallyUpdate && Active && !PhysicallySimulated)
+        if (!ManuallyUpdate && Active && !PhysicallySimulated) // If we're not physically simulated we Move inside of OnFixedUpdate
             Move();
     }
 
