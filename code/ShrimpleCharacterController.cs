@@ -12,7 +12,10 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     /// </summary>
     [Property]
     [Group("Options")]
+    [Validate(nameof(physicalAndManual), "Can't manually update and physically update at the same time.", LogLevel.Error)]
     public bool ManuallyUpdate { get; set; } = true;
+
+    private bool physicalAndManual(bool manual) => !manual && PhysicallySimulated;
 
     /// <summary>
     /// If pushing against a wall, scale the velocity based on the wall's angle (False is useful for NPCs that get stuck on corners)
@@ -742,7 +745,6 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         if (!ManuallyUpdate && Active)
         {
             var move = Move();
-            Log.Info(move.Offset);
             WorldPosition += move.Offset;
         }
 
