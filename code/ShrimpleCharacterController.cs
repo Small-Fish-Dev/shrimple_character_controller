@@ -701,24 +701,22 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         if (TraceShape == TraceType.Box)
         {
             var collider = GameObject.GetOrAddComponent<BoxCollider>();
-            collider.Scale = BuildBounds().Size - Vector3.Up;
-            collider.Center = Vector3.Up; // Move it up a bit so it doesn't snag
+            collider.Scale = BuildBounds().Size - SkinWidth;
             Collider = collider;
         }
         else if (TraceShape == TraceType.Cylinder)
         {
             var collider = GameObject.GetOrAddComponent<HullCollider>();
             collider.Type = HullCollider.PrimitiveType.Cylinder;
-            collider.Height = TraceHeight - 1f;
-            collider.Radius = TraceWidth / 2f;
-            collider.Center = Vector3.Up * (TraceHeight / 2f + 1f); // Move it up a bit so it doesn't snag
+            collider.Height = TraceHeight - SkinWidth;
+            collider.Radius = (TraceWidth - SkinWidth) / 2f;
+            collider.Center = Vector3.Up * (TraceHeight + SkinWidth) / 2f;
             Collider = collider;
         }
         else if (TraceShape == TraceType.Sphere)
         {
             var collider = GameObject.GetOrAddComponent<SphereCollider>();
-            collider.Radius = TraceWidth / 2f;
-            collider.Center = Vector3.Up; // Move it up a bit so it doesn't snag
+            collider.Radius = (TraceWidth - SkinWidth) / 2f;
             Collider = collider;
         }
         //Collider.Flags |= ComponentFlags.Hidden;
@@ -748,10 +746,10 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     {
         if (!PhysicallySimulated) return;
 
-        if (!ManuallyUpdate && Active) // If we're physically simulated we move before the physics step
-            Move();
+        //if (!ManuallyUpdate && Active) // If we're physically simulated we move before the physics step
+        var move = Move(false);
 
-        Body.Velocity = Velocity;
+        Body.Velocity = (move.Position - WorldPosition) / Time.Delta;
     }
     void IScenePhysicsEvents.PostPhysicsStep()
     {
@@ -760,7 +758,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
         if (!PhysicallySimulated) return;
 
-        Velocity = Body.Velocity;
+        //Velocity = Body.Velocity;
     }
 
     /// <summary>
