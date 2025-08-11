@@ -695,6 +695,9 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         if (Collider.IsValid())
             Collider.Destroy();
 
+        if (GameObject.Components.TryGet<Collider>(out var exisitingCollider))
+            exisitingCollider.Destroy();
+
         if (TraceShape == TraceType.Box)
         {
             var collider = GameObject.GetOrAddComponent<BoxCollider>();
@@ -725,7 +728,11 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     {
         if (Body.IsValid())
             Body.Destroy();
-        Body = GameObject.GetOrAddComponent<Rigidbody>();
+
+        if (GameObject.Components.TryGet<Rigidbody>(out var existingBody))
+            existingBody.Destroy();
+
+        Body = GameObject.AddComponent<Rigidbody>();
         // Body.Flags |= ComponentFlags.Hidden;
         Body.Locking = new PhysicsLock()
         {
