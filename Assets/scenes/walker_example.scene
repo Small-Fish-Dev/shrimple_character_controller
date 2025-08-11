@@ -163,99 +163,21 @@
       "__version": 1,
       "__Prefab": "prefabs/shrimplewalker.prefab",
       "__PrefabInstancePatch": {
-        "AddedObjects": [
+        "AddedObjects": [],
+        "RemovedObjects": [
           {
             "Id": {
               "Type": "Component",
-              "IdValue": "37cc794d-e718-47cc-9a0e-bd49ad659abc"
-            },
-            "Parent": {
-              "Type": "GameObject",
-              "IdValue": "74bb872c-c7e7-4227-85d3-9108a4460ee0"
-            },
-            "PreviousElement": {
-              "Type": "Component",
-              "IdValue": "5e617673-50db-45ac-ab64-9fe9a91cdcff"
-            },
-            "ContainerProperty": "Components",
-            "IsContainerArray": true,
-            "Data": {
-              "__type": "Sandbox.HullCollider",
-              "__guid": "37cc794d-e718-47cc-9a0e-bd49ad659abc",
-              "__enabled": true,
-              "BoxSize": "50,50,50",
-              "Center": "0,0,37",
-              "Elasticity": null,
-              "Friction": null,
-              "Height": 71,
-              "IsTrigger": false,
-              "OnComponentDestroy": null,
-              "OnComponentDisabled": null,
-              "OnComponentEnabled": null,
-              "OnComponentFixedUpdate": null,
-              "OnComponentStart": null,
-              "OnComponentUpdate": null,
-              "OnObjectTriggerEnter": null,
-              "OnObjectTriggerExit": null,
-              "OnTriggerEnter": null,
-              "OnTriggerExit": null,
-              "Points": [],
-              "Radius": 12,
-              "Radius2": 0,
-              "RollingResistance": null,
-              "Slices": 16,
-              "Static": false,
-              "Surface": null,
-              "SurfaceVelocity": "0,0,0",
-              "Type": "Cylinder"
+              "IdValue": "26e6300f-fd5f-41b4-a314-7b7c69be6782"
             }
           },
           {
             "Id": {
               "Type": "Component",
-              "IdValue": "f2f676a3-7c53-44e1-b164-3b1850ddca9d"
-            },
-            "Parent": {
-              "Type": "GameObject",
-              "IdValue": "74bb872c-c7e7-4227-85d3-9108a4460ee0"
-            },
-            "PreviousElement": {
-              "Type": "Component",
-              "IdValue": "37cc794d-e718-47cc-9a0e-bd49ad659abc"
-            },
-            "ContainerProperty": "Components",
-            "IsContainerArray": true,
-            "Data": {
-              "__type": "Sandbox.Rigidbody",
-              "__guid": "f2f676a3-7c53-44e1-b164-3b1850ddca9d",
-              "__enabled": true,
-              "AngularDamping": 0,
-              "Gravity": false,
-              "LinearDamping": 0,
-              "Locking": {
-                "X": false,
-                "Y": false,
-                "Z": false,
-                "Pitch": true,
-                "Yaw": true,
-                "Roll": true
-              },
-              "MassCenterOverride": "0,0,0",
-              "MassOverride": 500,
-              "MotionEnabled": true,
-              "OnComponentDestroy": null,
-              "OnComponentDisabled": null,
-              "OnComponentEnabled": null,
-              "OnComponentFixedUpdate": null,
-              "OnComponentStart": null,
-              "OnComponentUpdate": null,
-              "OverrideMassCenter": false,
-              "RigidbodyFlags": 0,
-              "StartAsleep": false
+              "IdValue": "2777301a-5abb-4225-87c3-f2055ae17c02"
             }
           }
         ],
-        "RemovedObjects": [],
         "PropertyOverrides": [
           {
             "Target": {
@@ -264,14 +186,6 @@
             },
             "Property": "Position",
             "Value": "-171.0225,-113.5377,171.9933"
-          },
-          {
-            "Target": {
-              "Type": "Component",
-              "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
-            },
-            "Property": "ManuallyUpdate",
-            "Value": false
           }
         ],
         "MovedObjects": []
@@ -281,7 +195,9 @@
         "8d28351d-303a-4961-9b16-b56f86df43b3": "fa127e8d-b05d-4e14-894d-d2977361591d",
         "5e617673-50db-45ac-ab64-9fe9a91cdcff": "21e48f2b-e808-42b7-83e6-83282972f187",
         "bed08f3b-d6c2-418f-a61f-4acfe61be6f9": "768529ee-5ecc-4ddb-a81e-73fdb775baec",
-        "abcba5c6-9e0a-4462-83c4-ee69366aa595": "75a0dedf-07bc-4a29-9027-9e88625f7ba0"
+        "abcba5c6-9e0a-4462-83c4-ee69366aa595": "75a0dedf-07bc-4a29-9027-9e88625f7ba0",
+        "26e6300f-fd5f-41b4-a314-7b7c69be6782": "7eae51e6-24c2-41dd-87b6-edd001f8d7ce",
+        "2777301a-5abb-4225-87c3-f2055ae17c02": "56650614-4844-476e-a433-da37d391eb2e"
       }
     },
     {
