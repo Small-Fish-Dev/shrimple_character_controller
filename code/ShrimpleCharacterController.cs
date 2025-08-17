@@ -742,7 +742,9 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         if (TraceShape == TraceType.Box)
         {
             var collider = GameObject.GetOrAddComponent<BoxCollider>();
-            collider.Scale = BuildBounds().Size - SkinWidth;
+            var bounds = BuildBounds();
+            collider.Scale = bounds.Size - SkinWidth;
+            collider.Center = bounds.Center;
             Collider = collider;
         }
         else if (TraceShape == TraceType.Cylinder)
