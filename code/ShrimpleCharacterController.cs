@@ -15,10 +15,22 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [Validate(nameof(physicalAndManual), "When manually updating a simulated body make sure to call Move() before the physics step!", LogLevel.Warn)]
     public bool ManuallyUpdate { get; set; } = false;
 
+    private bool _physicallySimulated = false;
+
     [Property]
-    [Group("Options")]
+    [FeatureEnabled("Physical")]
     [Validate(nameof(physicalAndManual), "When manually updating a simulated body make sure to call Move() before the physics step!", LogLevel.Warn)]
-    public bool PhysicallySimulated { get; set; } = false;
+    public bool PhysicallySimulated
+    {
+        get => _physicallySimulated;
+        set
+        {
+            _physicallySimulated = value;
+
+            if (value)
+                UseSceneGravity = true;
+        }
+    }
 
     private bool _warned = false;
     private bool physicalAndManual(bool _)
@@ -33,6 +45,21 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             _warned = false;
             return true;
         }
+    }
+
+    [Property]
+    [Feature("Physical")]
+    public Rigidbody Body { get; protected set; }
+
+    [Property]
+    [Feature("Physical")]
+    public Collider Collider { get; protected set; }
+
+    [Feature("Physical")]
+    [Button("Recreate Components", "sync")]
+    public void RefreshBody()
+    {
+        CreateBody();
     }
 
     /// <summary>
@@ -610,8 +637,6 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     public ShrimpleCharacterController UnstuckTarget;
 
     public Action<ShrimpleCollisionResult> OnCollide { get; set; }
-    public Rigidbody Body { get; private set; }
-    public Collider Collider { get; private set; }
     public bool IsOnPlatform => IsOnGround && GroundStickEnabled && !IsSlipping && StickToPlatforms && GroundObject.IsValid();
 
     protected override void OnStart()
@@ -781,7 +806,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             Roll = true,
             Yaw = true,
         };
-        Body.Gravity = false;
+        Body.Gravity = true;
         Body.MassOverride = 500f;
     }
 
