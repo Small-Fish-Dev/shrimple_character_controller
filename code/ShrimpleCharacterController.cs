@@ -12,10 +12,28 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     /// </summary>
     [Property]
     [Group("Options")]
-    [Validate(nameof(physicalAndManual), "When physically updating make sure to call Move() before the physics step!", LogLevel.Warn)]
-    public bool ManuallyUpdate { get; set; } = true;
+    [Validate(nameof(physicalAndManual), "When manually updating a simulated body make sure to call Move() before the physics step!", LogLevel.Warn)]
+    public bool ManuallyUpdate { get; set; } = false;
 
-    private bool physicalAndManual(bool manual) => !manual && PhysicallySimulated;
+    [Property]
+    [Group("Options")]
+    [Validate(nameof(physicalAndManual), "When manually updating a simulated body make sure to call Move() before the physics step!", LogLevel.Warn)]
+    public bool PhysicallySimulated { get; set; } = false;
+
+    private bool _warned = false;
+    private bool physicalAndManual(bool _)
+    {
+        if (ManuallyUpdate && PhysicallySimulated && !_warned)
+        {
+            _warned = true;
+            return false;
+        }
+        else
+        {
+            _warned = false;
+            return true;
+        }
+    }
 
     /// <summary>
     /// If pushing against a wall, scale the velocity based on the wall's angle (False is useful for NPCs that get stuck on corners)
@@ -573,7 +591,6 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     public Action<ShrimpleCollisionResult> OnCollide { get; set; }
     public Rigidbody Body { get; private set; }
     public Collider Collider { get; private set; }
-    public bool PhysicallySimulated => Body.IsValid() && Body.Active && Collider.IsValid() && Collider.Active;
     public bool IsOnPlatform => IsOnGround && GroundStickEnabled && !IsSlipping && StickToPlatforms && GroundObject.IsValid();
 
     protected override void OnStart()
@@ -758,7 +775,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
         if (!PhysicallySimulated) return;
 
-        //Velocity = Body.Velocity;
+        Velocity = Body.Velocity;
     }
 
     /// <summary>
@@ -942,7 +959,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         var targetPosition = position + velocity.Normal * toTravel;
         var travelTrace = BuildTrace(_shrunkenBounds, position, targetPosition);
 
-        if (travelTrace.Hit)
+        if (travelTrace.Hit && false)
         {
             var travelled = velocity.Normal * Math.Max(travelTrace.Distance - SkinWidth, 0f);
             var leftover = velocity - travelled; // How much leftover velocity still needs to be simulated
