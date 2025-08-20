@@ -175,11 +175,14 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         }
     }
 
+    private bool ignoreTagsAndPhysical(TagSet tagSet) => tagSet.IsEmpty || !PhysicallySimulated;
+
     /// <summary>
     /// Which tags it should ignore
     /// </summary>
     [Property]
     [Group("Trace")]
+    [Validate(nameof(ignoreTagsAndPhysical), "Contoller is physical! Ignore tags must be set on the collision matrix", LogLevel.Warn)]
     public TagSet IgnoreTags { get; set; } = new TagSet();
 
     /// <summary>
