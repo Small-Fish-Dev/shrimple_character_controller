@@ -296,6 +296,22 @@
               "Type": "Component",
               "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
             },
+            "Property": "BodyMassOverride",
+            "Value": 500
+          },
+          {
+            "Target": {
+              "Type": "Component",
+              "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
+            },
+            "Property": "BodyRigidbodyFlages",
+            "Value": 0
+          },
+          {
+            "Target": {
+              "Type": "Component",
+              "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
+            },
             "Property": "Collider",
             "Value": {
               "_type": "component",
@@ -309,8 +325,24 @@
               "Type": "Component",
               "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
             },
+            "Property": "ColliderElasticity",
+            "Value": null
+          },
+          {
+            "Target": {
+              "Type": "Component",
+              "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
+            },
+            "Property": "ColliderSurface",
+            "Value": null
+          },
+          {
+            "Target": {
+              "Type": "Component",
+              "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
+            },
             "Property": "HidePhysicalComponents",
-            "Value": false
+            "Value": true
           },
           {
             "Target": {

@@ -34,7 +34,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     private bool physicalAndManual(object _) => !ManuallyUpdate || !PhysicallySimulated;
     private bool isPhysical(object _) => !PhysicallySimulated;
 
-    private bool _hidePhysicalComponents = false;
+    private bool _hidePhysicalComponents = true;
     [Property]
     [Feature("Physical")]
     [Title("Hide Components")]
@@ -59,22 +59,73 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         }
     }
 
+    [Feature("Physical")]
+    [Button("Recreate Components", "sync")]
+    public void RefreshBody()
+    {
+        CreateBody();
+        CreateCollider();
+    }
+
     [Property]
     [Feature("Physical")]
-    [ShowIf("HidePhysicalComponents", false)]
-    public Rigidbody Body { get; protected set; }
+    [Header("Collider")]
+    public Surface ColliderSurface
+    {
+        get => Collider.IsValid() ? Collider.Surface : null;
+        set
+        {
+            if (Collider.IsValid())
+                Collider.Surface = value;
+        }
+    }
+
+    [Property]
+    [Feature("Physical")]
+    public float? ColliderElasticity
+    {
+        get => Collider.IsValid() ? Collider.Elasticity : null;
+        set
+        {
+            if (Collider.IsValid())
+                Collider.Elasticity = value;
+        }
+    }
 
     [Property]
     [Feature("Physical")]
     [ShowIf("HidePhysicalComponents", false)]
     public Collider Collider { get; protected set; }
 
+    [Property]
     [Feature("Physical")]
-    [Button("Recreate Components", "sync")]
-    public void RefreshBody()
+    [Header("Rigid Body")]
+    public float BodyMassOverride
     {
-        CreateBody();
+        get => Body.IsValid() ? Body.MassOverride : 0f;
+        set
+        {
+            if (Body.IsValid())
+                Body.MassOverride = value;
+        }
     }
+
+    [Property]
+    [Feature("Physical")]
+    public RigidbodyFlags BodyRigidbodyFlages
+    {
+        get => Body.IsValid() ? Body.RigidbodyFlags : 0;
+        set
+        {
+            if (Body.IsValid())
+                Body.RigidbodyFlags = value;
+        }
+    }
+
+    [Property]
+    [Feature("Physical")]
+    [ShowIf("HidePhysicalComponents", false)]
+    public Rigidbody Body { get; protected set; }
 
     /// <summary>
     /// If pushing against a wall, scale the velocity based on the wall's angle (False is useful for NPCs that get stuck on corners)
