@@ -342,7 +342,7 @@
               "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
             },
             "Property": "HidePhysicalComponents",
-            "Value": true
+            "Value": false
           },
           {
             "Target": {

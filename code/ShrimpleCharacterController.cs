@@ -27,7 +27,10 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         {
             _physicallySimulated = value;
 
-            // Disable stuff here?
+            if (value)
+                CreateBody();
+            else
+                DestroyBody();
         }
     }
 
@@ -721,7 +724,6 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         Bounds = BuildBounds();
         _shrunkenBounds = Bounds.Grow(-SkinWidth);
         _pushTags = BuildPushTags();
-        CreateBody();
     }
 
     protected override void DrawGizmos()
@@ -830,6 +832,12 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     {
         CreateCollider();
         CreateRigidbody();
+    }
+
+    protected void DestroyBody()
+    {
+        Collider?.Destroy();
+        Body?.Destroy();
     }
 
     protected void CreateCollider()
