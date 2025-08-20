@@ -164,9 +164,19 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         Sphere
     }
 
+    private TraceType _traceShape = TraceType.Box;
+
     [Property]
     [Group("Trace")]
-    public TraceType TraceShape { get; set; } = TraceType.Box;
+    public TraceType TraceShape
+    {
+        get => _traceShape;
+        set
+        {
+            _traceShape = value;
+            CreateCollider();
+        }
+    }
 
     [Sync]
     float _traceWidth { get; set; } = 16f;
