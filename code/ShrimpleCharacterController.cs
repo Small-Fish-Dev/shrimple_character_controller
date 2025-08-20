@@ -183,6 +183,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             _traceWidth = value;
             Bounds = BuildBounds();
             _shrunkenBounds = Bounds.Grow(-SkinWidth);
+            UpdateCollider();
         }
     }
 
@@ -204,6 +205,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             _traceHeight = value;
             Bounds = BuildBounds();
             _shrunkenBounds = Bounds.Grow(-SkinWidth);
+            UpdateCollider();
         }
     }
 
@@ -224,6 +226,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             _traceBounds = value;
             Bounds = BuildBounds();
             _shrunkenBounds = Bounds.Grow(-SkinWidth);
+            UpdateCollider();
         }
     }
 
