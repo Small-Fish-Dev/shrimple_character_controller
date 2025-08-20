@@ -451,6 +451,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     /// </summary>
     [Property]
     [Feature("Push")]
+    [Validate(nameof(isPhysical), "Contoller is physical! Make sure the tags are ignored on the collision matrix", LogLevel.Warn)]
     public Dictionary<string, float> PushTagsWeight
     {
         get => _pushTagsWeight;
