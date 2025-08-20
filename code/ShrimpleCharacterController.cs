@@ -27,32 +27,46 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         {
             _physicallySimulated = value;
 
-            if (value)
-                UseSceneGravity = true;
+            // Disable stuff here?
         }
     }
 
-    private bool _warned = false;
-    private bool physicalAndManual(bool _)
+    private bool physicalAndManual(object _) => !ManuallyUpdate || !PhysicallySimulated;
+    private bool isPhysical(object _) => !PhysicallySimulated;
+
+    private bool _hidePhysicalComponents = false;
+    [Property]
+    [Feature("Physical")]
+    [Title("Hide Components")]
+    [Validate(nameof(isPhysical), "Make sure to go over the other features to see any warning regarding physical simulation!", LogLevel.Warn)]
+    public bool HidePhysicalComponents
     {
-        if (ManuallyUpdate && PhysicallySimulated && !_warned)
+        get => _hidePhysicalComponents;
+        protected set
         {
-            _warned = true;
-            return false;
-        }
-        else
-        {
-            _warned = false;
-            return true;
+            _hidePhysicalComponents = value;
+
+            if (value)
+            {
+                Body.Flags |= ComponentFlags.Hidden;
+                Collider.Flags |= ComponentFlags.Hidden;
+            }
+            else
+            {
+                Body.Flags &= ~ComponentFlags.Hidden;
+                Collider.Flags &= ~ComponentFlags.Hidden;
+            }
         }
     }
 
     [Property]
     [Feature("Physical")]
+    [ShowIf("HidePhysicalComponents", false)]
     public Rigidbody Body { get; protected set; }
 
     [Property]
     [Feature("Physical")]
+    [ShowIf("HidePhysicalComponents", false)]
     public Collider Collider { get; protected set; }
 
     [Feature("Physical")]
@@ -787,7 +801,6 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             collider.Radius = (TraceWidth - SkinWidth) / 2f;
             Collider = collider;
         }
-        //Collider.Flags |= ComponentFlags.Hidden;
     }
 
     protected void CreateRigidbody()
