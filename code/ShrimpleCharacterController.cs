@@ -855,6 +855,11 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         else if (TraceShape == TraceType.Sphere)
             Collider = GameObject.GetOrAddComponent<SphereCollider>();
 
+        if (HidePhysicalComponents)
+            Collider.Flags |= ComponentFlags.Hidden;
+        else
+            Collider.Flags &= ~ComponentFlags.Hidden;
+
         UpdateCollider();
     }
 
@@ -886,7 +891,6 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             existingBody.Destroy();
 
         Body = GameObject.AddComponent<Rigidbody>();
-        // Body.Flags |= ComponentFlags.Hidden;
         Body.Locking = new PhysicsLock()
         {
             Pitch = true,
@@ -895,6 +899,12 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         };
         Body.Gravity = true;
         Body.MassOverride = 500f;
+
+        if (HidePhysicalComponents)
+            Body.Flags |= ComponentFlags.Hidden;
+        else
+            Body.Flags &= ~ComponentFlags.Hidden;
+
     }
 
     void IScenePhysicsEvents.PrePhysicsStep()
