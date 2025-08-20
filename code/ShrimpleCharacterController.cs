@@ -34,39 +34,6 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     private bool physicalAndManual(object _) => !ManuallyUpdate || !PhysicallySimulated;
     private bool isPhysical(object _) => !PhysicallySimulated;
 
-    private bool _hidePhysicalComponents = true;
-    [Property]
-    [Feature("Physical")]
-    [Title("Hide Components")]
-    [Validate(nameof(isPhysical), "Make sure to go over the other features to see any warning regarding physical simulation!", LogLevel.Warn)]
-    public bool HidePhysicalComponents
-    {
-        get => _hidePhysicalComponents;
-        protected set
-        {
-            _hidePhysicalComponents = value;
-
-            if (value)
-            {
-                Body.Flags |= ComponentFlags.Hidden;
-                Collider.Flags |= ComponentFlags.Hidden;
-            }
-            else
-            {
-                Body.Flags &= ~ComponentFlags.Hidden;
-                Collider.Flags &= ~ComponentFlags.Hidden;
-            }
-        }
-    }
-
-    [Feature("Physical")]
-    [Button("Recreate Components", "sync")]
-    public void RefreshBody()
-    {
-        CreateBody();
-        CreateCollider();
-    }
-
     [Property]
     [Feature("Physical")]
     [Header("Collider")]
@@ -126,6 +93,40 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [Feature("Physical")]
     [ShowIf("HidePhysicalComponents", false)]
     public Rigidbody Body { get; protected set; }
+
+    private bool _hidePhysicalComponents = true;
+
+    /// <summary>
+    /// Test
+    /// </summary>
+    [Property]
+    [Feature("Physical")]
+    [Title("Hide Components")]
+    [Space]
+    [Validate(nameof(isPhysical), "Make sure to go over the other features to see any warning regarding physical simulation!", LogLevel.Warn)]
+    public bool HidePhysicalComponents
+    {
+        get => _hidePhysicalComponents;
+        protected set
+        {
+            _hidePhysicalComponents = value;
+
+            if (value)
+            {
+                Body.Flags |= ComponentFlags.Hidden;
+                Collider.Flags |= ComponentFlags.Hidden;
+            }
+            else
+            {
+                Body.Flags &= ~ComponentFlags.Hidden;
+                Collider.Flags &= ~ComponentFlags.Hidden;
+            }
+        }
+    }
+
+    [Feature("Physical")]
+    [Button("Recreate Components", "sync")]
+    public void RefreshBody() => CreateBody();
 
     /// <summary>
     /// If pushing against a wall, scale the velocity based on the wall's angle (False is useful for NPCs that get stuck on corners)
@@ -837,28 +838,32 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             exisitingCollider.Destroy();
 
         if (TraceShape == TraceType.Box)
-        {
-            var collider = GameObject.GetOrAddComponent<BoxCollider>();
-            var bounds = BuildBounds();
-            collider.Scale = bounds.Size - SkinWidth;
-            collider.Center = bounds.Center;
-            Collider = collider;
-        }
+            Collider = GameObject.GetOrAddComponent<BoxCollider>();
         else if (TraceShape == TraceType.Cylinder)
-        {
-            var collider = GameObject.GetOrAddComponent<HullCollider>();
-            collider.Type = HullCollider.PrimitiveType.Cylinder;
-            collider.Height = TraceHeight - SkinWidth;
-            collider.Radius = (TraceWidth - SkinWidth) / 2f;
-            collider.Center = Vector3.Up * (TraceHeight + SkinWidth) / 2f;
-            Collider = collider;
-        }
+            Collider = GameObject.GetOrAddComponent<HullCollider>();
         else if (TraceShape == TraceType.Sphere)
+            Collider = GameObject.GetOrAddComponent<SphereCollider>();
+
+        UpdateCollider();
+    }
+
+    protected void UpdateCollider()
+    {
+        if (Collider is BoxCollider boxCollider)
         {
-            var collider = GameObject.GetOrAddComponent<SphereCollider>();
-            collider.Radius = (TraceWidth - SkinWidth) / 2f;
-            Collider = collider;
+            var bounds = BuildBounds();
+            boxCollider.Scale = bounds.Size - SkinWidth;
+            boxCollider.Center = bounds.Center;
         }
+        else if (Collider is HullCollider hullCollider)
+        {
+            hullCollider.Type = HullCollider.PrimitiveType.Cylinder;
+            hullCollider.Height = TraceHeight - SkinWidth;
+            hullCollider.Radius = (TraceWidth - SkinWidth) / 2f;
+            hullCollider.Center = Vector3.Up * (TraceHeight + SkinWidth) / 2f;
+        }
+        else if (Collider is SphereCollider sphereCollider)
+            sphereCollider.Radius = (TraceWidth - SkinWidth) / 2f;
     }
 
     protected void CreateRigidbody()
