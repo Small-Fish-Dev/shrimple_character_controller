@@ -240,6 +240,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     /// </summary>
     [Property]
     [Feature("Acceleration")]
+    [ValueRange(0f, 1f, false)]
     [HideIf("FixedAcceleration", true)]
     public Curve AccelerationCurve { get; set; } = DefaultAcceleration;
 
@@ -283,6 +284,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     /// </summary>
     [Property]
     [Feature("Acceleration")]
+    [ValueRange(0f, 1f, false)]
     [HideIf("FixedDeceleration", true)]
     public Curve DecelerationCurve { get; set; } = DefaultDeceleration;
 
