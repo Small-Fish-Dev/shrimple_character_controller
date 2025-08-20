@@ -339,6 +339,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [Property]
     [Feature("Bouncing")]
     [Range(0f, 1f, true)]
+    [Validate(nameof(isPhysical), "Contoller is physical! Elasticity must be done through the collider", LogLevel.Error)]
     public float HorizontalElasticity { get; set; } = 0f;
 
     /// <summary>
