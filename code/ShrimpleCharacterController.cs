@@ -104,7 +104,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     private bool _hidePhysicalComponents = true;
 
     /// <summary>
-    /// Hide the components and GameObject holding the <see cref="Body"/> and <see cref="Collider"/>
+    /// Hide the <see cref="Body"/> component and the GameObject holding the <see cref="Collider"/> component
     /// </summary>
     [Property]
     [Feature("Physical")]

@@ -167,7 +167,7 @@
           {
             "Id": {
               "Type": "Component",
-              "IdValue": "ac8bcc5e-aa2f-4639-9480-777807d7869c"
+              "IdValue": "7ea9816b-f62d-4852-b380-89ca139e459e"
             },
             "Parent": {
               "Type": "GameObject",
@@ -180,8 +180,82 @@
             "ContainerProperty": "Components",
             "IsContainerArray": true,
             "Data": {
+              "__type": "Sandbox.Rigidbody",
+              "__guid": "7ea9816b-f62d-4852-b380-89ca139e459e",
+              "__enabled": true,
+              "AngularDamping": 0,
+              "Gravity": true,
+              "LinearDamping": 0,
+              "Locking": {
+                "X": false,
+                "Y": false,
+                "Z": false,
+                "Pitch": true,
+                "Yaw": true,
+                "Roll": true
+              },
+              "MassCenterOverride": "0,0,0",
+              "MassOverride": 500,
+              "MotionEnabled": true,
+              "OnComponentDestroy": null,
+              "OnComponentDisabled": null,
+              "OnComponentEnabled": null,
+              "OnComponentFixedUpdate": null,
+              "OnComponentStart": null,
+              "OnComponentUpdate": null,
+              "OverrideMassCenter": false,
+              "RigidbodyFlags": 0,
+              "StartAsleep": false
+            }
+          },
+          {
+            "Id": {
+              "Type": "GameObject",
+              "IdValue": "bfa023bd-92cf-49fe-9377-0fd65d41ba62"
+            },
+            "Parent": {
+              "Type": "GameObject",
+              "IdValue": "74bb872c-c7e7-4227-85d3-9108a4460ee0"
+            },
+            "PreviousElement": {
+              "Type": "GameObject",
+              "IdValue": "bed08f3b-d6c2-418f-a61f-4acfe61be6f9"
+            },
+            "ContainerProperty": "Children",
+            "IsContainerArray": true,
+            "Data": {
+              "__guid": "bfa023bd-92cf-49fe-9377-0fd65d41ba62",
+              "__version": 1,
+              "Flags": 0,
+              "Name": "Body",
+              "Position": "0,0,0",
+              "Rotation": "0,0,0,1",
+              "Scale": "1,1,1",
+              "Tags": "",
+              "Enabled": true,
+              "NetworkMode": 2,
+              "NetworkInterpolation": true,
+              "NetworkOrphaned": 0,
+              "OwnerTransfer": 1,
+              "Components": [],
+              "Children": []
+            }
+          },
+          {
+            "Id": {
+              "Type": "Component",
+              "IdValue": "2b54ff68-22ca-4b90-a188-bd9fb0a54e70"
+            },
+            "Parent": {
+              "Type": "GameObject",
+              "IdValue": "bfa023bd-92cf-49fe-9377-0fd65d41ba62"
+            },
+            "PreviousElement": null,
+            "ContainerProperty": "Components",
+            "IsContainerArray": true,
+            "Data": {
               "__type": "Sandbox.HullCollider",
-              "__guid": "ac8bcc5e-aa2f-4639-9480-777807d7869c",
+              "__guid": "2b54ff68-22ca-4b90-a188-bd9fb0a54e70",
               "__enabled": true,
               "BoxSize": "50,50,50",
               "Center": "0,0,36.6",
@@ -209,63 +283,19 @@
               "SurfaceVelocity": "0,0,0",
               "Type": "Cylinder"
             }
-          },
-          {
-            "Id": {
-              "Type": "Component",
-              "IdValue": "48ca719e-c58b-4ad4-8dea-697514365ee6"
-            },
-            "Parent": {
-              "Type": "GameObject",
-              "IdValue": "74bb872c-c7e7-4227-85d3-9108a4460ee0"
-            },
-            "PreviousElement": {
-              "Type": "Component",
-              "IdValue": "ac8bcc5e-aa2f-4639-9480-777807d7869c"
-            },
-            "ContainerProperty": "Components",
-            "IsContainerArray": true,
-            "Data": {
-              "__type": "Sandbox.Rigidbody",
-              "__guid": "48ca719e-c58b-4ad4-8dea-697514365ee6",
-              "__enabled": true,
-              "AngularDamping": 0,
-              "Gravity": true,
-              "LinearDamping": 0,
-              "Locking": {
-                "X": false,
-                "Y": false,
-                "Z": false,
-                "Pitch": true,
-                "Yaw": true,
-                "Roll": true
-              },
-              "MassCenterOverride": "0,0,0",
-              "MassOverride": 500,
-              "MotionEnabled": true,
-              "OnComponentDestroy": null,
-              "OnComponentDisabled": null,
-              "OnComponentEnabled": null,
-              "OnComponentFixedUpdate": null,
-              "OnComponentStart": null,
-              "OnComponentUpdate": null,
-              "OverrideMassCenter": false,
-              "RigidbodyFlags": 0,
-              "StartAsleep": false
-            }
           }
         ],
         "RemovedObjects": [
           {
             "Id": {
               "Type": "Component",
-              "IdValue": "26e6300f-fd5f-41b4-a314-7b7c69be6782"
+              "IdValue": "2777301a-5abb-4225-87c3-f2055ae17c02"
             }
           },
           {
             "Id": {
               "Type": "Component",
-              "IdValue": "2777301a-5abb-4225-87c3-f2055ae17c02"
+              "IdValue": "0a271e99-55e5-49d0-a5b8-e98fdb51b289"
             }
           }
         ],
@@ -286,7 +316,7 @@
             "Property": "Body",
             "Value": {
               "_type": "component",
-              "component_id": "48ca719e-c58b-4ad4-8dea-697514365ee6",
+              "component_id": "7ea9816b-f62d-4852-b380-89ca139e459e",
               "go": "74bb872c-c7e7-4227-85d3-9108a4460ee0",
               "component_type": "Rigidbody"
             }
@@ -304,11 +334,30 @@
               "Type": "Component",
               "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
             },
+            "Property": "BodyObject",
+            "Value": {
+              "_type": "gameobject",
+              "go": "bfa023bd-92cf-49fe-9377-0fd65d41ba62"
+            }
+          },
+          {
+            "Target": {
+              "Type": "Component",
+              "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
+            },
+            "Property": "BodyRigidbodyFlags",
+            "Value": 0
+          },
+          {
+            "Target": {
+              "Type": "Component",
+              "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
+            },
             "Property": "Collider",
             "Value": {
               "_type": "component",
-              "component_id": "ac8bcc5e-aa2f-4639-9480-777807d7869c",
-              "go": "74bb872c-c7e7-4227-85d3-9108a4460ee0",
+              "component_id": "2b54ff68-22ca-4b90-a188-bd9fb0a54e70",
+              "go": "bfa023bd-92cf-49fe-9377-0fd65d41ba62",
               "component_type": "HullCollider"
             }
           },
@@ -337,7 +386,7 @@
         "5e617673-50db-45ac-ab64-9fe9a91cdcff": "21e48f2b-e808-42b7-83e6-83282972f187",
         "bed08f3b-d6c2-418f-a61f-4acfe61be6f9": "768529ee-5ecc-4ddb-a81e-73fdb775baec",
         "abcba5c6-9e0a-4462-83c4-ee69366aa595": "75a0dedf-07bc-4a29-9027-9e88625f7ba0",
-        "26e6300f-fd5f-41b4-a314-7b7c69be6782": "7eae51e6-24c2-41dd-87b6-edd001f8d7ce",
+        "0a271e99-55e5-49d0-a5b8-e98fdb51b289": "0a57b6d5-2f9b-492e-8ca5-9fbede5a65c5",
         "2777301a-5abb-4225-87c3-f2055ae17c02": "56650614-4844-476e-a433-da37d391eb2e"
       }
     },
