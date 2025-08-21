@@ -918,15 +918,13 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
     protected void CreateRigidbody()
     {
-        if (!BodyObject.IsValid())
-            return;
         if (Body.IsValid())
             Body.Destroy();
 
         if (GameObject.Components.TryGet<Rigidbody>(out var existingBody))
             existingBody.Destroy();
 
-        Body = BodyObject.AddComponent<Rigidbody>();
+        Body = GameObject.AddComponent<Rigidbody>();
         Body.Locking = new PhysicsLock()
         {
             Pitch = true,
