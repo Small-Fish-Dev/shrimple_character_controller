@@ -84,7 +84,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
     [Property]
     [Feature("Physical")]
-    public RigidbodyFlags BodyRigidbodyFlages
+    public RigidbodyFlags BodyRigidbodyFlags
     {
         get => Body.IsValid() ? Body.RigidbodyFlags : 0;
         set
