@@ -37,6 +37,8 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     private bool physicalAndManual(object _) => !ManuallyUpdate || !PhysicallySimulated;
     private bool isPhysical(object _) => !PhysicallySimulated;
 
+    [Property]
+    [Hide]
     public GameObject BodyObject { get; protected set; }
 
     [Property]
@@ -118,11 +120,13 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
             if (value)
             {
+                BodyObject.Flags |= GameObjectFlags.Hidden;
                 Body.Flags |= ComponentFlags.Hidden;
                 Collider.Flags |= ComponentFlags.Hidden;
             }
             else
             {
+                BodyObject.Flags &= ~GameObjectFlags.Hidden;
                 Body.Flags &= ~ComponentFlags.Hidden;
                 Collider.Flags &= ~ComponentFlags.Hidden;
             }
