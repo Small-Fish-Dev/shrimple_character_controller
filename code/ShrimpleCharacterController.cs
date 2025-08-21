@@ -37,6 +37,8 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     private bool physicalAndManual(object _) => !ManuallyUpdate || !PhysicallySimulated;
     private bool isPhysical(object _) => !PhysicallySimulated;
 
+    public GameObject BodyObject { get; protected set; }
+
     [Property]
     [Feature("Physical")]
     [Header("Collider")]
@@ -100,7 +102,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     private bool _hidePhysicalComponents = true;
 
     /// <summary>
-    /// Test
+    /// Hide the components and GameObject holding the <see cref="Body"/> and <see cref="Collider"/>
     /// </summary>
     [Property]
     [Feature("Physical")]
@@ -840,6 +842,17 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
     protected void CreateBody()
     {
+        if (BodyObject.IsValid())
+            BodyObject.Destroy();
+
+        var newBody = new GameObject(GameObject, true, "Body");
+        BodyObject = newBody;
+
+        if (HidePhysicalComponents)
+            BodyObject.Flags |= GameObjectFlags.Hidden;
+        else
+            BodyObject.Flags &= ~GameObjectFlags.Hidden;
+
         CreateCollider();
         CreateRigidbody();
     }
@@ -852,18 +865,20 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
     protected void CreateCollider()
     {
+        if (!BodyObject.IsValid())
+            return;
         if (Collider.IsValid())
             Collider.Destroy();
 
-        if (GameObject.Components.TryGet<Collider>(out var exisitingCollider))
-            exisitingCollider.Destroy();
+        //if (GameObject.Components.TryGet<Collider>(out var exisitingCollider))
+        //    exisitingCollider.Destroy();
 
         if (TraceShape == TraceType.Box)
-            Collider = GameObject.GetOrAddComponent<BoxCollider>();
+            Collider = BodyObject.GetOrAddComponent<BoxCollider>();
         else if (TraceShape == TraceType.Cylinder)
-            Collider = GameObject.GetOrAddComponent<HullCollider>();
+            Collider = BodyObject.GetOrAddComponent<HullCollider>();
         else if (TraceShape == TraceType.Sphere)
-            Collider = GameObject.GetOrAddComponent<SphereCollider>();
+            Collider = BodyObject.GetOrAddComponent<SphereCollider>();
 
         if (HidePhysicalComponents)
             Collider.Flags |= ComponentFlags.Hidden;
@@ -875,7 +890,10 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
     protected void UpdateCollider()
     {
-        if (!Collider.IsValid()) return;
+        if (!BodyObject.IsValid())
+            return;
+        if (!Collider.IsValid())
+            return;
 
         if (Collider is BoxCollider boxCollider)
         {
@@ -896,13 +914,15 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
     protected void CreateRigidbody()
     {
+        if (!BodyObject.IsValid())
+            return;
         if (Body.IsValid())
             Body.Destroy();
 
         if (GameObject.Components.TryGet<Rigidbody>(out var existingBody))
             existingBody.Destroy();
 
-        Body = GameObject.AddComponent<Rigidbody>();
+        Body = BodyObject.AddComponent<Rigidbody>();
         Body.Locking = new PhysicsLock()
         {
             Pitch = true,
