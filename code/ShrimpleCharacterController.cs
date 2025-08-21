@@ -875,6 +875,8 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
     protected void UpdateCollider()
     {
+        if (!Collider.IsValid()) return;
+
         if (Collider is BoxCollider boxCollider)
         {
             var bounds = BuildBounds();

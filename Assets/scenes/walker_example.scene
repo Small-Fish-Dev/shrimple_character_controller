@@ -167,7 +167,7 @@
           {
             "Id": {
               "Type": "Component",
-              "IdValue": "85f83645-e2bb-485c-af6d-0076409f551e"
+              "IdValue": "ac8bcc5e-aa2f-4639-9480-777807d7869c"
             },
             "Parent": {
               "Type": "GameObject",
@@ -181,7 +181,7 @@
             "IsContainerArray": true,
             "Data": {
               "__type": "Sandbox.HullCollider",
-              "__guid": "85f83645-e2bb-485c-af6d-0076409f551e",
+              "__guid": "ac8bcc5e-aa2f-4639-9480-777807d7869c",
               "__enabled": true,
               "BoxSize": "50,50,50",
               "Center": "0,0,36.6",
@@ -213,7 +213,7 @@
           {
             "Id": {
               "Type": "Component",
-              "IdValue": "ff7d214f-1b8f-4d52-9f4a-b0c52ec3dae2"
+              "IdValue": "48ca719e-c58b-4ad4-8dea-697514365ee6"
             },
             "Parent": {
               "Type": "GameObject",
@@ -221,13 +221,13 @@
             },
             "PreviousElement": {
               "Type": "Component",
-              "IdValue": "85f83645-e2bb-485c-af6d-0076409f551e"
+              "IdValue": "ac8bcc5e-aa2f-4639-9480-777807d7869c"
             },
             "ContainerProperty": "Components",
             "IsContainerArray": true,
             "Data": {
               "__type": "Sandbox.Rigidbody",
-              "__guid": "ff7d214f-1b8f-4d52-9f4a-b0c52ec3dae2",
+              "__guid": "48ca719e-c58b-4ad4-8dea-697514365ee6",
               "__enabled": true,
               "AngularDamping": 0,
               "Gravity": true,
@@ -286,7 +286,7 @@
             "Property": "Body",
             "Value": {
               "_type": "component",
-              "component_id": "ff7d214f-1b8f-4d52-9f4a-b0c52ec3dae2",
+              "component_id": "48ca719e-c58b-4ad4-8dea-697514365ee6",
               "go": "74bb872c-c7e7-4227-85d3-9108a4460ee0",
               "component_type": "Rigidbody"
             }
@@ -307,7 +307,7 @@
             "Property": "Collider",
             "Value": {
               "_type": "component",
-              "component_id": "85f83645-e2bb-485c-af6d-0076409f551e",
+              "component_id": "ac8bcc5e-aa2f-4639-9480-777807d7869c",
               "go": "74bb872c-c7e7-4227-85d3-9108a4460ee0",
               "component_type": "HullCollider"
             }
