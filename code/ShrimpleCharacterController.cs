@@ -710,7 +710,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     /// <summary>
     /// To avoid getting stuck due to imprecision we shrink the bounds before checking and compensate for it later
     /// </summary>
-    public float SkinWidth;
+    public float SkinWidth => Math.Min(Math.Max(0.1f, TraceWidth * 0.05f), GroundStickDistance);
 
     public float AppliedWidth => TraceWidth / 2f * WorldScale.x; // The width of the MoveHelper in world units
     public float AppliedDepth => TraceWidth / 2f * WorldScale.y; // The depth of the MoveHelper in world units
@@ -736,7 +736,6 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
     protected override void OnStart()
     {
-        SkinWidth = Math.Min(Math.Max(0.1f, TraceWidth * 0.05f), GroundStickDistance); // SkinWidth is 5% of the total width
         Bounds = BuildBounds();
         _shrunkenBounds = Bounds.Grow(-SkinWidth);
         _pushTags = BuildPushTags();
