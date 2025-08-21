@@ -1,5 +1,6 @@
 using Sandbox;
 
+[Hide]
 public sealed class PlatformTest : Component
 {
     protected override void OnFixedUpdate()

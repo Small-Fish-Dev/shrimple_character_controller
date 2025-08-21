@@ -71,6 +71,9 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [ShowIf("HidePhysicalComponents", false)]
     public Collider Collider { get; protected set; }
 
+    /// <summary>
+    /// Kilos, tweak based on your surroundings, default boxes are like 600kg!
+    /// </summary>
     [Property]
     [Feature("Physical")]
     [Header("Rigid Body")]
