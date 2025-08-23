@@ -807,7 +807,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             .WithoutTags(IgnoreTags);
 
         if (RotateWithGameObject)
-            builder = builder.Rotated(GameObject.WorldRotation);
+            builder = builder.Rotated(PhysicallySimulated ? Collider.WorldRotation : GameObject.WorldRotation);
 
         return builder.Run();
     }
@@ -949,8 +949,9 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
         //if (!ManuallyUpdate && Active) // If we're physically simulated we move before the physics step
         var move = Move(false);
-
-        Body.Velocity = (move.Position - WorldPosition) / Time.Delta;
+        Body.Velocity = move.Position - WorldPosition / Time.Delta;
+        Body.WorldPosition += move.Offset; // TODO: Do it once?
+        Body.Velocity -= move.Offset / Time.Delta; // When moving, the difference is applied as velocity
     }
     void IScenePhysicsEvents.PostPhysicsStep()
     {
@@ -1033,8 +1034,8 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             //WorldPosition = finalPosition; // Actually updating the position is "expensive" so we only do it once at the end
         }
 
-        if (PhysicallySimulated && !ManuallyUpdate && Active)
-            WorldPosition += moveHelperResult.Offset;
+        //if (PhysicallySimulated && !ManuallyUpdate && Active)
+        //    WorldPosition += moveHelperResult.Offset;
 
         return new MoveHelperResult(finalPosition, finalVelocity, moveHelperResult.Offset);
     }
@@ -1143,7 +1144,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         var targetPosition = position + velocity.Normal * toTravel;
         var travelTrace = BuildTrace(_shrunkenBounds, position, targetPosition);
 
-        if (travelTrace.Hit && false)
+        if (travelTrace.Hit)
         {
             var travelled = velocity.Normal * Math.Max(travelTrace.Distance - SkinWidth, 0f);
             var leftover = velocity - travelled; // How much leftover velocity still needs to be simulated
@@ -1219,12 +1220,12 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
                     // (Perpendicular = 0%, Parallel = 100%)
                     var scale = ScaleAgainstWalls ? 1f - Vector3.Dot(-travelTrace.Normal.Normal / GripFactorReduction, velocity.Normal) : 1f;
                     var wallLeftover = ScaleAgainstWalls ? Vector3.VectorPlaneProject(leftover, travelTrace.Normal.Normal) : leftover.ProjectAndScale(travelTrace.Normal.Normal);
-
+                    Log.Info($"Before: {leftover}");
                     if (elasticity > 0)
                         leftover = Vector3.Lerp(wallLeftover, Vector3.Reflect(leftover, travelTrace.Normal), elasticity, false);
                     else
                         leftover = (wallLeftover * scale).WithZ(wallLeftover.z);
-
+                    Log.Info($"After: {leftover}");
                     WallObject = travelTrace.GameObject;
                     WallNormal = travelTrace.Normal;
                 }
