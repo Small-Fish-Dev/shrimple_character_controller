@@ -641,6 +641,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [Feature("Unstuck")]
     [Range(1, 50, false)]
     [Step(1f)]
+    [Validate(nameof(isPhysical), "Controller is physical! Unstuck is disabled, check IsStuck and implement your own!", LogLevel.Error)]
     public int MaxUnstuckTries { get; set; } = 20;
 
     /// <summary>
@@ -953,6 +954,8 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         Body.Velocity = (move.Position - WorldPosition) / Time.Delta; // For physical simulation, let's move the body towards the intended position
         Body.WorldPosition += move.Offset; // TODO: Do it once?
         Body.Velocity -= move.Offset / Time.Delta; // When manually setting the position, the difference is applied as velocity so we have to remove it
+
+
     }
     void IScenePhysicsEvents.PostPhysicsStep()
     {
@@ -1087,7 +1090,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             if (groundTrace.StartedSolid)
             {
                 IsStuck = true;
-                if (UnstuckEnabled)
+                if (UnstuckEnabled && !PhysicallySimulated)
                 {
                     if (UnstuckTarget == null)
                     {
@@ -1242,6 +1245,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
                         else
                             leftover = wallLeftover;
                     }
+
                 }
 
 
