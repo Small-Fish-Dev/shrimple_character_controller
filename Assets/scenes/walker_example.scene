@@ -167,7 +167,7 @@
           {
             "Id": {
               "Type": "Component",
-              "IdValue": "7ea9816b-f62d-4852-b380-89ca139e459e"
+              "IdValue": "4323ab82-df07-44d2-af03-2c9ecc744945"
             },
             "Parent": {
               "Type": "GameObject",
@@ -181,7 +181,7 @@
             "IsContainerArray": true,
             "Data": {
               "__type": "Sandbox.Rigidbody",
-              "__guid": "7ea9816b-f62d-4852-b380-89ca139e459e",
+              "__guid": "4323ab82-df07-44d2-af03-2c9ecc744945",
               "__enabled": true,
               "AngularDamping": 0,
               "Gravity": true,
@@ -204,14 +204,14 @@
               "OnComponentStart": null,
               "OnComponentUpdate": null,
               "OverrideMassCenter": false,
-              "RigidbodyFlags": 0,
+              "RigidbodyFlags": "DisableCollisionSounds",
               "StartAsleep": false
             }
           },
           {
             "Id": {
               "Type": "GameObject",
-              "IdValue": "bfa023bd-92cf-49fe-9377-0fd65d41ba62"
+              "IdValue": "ac5e2711-b553-485c-b4fa-634dabad91dd"
             },
             "Parent": {
               "Type": "GameObject",
@@ -224,7 +224,7 @@
             "ContainerProperty": "Children",
             "IsContainerArray": true,
             "Data": {
-              "__guid": "bfa023bd-92cf-49fe-9377-0fd65d41ba62",
+              "__guid": "ac5e2711-b553-485c-b4fa-634dabad91dd",
               "__version": 1,
               "Flags": 0,
               "Name": "Body",
@@ -244,18 +244,18 @@
           {
             "Id": {
               "Type": "Component",
-              "IdValue": "2b54ff68-22ca-4b90-a188-bd9fb0a54e70"
+              "IdValue": "916d7c14-f1d6-415a-a187-630acf6fc13a"
             },
             "Parent": {
               "Type": "GameObject",
-              "IdValue": "bfa023bd-92cf-49fe-9377-0fd65d41ba62"
+              "IdValue": "ac5e2711-b553-485c-b4fa-634dabad91dd"
             },
             "PreviousElement": null,
             "ContainerProperty": "Components",
             "IsContainerArray": true,
             "Data": {
               "__type": "Sandbox.HullCollider",
-              "__guid": "2b54ff68-22ca-4b90-a188-bd9fb0a54e70",
+              "__guid": "916d7c14-f1d6-415a-a187-630acf6fc13a",
               "__enabled": true,
               "BoxSize": "50,50,50",
               "Center": "0,0,36.6",
@@ -289,13 +289,13 @@
           {
             "Id": {
               "Type": "Component",
-              "IdValue": "2777301a-5abb-4225-87c3-f2055ae17c02"
+              "IdValue": "26e6300f-fd5f-41b4-a314-7b7c69be6782"
             }
           },
           {
             "Id": {
               "Type": "Component",
-              "IdValue": "0a271e99-55e5-49d0-a5b8-e98fdb51b289"
+              "IdValue": "2777301a-5abb-4225-87c3-f2055ae17c02"
             }
           }
         ],
@@ -316,7 +316,7 @@
             "Property": "Body",
             "Value": {
               "_type": "component",
-              "component_id": "7ea9816b-f62d-4852-b380-89ca139e459e",
+              "component_id": "4323ab82-df07-44d2-af03-2c9ecc744945",
               "go": "74bb872c-c7e7-4227-85d3-9108a4460ee0",
               "component_type": "Rigidbody"
             }
@@ -337,7 +337,7 @@
             "Property": "BodyObject",
             "Value": {
               "_type": "gameobject",
-              "go": "bfa023bd-92cf-49fe-9377-0fd65d41ba62"
+              "go": "ac5e2711-b553-485c-b4fa-634dabad91dd"
             }
           },
           {
@@ -346,7 +346,7 @@
               "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
             },
             "Property": "BodyRigidbodyFlags",
-            "Value": 0
+            "Value": "DisableCollisionSounds"
           },
           {
             "Target": {
@@ -356,8 +356,8 @@
             "Property": "Collider",
             "Value": {
               "_type": "component",
-              "component_id": "2b54ff68-22ca-4b90-a188-bd9fb0a54e70",
-              "go": "bfa023bd-92cf-49fe-9377-0fd65d41ba62",
+              "component_id": "916d7c14-f1d6-415a-a187-630acf6fc13a",
+              "go": "ac5e2711-b553-485c-b4fa-634dabad91dd",
               "component_type": "HullCollider"
             }
           },
@@ -386,7 +386,7 @@
         "5e617673-50db-45ac-ab64-9fe9a91cdcff": "21e48f2b-e808-42b7-83e6-83282972f187",
         "bed08f3b-d6c2-418f-a61f-4acfe61be6f9": "768529ee-5ecc-4ddb-a81e-73fdb775baec",
         "abcba5c6-9e0a-4462-83c4-ee69366aa595": "75a0dedf-07bc-4a29-9027-9e88625f7ba0",
-        "0a271e99-55e5-49d0-a5b8-e98fdb51b289": "0a57b6d5-2f9b-492e-8ca5-9fbede5a65c5",
+        "26e6300f-fd5f-41b4-a314-7b7c69be6782": "aa0e2f30-63c1-4a7c-bb3c-1616d5fc2fc2",
         "2777301a-5abb-4225-87c3-f2055ae17c02": "56650614-4844-476e-a433-da37d391eb2e"
       }
     },

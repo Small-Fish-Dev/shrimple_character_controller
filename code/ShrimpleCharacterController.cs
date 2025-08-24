@@ -868,6 +868,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     {
         Collider?.Destroy();
         Body?.Destroy();
+        BodyObject?.Destroy();
     }
 
     protected void CreateCollider()
@@ -954,8 +955,6 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         Body.Velocity = (move.Position - WorldPosition) / Time.Delta; // For physical simulation, let's move the body towards the intended position
         Body.WorldPosition += move.Offset; // TODO: Do it once?
         Body.Velocity -= move.Offset / Time.Delta; // When manually setting the position, the difference is applied as velocity so we have to remove it
-
-
     }
     void IScenePhysicsEvents.PostPhysicsStep()
     {
@@ -1154,6 +1153,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             var leftover = velocity - travelled; // How much leftover velocity still needs to be simulated
             var speed = leftover.Length;
             var angle = Vector3.GetAngle(-AppliedGravity.Normal, travelTrace.Normal);
+
             if (toTravel >= SkinWidth && travelTrace.Distance < SkinWidth)
                 travelled = Vector3.Zero;
 
@@ -1171,7 +1171,6 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
                     projectedLeftover = Vector3.VectorPlaneProject(projectedLeftover, travelTrace.Normal); // Don't project the vertical velocity after landing else it boosts your horizontal velocity
                 else
                     projectedLeftover = projectedLeftover.ProjectAndScale(travelTrace.Normal); // Project the velocity along the terrain
-
 
                 if (elasticity > 0)
                     leftover = Vector3.Lerp(projectedLeftover, Vector3.Reflect(leftover, travelTrace.Normal), elasticity, false);
