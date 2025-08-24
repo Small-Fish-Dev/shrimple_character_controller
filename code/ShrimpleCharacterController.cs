@@ -935,6 +935,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         };
         Body.Gravity = true;
         Body.MassOverride = 500f;
+        Body.RigidbodyFlags |= RigidbodyFlags.DisableCollisionSounds;
 
         if (HidePhysicalComponents)
             Body.Flags |= ComponentFlags.Hidden;
