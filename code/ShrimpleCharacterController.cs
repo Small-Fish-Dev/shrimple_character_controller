@@ -949,9 +949,9 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
         //if (!ManuallyUpdate && Active) // If we're physically simulated we move before the physics step
         var move = Move(false);
-        Body.Velocity = move.Position - WorldPosition / Time.Delta;
+        Body.Velocity = (move.Position - WorldPosition) / Time.Delta; // For physical simulation, let's move the body towards the intended position
         Body.WorldPosition += move.Offset; // TODO: Do it once?
-        Body.Velocity -= move.Offset / Time.Delta; // When moving, the difference is applied as velocity
+        Body.Velocity -= move.Offset / Time.Delta; // When manually setting the position, the difference is applied as velocity so we have to remove it
     }
     void IScenePhysicsEvents.PostPhysicsStep()
     {
@@ -1154,10 +1154,10 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
                 travelled = Vector3.Zero;
 
             var elasticityDirection = MathX.Lerp(HorizontalElasticity, VerticalElasticity, angle / 90f);
-            var elasticity = BouncingEnabled ?
+            var elasticity = PhysicallySimulated ? 0f : BouncingEnabled ?
                 velocity.Length / delta <= ElasticityThreshold ?
                     0f : elasticityDirection * (IncludeGroundElasticity ? GroundSurface?.Elasticity ?? 1f : 1f)
-                : 0f;
+                : 0f; // Allah help me format this better
 
             if (angle <= MaxGroundAngle) // Terrain we can walk on
             {
@@ -1220,12 +1220,12 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
                     // (Perpendicular = 0%, Parallel = 100%)
                     var scale = ScaleAgainstWalls ? 1f - Vector3.Dot(-travelTrace.Normal.Normal / GripFactorReduction, velocity.Normal) : 1f;
                     var wallLeftover = ScaleAgainstWalls ? Vector3.VectorPlaneProject(leftover, travelTrace.Normal.Normal) : leftover.ProjectAndScale(travelTrace.Normal.Normal);
-                    Log.Info($"Before: {leftover}");
+
                     if (elasticity > 0)
                         leftover = Vector3.Lerp(wallLeftover, Vector3.Reflect(leftover, travelTrace.Normal), elasticity, false);
                     else
                         leftover = (wallLeftover * scale).WithZ(wallLeftover.z);
-                    Log.Info($"After: {leftover}");
+
                     WallObject = travelTrace.GameObject;
                     WallNormal = travelTrace.Normal;
                 }
