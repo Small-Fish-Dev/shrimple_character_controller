@@ -857,11 +857,8 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     /// <param name="amount"></param>
     public void Punch(in Vector3 amount)
     {
-        if (IsOnPlatform)
-            Velocity += GroundObject.GetComponent<Collider>()?.GetVelocityAtPoint(WorldPosition) ?? Vector3.Zero;
-
+        Velocity += amount + GroundVelocity; // Apply before ungrounding, otherwise we lose the platform and surface velocities
         IsOnGround = false;
-        Velocity += amount;
     }
 
     protected void CreateBody()
