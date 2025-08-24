@@ -123,15 +123,21 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
             if (value)
             {
-                BodyObject.Flags |= GameObjectFlags.Hidden;
-                Body.Flags |= ComponentFlags.Hidden;
-                Collider.Flags |= ComponentFlags.Hidden;
+                if (BodyObject.IsValid())
+                    BodyObject.Flags |= GameObjectFlags.Hidden;
+                if (Body.IsValid())
+                    Body.Flags |= ComponentFlags.Hidden;
+                if (Collider.IsValid())
+                    Collider.Flags |= ComponentFlags.Hidden;
             }
             else
             {
-                BodyObject.Flags &= ~GameObjectFlags.Hidden;
-                Body.Flags &= ~ComponentFlags.Hidden;
-                Collider.Flags &= ~ComponentFlags.Hidden;
+                if (BodyObject.IsValid())
+                    BodyObject.Flags &= ~GameObjectFlags.Hidden;
+                if (Body.IsValid())
+                    Body.Flags &= ~ComponentFlags.Hidden;
+                if (Collider.IsValid())
+                    Collider.Flags &= ~ComponentFlags.Hidden;
             }
         }
     }
