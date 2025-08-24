@@ -752,7 +752,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     public bool IsOnPlatform => IsOnGround && GroundStickEnabled && !IsSlipping && StickToPlatforms && GroundObject.IsValid();
     public Vector3 PlatformVelocity => IsOnPlatform ? GroundObject.GetComponent<Collider>()?.GetVelocityAtPoint(WorldPosition) ?? Vector3.Zero : Vector3.Zero;
     public bool IsOnSurfaceWithVelocity => IsOnGround && GroundStickEnabled && !IsSlipping && ApplySurfaceVelocity && GroundObject.IsValid();
-    public Vector3 SurfaceVelocity => IsOnSurfaceWithVelocity ? GroundObject.GetComponent<Collider>()?.SurfaceVelocity ?? Vector3.Zero : Vector3.Zero;
+    public Vector3 SurfaceVelocity => IsOnSurfaceWithVelocity ? GroundObject.GetComponent<Collider>()?.SurfaceVelocity * GroundObject.WorldRotation ?? Vector3.Zero : Vector3.Zero;
     public Vector3 GroundVelocity => PlatformVelocity + SurfaceVelocity;
 
     protected override void OnStart()
