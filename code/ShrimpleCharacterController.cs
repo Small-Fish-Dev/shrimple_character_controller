@@ -960,19 +960,18 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
     }
 
+    MoveHelperResult _lastMove;
     void IScenePhysicsEvents.PrePhysicsStep()
     {
         if (!PhysicallySimulated && !ManuallyUpdate) return;
 
-        var move = Move(true);
-        Body.Velocity = (move.Position - WorldPosition) / Time.Delta; // For physical simulation, let's move the body towards the intended position
-        Body.WorldPosition += move.Offset; // TODO: Do it once?
-        Body.Velocity -= move.Offset / Time.Delta; // When manually setting the position, the difference is applied as velocity so we have to remove it
+        _lastMove = Move(true);
+        Body.Velocity = (_lastMove.Position - WorldPosition) / Time.Delta; // For physical simulation, let's move the body towards the intended position
     }
     void IScenePhysicsEvents.PostPhysicsStep()
     {
-        if (IsOnPlatform) // Apply platform changes after physics
-            WorldPosition += GroundVelocity * Time.Delta; // TODO: Find a way to apply WorldPosition only once
+        Body.WorldPosition += _lastMove.Offset + GroundVelocity * Time.Delta; // TODO: Do it once?
+        Body.Velocity -= _lastMove.Offset / Time.Delta; // When manually setting the position, the difference is applied as velocity so we have to remove it
 
         if (!PhysicallySimulated) return;
 
