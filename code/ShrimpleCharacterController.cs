@@ -743,6 +743,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
     public Action<ShrimpleCollisionResult> OnCollide { get; set; }
     public bool IsOnPlatform => IsOnGround && GroundStickEnabled && !IsSlipping && StickToPlatforms && GroundObject.IsValid();
+    public Vector3 GroundVelocity => IsOnPlatform ? GroundObject.GetComponent<Collider>()?.GetVelocityAtPoint(WorldPosition) ?? Vector3.Zero : Vector3.Zero;
 
     protected override void OnStart()
     {
@@ -964,7 +965,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     void IScenePhysicsEvents.PostPhysicsStep()
     {
         if (IsOnPlatform) // Apply platform changes after physics
-            WorldPosition += GroundObject.GetComponent<Collider>()?.GetVelocityAtPoint(WorldPosition) * Time.Delta ?? Vector3.Zero;
+            WorldPosition += GroundVelocity * Time.Delta; // TODO: Find a way to apply WorldPosition only once
 
         if (!PhysicallySimulated) return;
 
