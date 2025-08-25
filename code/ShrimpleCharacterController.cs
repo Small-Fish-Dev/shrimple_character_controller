@@ -6,7 +6,7 @@ using static ShrimpleCharacterController.ShrimpleCharacterController;
 namespace ShrimpleCharacterController;
 
 [Icon("nordic_walking")]
-public class ShrimpleCharacterController : Component, IScenePhysicsEvents, ISceneEvent<IScenePhysicsEvents>, Component.ExecuteInEditor, Component.ICollisionListener
+public class ShrimpleCharacterController : Component, IScenePhysicsEvents, ISceneEvent<IScenePhysicsEvents>, Component.ICollisionListener
 {
     /// <summary>
     /// Manually update this by calling Move() or let it always be simulated
