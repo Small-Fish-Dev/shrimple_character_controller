@@ -177,7 +177,12 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         /// This will disable <see cref="StepsEnabled"/> as it's impossible to get the angle reliably
         /// </summary>
         [Icon("🏐")]
-        Sphere
+        Sphere,
+        /// <summary>
+        /// No drawbacks, box but you can define exact bounds
+        /// </summary>
+        [Icon("🧊")]
+        Bounds
     }
 
     private TraceType _traceShape = TraceType.Box;
@@ -202,7 +207,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     /// </summary>
     [Property]
     [Group("Trace")]
-    [HideIf("TraceShape", TraceType.Box)] // Sphere doesn't have height
+    [HideIf("TraceShape", TraceType.Bounds)]
     [Range(1f, 128f, false, true)]
     public float TraceWidth
     {
@@ -216,6 +221,8 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         }
     }
 
+    bool _cylinderOrBox => TraceShape == TraceType.Box || TraceShape == TraceType.Cylinder;
+
     [Sync]
     float _traceHeight { get; set; } = 72f;
 
@@ -224,7 +231,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     /// </summary>
     [Property]
     [Group("Trace")]
-    [ShowIf("TraceShape", TraceType.Cylinder)]
+    [ShowIf("_cylinderOrBox", true)]
     [Range(1f, 256f, false, true)]
     public float TraceHeight
     {
@@ -246,10 +253,10 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     /// </summary>
     [Property]
     [Group("Trace")]
-    [ShowIf("TraceShape", TraceType.Box)]
+    [ShowIf("TraceShape", TraceType.Bounds)]
     public BBox TraceBounds
     {
-        get => _traceBounds;
+        get => TraceShape == TraceType.Bounds ? _traceBounds : Bounds;
         set
         {
             _traceBounds = value;
@@ -769,20 +776,21 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         {
             Gizmo.GizmoDraw draw = Gizmo.Draw;
             draw.Color = Color.Blue;
-            var bounds = BuildBounds();
 
             if (TraceShape == TraceType.Box)
-                draw.LineBBox(TraceBounds);
+                draw.LineBBox(Bounds);
             if (TraceShape == TraceType.Cylinder)
-                draw.LineCylinder(Vector3.Zero, WorldRotation.Up * (bounds.Maxs.z - bounds.Mins.z), bounds.Maxs.x, bounds.Maxs.x, 24);
+                draw.LineCylinder(Vector3.Zero, WorldRotation.Up * (Bounds.Maxs.z - Bounds.Mins.z), Bounds.Maxs.x, Bounds.Maxs.x, 24);
             if (TraceShape == TraceType.Sphere)
-                draw.LineSphere(Vector3.Up * bounds.Maxs.x, bounds.Maxs.x);
+                draw.LineSphere(Vector3.Up * Bounds.Maxs.x, Bounds.Maxs.x);
+            if (TraceShape == TraceType.Bounds)
+                draw.LineBBox(Bounds);
         }
     }
 
     private BBox BuildBounds()
     {
-        if (TraceShape == TraceType.Box)
+        if (TraceShape == TraceType.Bounds)
             return new BBox(TraceBounds.Mins * GameObject.WorldScale, TraceBounds.Maxs * GameObject.WorldScale);
 
         var x = GameObject.WorldScale.x;
@@ -820,6 +828,8 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             builder = Game.SceneTrace.Cylinder(bounds.Maxs.z - bounds.Mins.z, bounds.Maxs.x, from, to);
         if (TraceShape == TraceType.Sphere)
             builder = Game.SceneTrace.Sphere(bounds.Maxs.x, from + WorldRotation.Up * bounds.Maxs.x, to + WorldRotation.Up * bounds.Maxs.x);
+        if (TraceShape == TraceType.Bounds)
+            builder = Game.SceneTrace.Box(new BBox(bounds.Mins + Vector3.Down * 36f, bounds.Maxs), from, to);
 
         builder = builder
             .IgnoreGameObjectHierarchy(GameObject)
@@ -841,6 +851,8 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             builder = Game.SceneTrace.Cylinder(bounds.Maxs.z - bounds.Mins.z, bounds.Maxs.x, from, to);
         if (TraceShape == TraceType.Sphere)
             builder = Game.SceneTrace.Sphere(bounds.Maxs.x, from, to);
+        if (TraceShape == TraceType.Bounds)
+            builder = Game.SceneTrace.Box(bounds, from, to);
 
         builder = builder
             .IgnoreGameObjectHierarchy(GameObject)
@@ -902,6 +914,8 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             Collider = BodyObject.GetOrAddComponent<HullCollider>();
         else if (TraceShape == TraceType.Sphere)
             Collider = BodyObject.GetOrAddComponent<SphereCollider>();
+        if (TraceShape == TraceType.Bounds)
+            Collider = BodyObject.GetOrAddComponent<BoxCollider>();
 
         if (HidePhysicalComponents)
             Collider.Flags |= ComponentFlags.Hidden;
