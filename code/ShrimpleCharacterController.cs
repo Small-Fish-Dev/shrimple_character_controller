@@ -1,6 +1,7 @@
 ﻿using Sandbox.Internal;
 using System.Text.Json.Nodes;
 using static Sandbox.VertexLayout;
+using static ShrimpleCharacterController.ShrimpleCharacterController;
 
 namespace ShrimpleCharacterController;
 
@@ -737,8 +738,9 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
     public float AppliedWidth => TraceWidth / 2f * WorldScale.x; // The width of the MoveHelper in world units
     public float AppliedDepth => TraceWidth / 2f * WorldScale.y; // The depth of the MoveHelper in world units
-    public float AppliedHeight => TraceShape == TraceType.Sphere ? AppliedWidth : TraceHeight / 2f * WorldScale.z; // The height of the MoveHelper in world units
-    private Vector3 _offset => (RotateWithGameObject ? WorldRotation.Up : Vector3.Up) * (TraceShape == TraceType.Sphere ? 0f : AppliedHeight); // The position of the MoveHelper in world units
+    public float AppliedHeight => TraceShape == TraceType.Sphere ? AppliedWidth :
+        TraceShape == TraceType.Bounds ? TraceBounds.Size.z / 2f * WorldScale.z : TraceHeight / 2f * WorldScale.z; // The height of the MoveHelper in world units
+    private Vector3 _offset => (RotateWithGameObject ? WorldRotation.Up : Vector3.Up) * (TraceShape == TraceType.Sphere || TraceShape == TraceType.Bounds ? 0f : AppliedHeight); // The position of the MoveHelper in world units
 
     /// <summary>
     /// The bounds of this MoveHelper generated from the TraceWidth and TraceHeight
@@ -775,18 +777,20 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             draw.Color = Color.Blue;
 
             if (TraceShape == TraceType.Box)
-                draw.LineBBox(Bounds);
+                draw.LineBBox(Bounds.Translate(Vector3.Up * Bounds.Size.z / 2f));
             if (TraceShape == TraceType.Cylinder)
                 draw.LineCylinder(Vector3.Zero, WorldRotation.Up * (Bounds.Maxs.z - Bounds.Mins.z), Bounds.Maxs.x, Bounds.Maxs.x, 24);
             if (TraceShape == TraceType.Sphere)
                 draw.LineSphere(Vector3.Up * Bounds.Maxs.x, Bounds.Maxs.x);
             if (TraceShape == TraceType.Bounds)
-                draw.LineBBox(Bounds);
+                draw.LineBBox(TraceBounds);
         }
     }
 
     private BBox BuildBounds()
     {
+        if (TraceShape == TraceType.Bounds)
+            return new BBox(TraceBounds.Mins * GameObject.WorldScale, TraceBounds.Maxs * GameObject.WorldScale);
 
         var x = GameObject.WorldScale.x;
         var y = GameObject.WorldScale.y;
@@ -795,12 +799,6 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         var width = TraceWidth / 2f * x;
         var depth = TraceWidth / 2f * y;
         var height = TraceHeight / 2f * z;
-
-        Log.Info("Bounds: " + new BBox(-TraceBounds.Size / 2f * GameObject.WorldScale, TraceBounds.Size / 2f * GameObject.WorldScale));
-        Log.Info("Box: " + new BBox(new Vector3(-width, -depth, -height), new Vector3(width, depth, height)));
-
-        if (TraceShape == TraceType.Bounds)
-            return new BBox(-TraceBounds.Size / 2f * GameObject.WorldScale, TraceBounds.Size / 2f * GameObject.WorldScale);
 
         return new BBox(new Vector3(-width, -depth, -height), new Vector3(width, depth, height));
     }

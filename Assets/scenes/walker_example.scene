@@ -163,128 +163,7 @@
       "__version": 1,
       "__Prefab": "prefabs/shrimplewalker.prefab",
       "__PrefabInstancePatch": {
-        "AddedObjects": [
-          {
-            "Id": {
-              "Type": "Component",
-              "IdValue": "318b26a5-5c36-4287-a3e0-96b7848826f4"
-            },
-            "Parent": {
-              "Type": "GameObject",
-              "IdValue": "74bb872c-c7e7-4227-85d3-9108a4460ee0"
-            },
-            "PreviousElement": {
-              "Type": "Component",
-              "IdValue": "5e617673-50db-45ac-ab64-9fe9a91cdcff"
-            },
-            "ContainerProperty": "Components",
-            "IsContainerArray": true,
-            "Data": {
-              "__type": "Sandbox.Rigidbody",
-              "__guid": "318b26a5-5c36-4287-a3e0-96b7848826f4",
-              "__enabled": true,
-              "AngularDamping": 0,
-              "Gravity": true,
-              "LinearDamping": 0,
-              "Locking": {
-                "X": false,
-                "Y": false,
-                "Z": false,
-                "Pitch": true,
-                "Yaw": true,
-                "Roll": true
-              },
-              "MassCenterOverride": "0,0,0",
-              "MassOverride": 500,
-              "MotionEnabled": true,
-              "OnComponentDestroy": null,
-              "OnComponentDisabled": null,
-              "OnComponentEnabled": null,
-              "OnComponentFixedUpdate": null,
-              "OnComponentStart": null,
-              "OnComponentUpdate": null,
-              "OverrideMassCenter": false,
-              "RigidbodyFlags": "DisableCollisionSounds",
-              "StartAsleep": false
-            }
-          },
-          {
-            "Id": {
-              "Type": "GameObject",
-              "IdValue": "3c92e04c-2f08-4698-b545-99d4c8280db7"
-            },
-            "Parent": {
-              "Type": "GameObject",
-              "IdValue": "74bb872c-c7e7-4227-85d3-9108a4460ee0"
-            },
-            "PreviousElement": {
-              "Type": "GameObject",
-              "IdValue": "bed08f3b-d6c2-418f-a61f-4acfe61be6f9"
-            },
-            "ContainerProperty": "Children",
-            "IsContainerArray": true,
-            "Data": {
-              "__guid": "3c92e04c-2f08-4698-b545-99d4c8280db7",
-              "__version": 1,
-              "Flags": 0,
-              "Name": "Body",
-              "Position": "0,0,0",
-              "Rotation": "0,0,0,1",
-              "Scale": "1,1,1",
-              "Tags": "",
-              "Enabled": true,
-              "NetworkMode": 2,
-              "NetworkInterpolation": true,
-              "NetworkOrphaned": 0,
-              "OwnerTransfer": 1,
-              "Components": [],
-              "Children": []
-            }
-          },
-          {
-            "Id": {
-              "Type": "Component",
-              "IdValue": "4a9edf0f-f2e1-4247-948f-67bbb76c4b3c"
-            },
-            "Parent": {
-              "Type": "GameObject",
-              "IdValue": "3c92e04c-2f08-4698-b545-99d4c8280db7"
-            },
-            "PreviousElement": null,
-            "ContainerProperty": "Components",
-            "IsContainerArray": true,
-            "Data": {
-              "__type": "Sandbox.HullCollider",
-              "__guid": "4a9edf0f-f2e1-4247-948f-67bbb76c4b3c",
-              "__enabled": true,
-              "BoxSize": "50,50,50",
-              "Center": "0,0,36.6",
-              "Elasticity": null,
-              "Friction": null,
-              "Height": 70.8,
-              "IsTrigger": false,
-              "OnComponentDestroy": null,
-              "OnComponentDisabled": null,
-              "OnComponentEnabled": null,
-              "OnComponentFixedUpdate": null,
-              "OnComponentStart": null,
-              "OnComponentUpdate": null,
-              "OnObjectTriggerEnter": null,
-              "OnObjectTriggerExit": null,
-              "OnTriggerEnter": null,
-              "OnTriggerExit": null,
-              "Points": [],
-              "Radius": 11.4,
-              "Radius2": 0,
-              "RollingResistance": null,
-              "Slices": 16,
-              "Static": false,
-              "Surface": null,
-              "SurfaceVelocity": "0,0,0",
-              "Type": "Cylinder"
-            }
-          }
-        ],
+        "AddedObjects": [],
         "RemovedObjects": [
           {
             "Id": {
@@ -306,60 +185,7 @@
               "IdValue": "74bb872c-c7e7-4227-85d3-9108a4460ee0"
             },
             "Property": "Position",
-            "Value": "-171.0225,-113.5377,0.03125"
-          },
-          {
-            "Target": {
-              "Type": "Component",
-              "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
-            },
-            "Property": "Body",
-            "Value": {
-              "_type": "component",
-              "component_id": "318b26a5-5c36-4287-a3e0-96b7848826f4",
-              "go": "74bb872c-c7e7-4227-85d3-9108a4460ee0",
-              "component_type": "Rigidbody"
-            }
-          },
-          {
-            "Target": {
-              "Type": "Component",
-              "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
-            },
-            "Property": "BodyMassOverride",
-            "Value": 500
-          },
-          {
-            "Target": {
-              "Type": "Component",
-              "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
-            },
-            "Property": "BodyObject",
-            "Value": {
-              "_type": "gameobject",
-              "go": "3c92e04c-2f08-4698-b545-99d4c8280db7"
-            }
-          },
-          {
-            "Target": {
-              "Type": "Component",
-              "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
-            },
-            "Property": "BodyRigidbodyFlags",
-            "Value": "DisableCollisionSounds"
-          },
-          {
-            "Target": {
-              "Type": "Component",
-              "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
-            },
-            "Property": "Collider",
-            "Value": {
-              "_type": "component",
-              "component_id": "4a9edf0f-f2e1-4247-948f-67bbb76c4b3c",
-              "go": "3c92e04c-2f08-4698-b545-99d4c8280db7",
-              "component_type": "HullCollider"
-            }
+            "Value": "-170.9081,-117.4769,0.03125"
           },
           {
             "Target": {
@@ -374,8 +200,24 @@
               "Type": "Component",
               "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
             },
-            "Property": "PhysicallySimulated",
-            "Value": true
+            "Property": "TraceHeight",
+            "Value": 141.99583
+          },
+          {
+            "Target": {
+              "Type": "Component",
+              "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
+            },
+            "Property": "TraceShape",
+            "Value": "Bounds"
+          },
+          {
+            "Target": {
+              "Type": "Component",
+              "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
+            },
+            "Property": "TraceWidth",
+            "Value": 43.274372
           }
         ],
         "MovedObjects": []
