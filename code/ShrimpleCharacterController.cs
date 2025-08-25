@@ -5,7 +5,7 @@ using static Sandbox.VertexLayout;
 namespace ShrimpleCharacterController;
 
 [Icon("nordic_walking")]
-public class ShrimpleCharacterController : Component, IScenePhysicsEvents, ISceneEvent<IScenePhysicsEvents>, Component.ExecuteInEditor
+public class ShrimpleCharacterController : Component, IScenePhysicsEvents, ISceneEvent<IScenePhysicsEvents>, Component.ExecuteInEditor, Component.ICollisionListener
 {
     /// <summary>
     /// Manually update this by calling Move() or let it always be simulated
@@ -44,6 +44,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [Property]
     [Feature("Physical")]
     [Header("Collider")]
+    [Validate(nameof(isPhysical), "⚠️⚠️ PHYSICAL IS EXPERIMENTAL, EXPECT BUGS AND REPORT THEM THANK YOU ⚠️⚠️", LogLevel.Error)]
     public Surface ColliderSurface
     {
         get => Collider.IsValid() ? Collider.Surface : null;
@@ -963,19 +964,23 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     MoveHelperResult _lastMove;
     void IScenePhysicsEvents.PrePhysicsStep()
     {
-        if (!PhysicallySimulated && !ManuallyUpdate) return;
+        if (!PhysicallySimulated && !ManuallyUpdate || !Body.IsValid()) return;
 
         _lastMove = Move(true);
-        Body.Velocity = (_lastMove.Position - WorldPosition) / Time.Delta; // For physical simulation, let's move the body towards the intended position
+        Body.Velocity = (_lastMove.Position - WorldPosition - _lastMove.Offset) / Time.Delta; // For physical simulation, let's move the body towards the intended position
     }
     void IScenePhysicsEvents.PostPhysicsStep()
     {
+        if (!PhysicallySimulated || !Body.IsValid()) return;
+
         Body.WorldPosition += _lastMove.Offset + GroundVelocity * Time.Delta; // TODO: Do it once?
         Body.Velocity -= _lastMove.Offset / Time.Delta; // When manually setting the position, the difference is applied as velocity so we have to remove it
-
-        if (!PhysicallySimulated) return;
-
         Velocity = Body.Velocity;
+    }
+
+    public void OnCollisionStart(Collision collision)
+    {
+        // DebugOverlay.Sphere(new Sphere(collision.Contact.Point, 5f), Color.Red, 10f);
     }
 
     /// <summary>
