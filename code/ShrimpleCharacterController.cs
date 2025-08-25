@@ -195,6 +195,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         set
         {
             _traceShape = value;
+            RebuildBounds();
             CreateCollider();
         }
     }
@@ -215,8 +216,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         set
         {
             _traceWidth = value;
-            Bounds = BuildBounds();
-            _shrunkenBounds = Bounds.Grow(-SkinWidth);
+            RebuildBounds();
             UpdateCollider();
         }
     }
@@ -239,8 +239,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         set
         {
             _traceHeight = value;
-            Bounds = BuildBounds();
-            _shrunkenBounds = Bounds.Grow(-SkinWidth);
+            RebuildBounds();
             UpdateCollider();
         }
     }
@@ -260,8 +259,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         set
         {
             _traceBounds = value;
-            Bounds = BuildBounds();
-            _shrunkenBounds = Bounds.Grow(-SkinWidth);
+            RebuildBounds();
             UpdateCollider();
         }
     }
@@ -765,8 +763,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
     protected override void OnStart()
     {
-        Bounds = BuildBounds();
-        _shrunkenBounds = Bounds.Grow(-SkinWidth);
+        RebuildBounds();
         _pushTags = BuildPushTags();
     }
 
@@ -790,8 +787,6 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
     private BBox BuildBounds()
     {
-        if (TraceShape == TraceType.Bounds)
-            return new BBox(TraceBounds.Mins * GameObject.WorldScale, TraceBounds.Maxs * GameObject.WorldScale);
 
         var x = GameObject.WorldScale.x;
         var y = GameObject.WorldScale.y;
@@ -801,7 +796,19 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         var depth = TraceWidth / 2f * y;
         var height = TraceHeight / 2f * z;
 
+        Log.Info("Bounds: " + new BBox(-TraceBounds.Size / 2f * GameObject.WorldScale, TraceBounds.Size / 2f * GameObject.WorldScale));
+        Log.Info("Box: " + new BBox(new Vector3(-width, -depth, -height), new Vector3(width, depth, height)));
+
+        if (TraceShape == TraceType.Bounds)
+            return new BBox(-TraceBounds.Size / 2f * GameObject.WorldScale, TraceBounds.Size / 2f * GameObject.WorldScale);
+
         return new BBox(new Vector3(-width, -depth, -height), new Vector3(width, depth, height));
+    }
+
+    private void RebuildBounds()
+    {
+        Bounds = BuildBounds();
+        _shrunkenBounds = Bounds.Grow(-SkinWidth);
     }
 
     private Vector3 BuildGravity() => UseSceneGravity ? Scene.PhysicsWorld.Gravity : UseVectorGravity ? VectorGravity : new Vector3(0f, 0f, Gravity);
@@ -822,14 +829,12 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     {
         SceneTrace builder = new SceneTrace(); // Empty trace builder
 
-        if (TraceShape == TraceType.Box)
+        if (TraceShape == TraceType.Box || TraceShape == TraceType.Bounds)
             builder = Game.SceneTrace.Box(bounds, from, to);
         if (TraceShape == TraceType.Cylinder)
             builder = Game.SceneTrace.Cylinder(bounds.Maxs.z - bounds.Mins.z, bounds.Maxs.x, from, to);
         if (TraceShape == TraceType.Sphere)
             builder = Game.SceneTrace.Sphere(bounds.Maxs.x, from + WorldRotation.Up * bounds.Maxs.x, to + WorldRotation.Up * bounds.Maxs.x);
-        if (TraceShape == TraceType.Bounds)
-            builder = Game.SceneTrace.Box(new BBox(bounds.Mins + Vector3.Down * 36f, bounds.Maxs), from, to);
 
         builder = builder
             .IgnoreGameObjectHierarchy(GameObject)
@@ -845,14 +850,12 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     {
         SceneTrace builder = new SceneTrace(); // Empty trace builder
 
-        if (TraceShape == TraceType.Box)
+        if (TraceShape == TraceType.Box || TraceShape == TraceType.Bounds)
             builder = Game.SceneTrace.Box(bounds, from, to);
         if (TraceShape == TraceType.Cylinder)
             builder = Game.SceneTrace.Cylinder(bounds.Maxs.z - bounds.Mins.z, bounds.Maxs.x, from, to);
         if (TraceShape == TraceType.Sphere)
             builder = Game.SceneTrace.Sphere(bounds.Maxs.x, from, to);
-        if (TraceShape == TraceType.Bounds)
-            builder = Game.SceneTrace.Box(bounds, from, to);
 
         builder = builder
             .IgnoreGameObjectHierarchy(GameObject)
@@ -908,14 +911,12 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         //if (GameObject.Components.TryGet<Collider>(out var exisitingCollider))
         //    exisitingCollider.Destroy();
 
-        if (TraceShape == TraceType.Box)
+        if (TraceShape == TraceType.Box || TraceShape == TraceType.Bounds)
             Collider = BodyObject.GetOrAddComponent<BoxCollider>();
         else if (TraceShape == TraceType.Cylinder)
             Collider = BodyObject.GetOrAddComponent<HullCollider>();
         else if (TraceShape == TraceType.Sphere)
             Collider = BodyObject.GetOrAddComponent<SphereCollider>();
-        if (TraceShape == TraceType.Bounds)
-            Collider = BodyObject.GetOrAddComponent<BoxCollider>();
 
         if (HidePhysicalComponents)
             Collider.Flags |= ComponentFlags.Hidden;
