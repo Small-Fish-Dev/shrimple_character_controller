@@ -200,6 +200,17 @@
               "Type": "Component",
               "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
             },
+            "Property": "TraceBounds",
+            "Value": {
+              "Mins": "-12,-12,0",
+              "Maxs": "12,12,72"
+            }
+          },
+          {
+            "Target": {
+              "Type": "Component",
+              "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
+            },
             "Property": "TraceHeight",
             "Value": 141.99583
           },
