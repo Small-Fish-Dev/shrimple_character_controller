@@ -659,10 +659,10 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     /// </summary>
     [Property]
     [Feature("Unstuck")]
-    [Range(1, 50, false)]
+    [Range(1, 100, false)]
     [Step(1f)]
     [Validate(nameof(isPhysical), "Controller is physical! Unstuck is disabled, check IsStuck and implement your own!", LogLevel.Error)]
-    public int MaxUnstuckTries { get; set; } = 20;
+    public int MaxUnstuckTries { get; set; } = 40;
 
     /// <summary>
     /// The simulated target velocity for our MoveHelper (Units per second, we apply Time.Delta inside)
@@ -1362,6 +1362,13 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         return shouldIgnoreZ ? goalVelocity.WithZ(Velocity.z) : goalVelocity;
     }
 
+    /// <summary>
+    /// Attempts to return the nearest standable position until you're not longer inside other colliders<br/>
+    /// If it fails too frequently, consider increasing <see cref="MaxUnstuckTries"/>
+    /// </summary>
+    /// <param name="position">The start position</param>
+    /// <param name="result">The final standable position</param>
+    /// <returns>True if it found one, false if it failed.</returns>
     public bool TryUnstuck(Vector3 position, out Vector3 result)
     {
         if (_lastVelocity == Vector3.Zero)
@@ -1376,8 +1383,11 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             if (i == 1)
                 startPos = position + -AppliedGravity.Normal * 2f; // Try going up 2nd
 
-            if (i > 1)
+            if (i > 1 && i < MaxUnstuckTries / 2f)
                 startPos = position + Vector3.Random.Normal * ((float)i / 2f); // Start randomly checking 3rd
+
+            if (i >= MaxUnstuckTries / 2f)
+                startPos = position + Vector3.Random.Normal * i; // Ok at this point start checking further
 
             if (startPos - endPos == Vector3.Zero) // No difference!
                 continue;
