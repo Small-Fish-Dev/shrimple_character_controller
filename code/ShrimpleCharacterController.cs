@@ -736,11 +736,11 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     /// </summary>
     public float SkinWidth => Math.Min(Math.Max(0.1f, TraceWidth * 0.05f), GroundStickDistance);
 
-    public float AppliedWidth => TraceWidth / 2f * WorldScale.x; // The width of the MoveHelper in world units
-    public float AppliedDepth => TraceWidth / 2f * WorldScale.y; // The depth of the MoveHelper in world units
+    public float AppliedWidth => TraceWidth * WorldScale.x; // The width of the MoveHelper in world units
+    public float AppliedDepth => TraceWidth * WorldScale.y; // The depth of the MoveHelper in world units
     public float AppliedHeight => TraceShape == TraceType.Sphere ? AppliedWidth :
-        TraceShape == TraceType.Bounds ? TraceBounds.Size.z / 2f * WorldScale.z : TraceHeight / 2f * WorldScale.z; // The height of the MoveHelper in world units
-    private Vector3 _offset => (RotateWithGameObject ? WorldRotation.Up : Vector3.Up) * (TraceShape == TraceType.Sphere || TraceShape == TraceType.Bounds ? 0f : AppliedHeight); // The position of the MoveHelper in world units
+        TraceShape == TraceType.Bounds ? TraceBounds.Size.z * WorldScale.z : TraceHeight * WorldScale.z; // The height of the MoveHelper in world units
+    private Vector3 _offset => (RotateWithGameObject ? WorldRotation.Up : Vector3.Up) * (TraceShape == TraceType.Sphere || TraceShape == TraceType.Bounds ? 0f : AppliedHeight / 2f); // The position of the MoveHelper in world units
 
     /// <summary>
     /// The bounds of this MoveHelper generated from the TraceWidth and TraceHeight
