@@ -33,11 +33,11 @@ var edgeCheckTrace = Controller.BuildTrace( Controller.Bounds.Grow( -Controller.
 
 if ( edgeCheckTrace.Hit ) // We're safe to move
 {
-    Transform.Position = controllerResult.Position;
-    MyVelocity = controllerResult.Velocity;
+    WorldPosition = controllerResult.Position;
+    Controller.Velocity = controllerResult.Velocity;
 }
 else // Uh oh, we'll fall if we keep going!
 {
-    MyVelocity = Vector3.Zero;
+    Controller.Velocity = Vector3.Zero;
 }
 ```
