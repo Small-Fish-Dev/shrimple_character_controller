@@ -1,7 +1,4 @@
-﻿using Sandbox.Internal;
-using System.Text.Json.Nodes;
-using static Sandbox.VertexLayout;
-using static ShrimpleCharacterController.ShrimpleCharacterController;
+﻿using System.Text.Json.Nodes;
 
 namespace ShrimpleCharacterController;
 
@@ -798,9 +795,13 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
         var width = TraceWidth / 2f * x;
         var depth = TraceWidth / 2f * y;
-        var height = TraceHeight / 2f * z;
+        var halfHeight = TraceHeight / 2f * z;
 
-        return new BBox(new Vector3(-width, -depth, -height), new Vector3(width, depth, height));
+        // For cylinders we want the bounds to start at Z = 0 and extend up to the full height
+        if (TraceShape == TraceType.Cylinder)
+            return new BBox(new Vector3(-width, -depth, 0f), new Vector3(width, depth, halfHeight * 2f));
+
+        return new BBox(new Vector3(-width, -depth, -halfHeight), new Vector3(width, depth, halfHeight));
     }
 
     private void RebuildBounds()
