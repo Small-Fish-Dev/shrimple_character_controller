@@ -13,17 +13,15 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [Validate(nameof(physicalAndManual), "When manually updating a simulated body make sure to call Move() before the physics step!", LogLevel.Warn)]
     public bool ManuallyUpdate { get; set; } = false;
 
-    private bool _physicallySimulated = false;
-
     [Property]
     [FeatureEnabled("Physical")]
     [Validate(nameof(physicalAndManual), "When manually updating a simulated body make sure to call Move() before the physics step!", LogLevel.Warn)]
     public bool PhysicallySimulated
     {
-        get => _physicallySimulated;
+        get => field;
         set
         {
-            _physicallySimulated = value;
+            field = value;
 
             if (value)
                 CreateBody();
@@ -42,7 +40,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [Property]
     [Feature("Physical")]
     [Header("Collider")]
-    [Validate(nameof(isPhysical), "⚠️⚠️ PHYSICAL IS EXPERIMENTAL, EXPECT BUGS AND REPORT THEM THANK YOU ⚠️⚠️", LogLevel.Error)]
+    [Validate(nameof(isPhysical), "Physical mode enabled - controller can interact with and be pushed by physics objects", LogLevel.Info)]
     public Surface ColliderSurface
     {
         get => Collider.IsValid() ? Collider.Surface : null;
@@ -98,12 +96,33 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         }
     }
 
+    /// <summary>
+    /// Enable Continuous Collision Detection (CCD) for the physics body.
+    /// Useful for fast-moving characters to prevent tunneling through thin objects.
+    /// </summary>
+    [Property]
+    [Feature("Physical")]
+    [Title("Enable CCD")]
+    public bool EnableCCD
+    {
+        get => field;
+        set
+        {
+            field = value;
+            if (Body.IsValid())
+            {
+                if (value)
+                    Body.RigidbodyFlags |= RigidbodyFlags.EnableCCD;
+                else
+                    Body.RigidbodyFlags &= ~RigidbodyFlags.EnableCCD;
+            }
+        }
+    }
+
     [Property]
     [Feature("Physical")]
     [ShowIf("HidePhysicalComponents", false)]
     public Rigidbody Body { get; protected set; }
-
-    private bool _hidePhysicalComponents = true;
 
     /// <summary>
     /// Hide the <see cref="Body"/> component and the GameObject holding the <see cref="Collider"/> component
@@ -115,10 +134,10 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [Validate(nameof(isPhysical), "Make sure to go over the other features to see any warning regarding physical simulation!", LogLevel.Warn)]
     public bool HidePhysicalComponents
     {
-        get => _hidePhysicalComponents;
+        get => field;
         protected set
         {
-            _hidePhysicalComponents = value;
+            field = value;
 
             if (value)
             {
@@ -139,7 +158,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
                     Collider.Flags &= ~ComponentFlags.Hidden;
             }
         }
-    }
+    } = true;
 
     [Feature("Physical")]
     [Button("Recreate Components", "sync")]
@@ -183,23 +202,18 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         Bounds
     }
 
-    private TraceType _traceShape = TraceType.Box;
-
     [Property]
     [Group("Trace")]
     public TraceType TraceShape
     {
-        get => _traceShape;
+        get => field;
         set
         {
-            _traceShape = value;
+            field = value;
             RebuildBounds();
             CreateCollider();
         }
-    }
-
-    [Sync]
-    float _traceWidth { get; set; } = 16f;
+    } = TraceType.Box;
 
     /// <summary>
     /// Width of our trace
@@ -210,19 +224,16 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [Range(1f, 128f, false, true)]
     public float TraceWidth
     {
-        get => _traceWidth;
+        [Sync] get => field;
         set
         {
-            _traceWidth = value;
+            field = value;
             RebuildBounds();
             UpdateCollider();
         }
-    }
+    } = 16f;
 
     bool _cylinderOrBox => TraceShape == TraceType.Box || TraceShape == TraceType.Cylinder;
-
-    [Sync]
-    float _traceHeight { get; set; } = 72f;
 
     /// <summary>
     /// Height of our trace
@@ -233,17 +244,14 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [Range(1f, 256f, false, true)]
     public float TraceHeight
     {
-        get => _traceHeight;
+        [Sync] get => field;
         set
         {
-            _traceHeight = value;
+            field = value;
             RebuildBounds();
             UpdateCollider();
         }
-    }
-
-    [Sync]
-    BBox _traceBounds { get; set; } = BBox.FromPositionAndSize(Vector3.Up * 36f, new Vector3(32f, 32f, 72f));
+    } = 72f;
 
     /// <summary>
     /// Bounds of our trace
@@ -253,14 +261,14 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [ShowIf("TraceShape", TraceType.Bounds)]
     public BBox TraceBounds
     {
-        get => TraceShape == TraceType.Bounds ? _traceBounds : Bounds;
+        [Sync] get => TraceShape == TraceType.Bounds ? field : Bounds;
         set
         {
-            _traceBounds = value;
+            field = value;
             RebuildBounds();
             UpdateCollider();
         }
-    }
+    } = BBox.FromPositionAndSize(Vector3.Up * 36f, new Vector3(32f, 32f, 72f));
 
     private bool ignoreTagsAndPhysical(TagSet tagSet) => tagSet.IsEmpty || !PhysicallySimulated;
 
@@ -539,9 +547,6 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [Property]
     public bool PushEnabled { get; set; } = false;
 
-    [Sync]
-    Dictionary<string, float> _pushTagsWeight { get; set; } = new Dictionary<string, float>() { { "player", 1f } };
-
     /// <summary>
     /// Which tags will push this MoveHelper away and with how much force (Make sure they are also included in IgnoreTags!) (+1 Trace call)
     /// </summary>
@@ -550,13 +555,13 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [Validate(nameof(isPhysical), "Contoller is physical! Make sure the tags are ignored on the collision matrix", LogLevel.Warn)]
     public Dictionary<string, float> PushTagsWeight
     {
-        get => _pushTagsWeight;
+        [Sync] get => field;
         set
         {
-            _pushTagsWeight = value;
+            field = value;
             _pushTags = BuildPushTags();
         }
-    }
+    } = new Dictionary<string, float>() { { "player", 1f } };
 
     /// <summary>
     /// Apply gravity to this MoveHelper when not on the ground
@@ -565,8 +570,6 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [Property]
     public bool GravityEnabled { get; set; } = true;
 
-    private bool _useSceneGravity = true;
-
     /// <summary>
     /// Use the scene's gravity or our own
     /// </summary>
@@ -574,15 +577,13 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [Feature("Gravity")]
     public bool UseSceneGravity
     {
-        get => _useSceneGravity;
+        get => field;
         set
         {
-            _useSceneGravity = value;
+            field = value;
             _appliedGravity = BuildGravity();
         }
-    }
-
-    private bool _useVectorGravity = false;
+    } = true;
 
     /// <summary>
     /// Use a Vector3 gravity instead of a single float (Use this if you want to use a custom gravity)
@@ -592,18 +593,16 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [HideIf("UseSceneGravity", true)]
     public bool UseVectorGravity
     {
-        get => _useVectorGravity;
+        get => field;
         set
         {
-            _useVectorGravity = value;
+            field = value;
             _appliedGravity = BuildGravity();
         }
     }
 
     private bool _usingFloatGravity => !UseVectorGravity && !UseSceneGravity;
     private bool _usingVectorGravity => UseVectorGravity && !UseSceneGravity;
-
-    private float _gravity = -850f;
 
     /// <summary>
     /// Units per second squared (Default is -850f)
@@ -614,15 +613,13 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [ShowIf("_usingFloatGravity", true)]
     public float Gravity
     {
-        get => _gravity;
+        get => field;
         set
         {
-            _gravity = value;
+            field = value;
             _appliedGravity = BuildGravity();
         }
-    }
-
-    private Vector3 _vectorGravity = new Vector3(0f, 0f, -850f);
+    } = -850f;
 
     /// <summary>
     /// Units per second squared (Default is 0f, 0f, -850f)<br/>
@@ -633,13 +630,13 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [ShowIf("_usingVectorGravity", true)]
     public Vector3 VectorGravity
     {
-        get => _vectorGravity;
+        get => field;
         set
         {
-            _vectorGravity = value;
+            field = value;
             _appliedGravity = BuildGravity();
         }
-    }
+    } = new Vector3(0f, 0f, -850f);
 
     private Vector3 _appliedGravity;
     public Vector3 AppliedGravity => _appliedGravity;
@@ -658,7 +655,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [Feature("Unstuck")]
     [Range(1, 100, false)]
     [Step(1f)]
-    [Validate(nameof(isPhysical), "Controller is physical! Unstuck is disabled, check IsStuck and implement your own!", LogLevel.Error)]
+    [Validate(nameof(isPhysical), "Physical mode uses physics-aware unstuck. Check IsStuck for stuck state.", LogLevel.Info)]
     public int MaxUnstuckTries { get; set; } = 40;
 
     /// <summary>
@@ -964,9 +961,15 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             Roll = true,
             Yaw = true,
         };
-        Body.Gravity = true;
+        // IMPORTANT: Disable rigidbody gravity - the controller handles gravity manually
+        // This prevents double gravity application and maintains 1:1 parity with non-physical mode
+        Body.Gravity = false;
         Body.MassOverride = 500f;
         Body.RigidbodyFlags |= RigidbodyFlags.DisableCollisionSounds;
+
+        // Apply CCD if enabled
+        if (EnableCCD)
+            Body.RigidbodyFlags |= RigidbodyFlags.EnableCCD;
 
         if (HidePhysicalComponents)
             Body.Flags |= ComponentFlags.Hidden;
@@ -976,24 +979,54 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     }
 
     MoveHelperResult _lastMove;
+    Vector3 _prePhysicsBodyPosition;
+
     void IScenePhysicsEvents.PrePhysicsStep()
     {
-        if (!PhysicallySimulated && !ManuallyUpdate || !Body.IsValid()) return;
+        if ((!PhysicallySimulated && !ManuallyUpdate) || !Body.IsValid()) return;
 
+        // Store physics body position before simulation to detect external pushes
+        _prePhysicsBodyPosition = Body.WorldPosition;
+
+        // Calculate the controller's desired movement
         _lastMove = Move(true);
-        Body.Velocity = (_lastMove.Position - WorldPosition - _lastMove.Offset) / Time.Delta; // For physical simulation, let's move the body towards the intended position
+
+        // Set body velocity to move toward the intended position
+        // This is the core of physical mode - let physics engine handle the actual movement
+        Body.Velocity = (_lastMove.Position - WorldPosition - _lastMove.Offset) / Time.Delta;
     }
+
     void IScenePhysicsEvents.PostPhysicsStep()
     {
-        if (Body.IsValid())
-            Body.WorldPosition += _lastMove.Offset + GroundVelocity * Time.Delta; // TODO: Do it once?
-        else
+        // Apply ground velocity for non-physical mode or when body is invalid
+        if (!Body.IsValid())
+        {
             WorldPosition += GroundVelocity * Time.Delta;
+            return;
+        }
 
-        if (!PhysicallySimulated || !Body.IsValid()) return;
+        // Apply platform/surface offset
+        Body.WorldPosition += _lastMove.Offset + GroundVelocity * Time.Delta;
 
-        Body.Velocity -= _lastMove.Offset / Time.Delta; // When manually setting the position, the difference is applied as velocity so we have to remove it
-        Velocity = Body.Velocity;
+        if (!PhysicallySimulated) return;
+
+        // Remove the manual offset from velocity
+        Body.Velocity -= _lastMove.Offset / Time.Delta;
+
+        // Check if physics pushed us (collision with other objects)
+        var expectedPosition = _prePhysicsBodyPosition + Body.Velocity * Time.Delta;
+        var actualPosition = Body.WorldPosition;
+        var physicsPush = actualPosition - expectedPosition;
+
+        // Update controller velocity from the Move() calculation
+        Velocity = _lastMove.Velocity;
+
+        // If we were pushed by physics, incorporate that into our velocity
+        if (physicsPush.Length > 0.5f)
+        {
+            // Add the push as an impulse to our velocity (scaled to feel right)
+            Velocity += physicsPush / Time.Delta * 0.5f;
+        }
     }
 
     public void OnCollisionStart(Collision collision)
@@ -1121,9 +1154,20 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             if (groundTrace.StartedSolid)
             {
                 IsStuck = true;
-                if (UnstuckEnabled && !PhysicallySimulated)
+                if (UnstuckEnabled)
                 {
-                    if (UnstuckTarget == null)
+                    if (PhysicallySimulated)
+                    {
+                        // For physical mode, attempt physics-aware unstuck
+                        if (Body.IsValid() && TryPhysicalUnstuck(position, out var physResult))
+                        {
+                            IsStuck = false;
+                            position = physResult;
+                        }
+                        // If physical unstuck fails, IsStuck remains true
+                        // The physics body may naturally resolve this through collision response
+                    }
+                    else if (UnstuckTarget == null)
                     {
                         IsStuck = !TryUnstuck(position, out var result);
 
@@ -1159,6 +1203,21 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
                 if (IsSlipping && !gravityPass && Vector3.Dot(velocity, AppliedGravity) < 0f)
                     velocity = velocity.WithZ(0f); // If we're slipping ignore any extra velocity we had
+
+                // FIX: Clamp velocity when slipping to prevent buildup
+                // Project velocity onto the slope and limit accumulation
+                if (IsSlipping)
+                {
+                    var slopeDir = Vector3.VectorPlaneProject(AppliedGravity.Normal, GroundNormal).Normal;
+                    var slopeSpeed = Vector3.Dot(velocity, slopeDir);
+                    var maxSlipSpeed = AppliedGravity.Length * delta * 2f; // Reasonable max slip speed per frame
+
+                    if (slopeSpeed > maxSlipSpeed)
+                    {
+                        // Clamp the velocity component along the slope
+                        velocity = velocity - slopeDir * (slopeSpeed - maxSlipSpeed);
+                    }
+                }
 
                 if (IsOnGround && GroundStickEnabled && !IsSlipping)
                 {
@@ -1400,6 +1459,64 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
                 result = unstuckTrace.EndPosition - _lastVelocity.Normal * SkinWidth / 4f;
                 _lastVelocity = Vector3.Zero;
                 return true;
+            }
+        }
+
+        result = position;
+        return false;
+    }
+
+    /// <summary>
+    /// Physics-aware unstuck for Physical mode. Uses the physics body position as a potential escape route.
+    /// </summary>
+    /// <param name="position">The start position</param>
+    /// <param name="result">The final standable position</param>
+    /// <returns>True if found a valid position, false otherwise.</returns>
+    public bool TryPhysicalUnstuck(Vector3 position, out Vector3 result)
+    {
+        // First, check if the physics body has already pushed us to a valid position
+        if (Body.IsValid())
+        {
+            var bodyPos = Body.WorldPosition;
+            var bodyTrace = BuildTrace(_shrunkenBounds, bodyPos + _offset, bodyPos + _offset);
+            if (!bodyTrace.StartedSolid)
+            {
+                result = bodyPos;
+                return true;
+            }
+        }
+
+        // Try pushing upward (most common escape direction)
+        for (int i = 1; i <= 10; i++)
+        {
+            var upPos = position + -AppliedGravity.Normal * (i * 2f);
+            var upTrace = BuildTrace(_shrunkenBounds, upPos + _offset, upPos + _offset);
+            if (!upTrace.StartedSolid)
+            {
+                result = upPos;
+                if (Body.IsValid())
+                {
+                    Body.WorldPosition = upPos;
+                    Body.Velocity = Vector3.Zero;
+                }
+                return true;
+            }
+        }
+
+        // Try the physics body's velocity direction
+        if (Body.IsValid() && Body.Velocity.Length > 1f)
+        {
+            var velDir = Body.Velocity.Normal;
+            for (int i = 1; i <= 5; i++)
+            {
+                var velPos = position + velDir * (i * 4f);
+                var velTrace = BuildTrace(_shrunkenBounds, velPos + _offset, velPos + _offset);
+                if (!velTrace.StartedSolid)
+                {
+                    result = velPos;
+                    Body.WorldPosition = velPos;
+                    return true;
+                }
             }
         }
 
