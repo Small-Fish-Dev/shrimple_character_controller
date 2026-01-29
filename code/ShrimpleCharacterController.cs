@@ -1185,18 +1185,27 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
                         var slopeMultiplier = isGoingUphill ? GetSlopeVelocityMultiplier(GroundAngle) : 1f;
                         targetVelocity = targetVelocity.Normal * maxSpeed * slopeMultiplier;
                     }
+
+                    // On ground: MoveTowards the projected target velocity (includes Z component for slope following)
+                    velocity = velocity.MoveTowards(targetVelocity, acceleration * Time.Delta);
+
+                    // Clamp speed to max
+                    if (velocity.Length > maxSpeed)
+                        velocity = velocity.Normal * maxSpeed;
                 }
                 else
                 {
-                    targetVelocity = wish.Normal * maxSpeed;
+                    // In air: only accelerate horizontal velocity, preserve vertical (for jumping/falling)
+                    var horizontalVel = velocity.WithZ(0);
+                    var targetHorizontal = wish.Normal * maxSpeed;
+                    horizontalVel = horizontalVel.MoveTowards(targetHorizontal, acceleration * Time.Delta);
+
+                    // Clamp horizontal speed only
+                    if (horizontalVel.Length > maxSpeed)
+                        horizontalVel = horizontalVel.Normal * maxSpeed;
+
+                    velocity = horizontalVel.WithZ(velocity.z);
                 }
-
-                // MoveTowards the projected target velocity (includes Z component for slope following)
-                velocity = velocity.MoveTowards(targetVelocity, acceleration * Time.Delta);
-
-                // Clamp speed to max
-                if (velocity.Length > maxSpeed)
-                    velocity = velocity.Normal * maxSpeed;
             }
             else
             {
@@ -1217,7 +1226,11 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
                 }
                 else
                 {
-                    velocity = wish;
+                    // When in air, preserve Z velocity and only set horizontal
+                    if (!IsOnGround)
+                        velocity = wish.WithZ(velocity.z);
+                    else
+                        velocity = wish;
                 }
             }
         }
