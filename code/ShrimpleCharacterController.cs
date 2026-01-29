@@ -1106,12 +1106,6 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     {
         if (!Collider.IsValid() || !Body.IsValid()) return;
 
-        // Gravity control: only enable when moving or on dynamic ground
-        bool wantsGravity = false;
-        if (!IsOnGround) wantsGravity = true;
-        if (Velocity.Length > 1f) wantsGravity = true;
-        if (GroundVelocity.Length > 1f) wantsGravity = true;
-
         // Check if on dynamic ground
         var onDynamic = false;
         if (IsOnGround && GroundObject.IsValid())
@@ -1119,7 +1113,6 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             var groundBody = GroundObject.GetComponent<Rigidbody>();
             onDynamic = groundBody != null && groundBody.PhysicsBody.BodyType == PhysicsBodyType.Dynamic;
         }
-        if (onDynamic) wantsGravity = true;
 
         // We handle gravity manually in AddWishVelocity, so always disable body gravity
         // This prevents double gravity application
