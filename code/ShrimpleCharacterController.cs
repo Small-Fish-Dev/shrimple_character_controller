@@ -1087,14 +1087,14 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         }
         if (onDynamic) wantsGravity = true;
 
-        // Note: We handle gravity manually in AddWishVelocity, but we still
-        // control the body's gravity flag for physics interactions
-        Body.Gravity = wantsGravity && GravityEnabled;
+        // We handle gravity manually in AddWishVelocity, so always disable body gravity
+        // This prevents double gravity application
+        Body.Gravity = false;
 
         // Linear damping for braking (s&box pattern)
-        // High damping when on ground with no wish = brakes
-        // Low damping otherwise = momentum carries through
-        bool wantsBrakes = IsOnGround && WishVelocity.Length < 1f && GroundVelocity.Length < 1f;
+        // Only apply high damping when stationary on non-moving ground
+        var velocityHorizontal = Body.Velocity.WithZ(0).Length;
+        bool wantsBrakes = IsOnGround && WishVelocity.Length < 1f && velocityHorizontal < 10f;
         Body.LinearDamping = wantsBrakes ? 10f : 0.1f;
         Body.AngularDamping = 1f;
 
@@ -1110,44 +1110,52 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
     /// <summary>
     /// Adds velocity towards wish direction (following s&box MoveMode.AddVelocity pattern)
+    /// Ground velocity is handled separately in PostPhysicsStep for correct timing
     /// </summary>
     private void AddWishVelocity()
     {
         var wish = WishVelocity;
-        if (wish.IsNearZeroLength) return;
-
-        var groundVelocity = GroundVelocity;
         var z = Body.Velocity.z;
 
-        // Get velocity relative to ground
-        var velocity = Body.Velocity - groundVelocity;
-        var speed = velocity.Length;
-
-        // Max speed is the greater of wish speed or current speed (preserves momentum)
-        var maxSpeed = MathF.Max(wish.Length, speed);
+        // Work with velocity directly (ground velocity handled in PostPhysicsStep)
+        var velocity = Body.Velocity;
 
         // Ground friction factor for acceleration
         var groundFriction = 0.25f + (GroundSurface?.Friction ?? 1f) * 10f;
 
-        if (IsOnGround)
+        if (!wish.IsNearZeroLength)
         {
-            // On ground: accelerate with friction multiplier
-            var amount = 1f * groundFriction;
-            velocity = velocity.AddClamped(wish * amount, wish.Length * amount);
+            // We have input - accelerate towards wish
+            var speed = velocity.WithZ(0).Length;
+
+            // Max speed is the greater of wish speed or current speed (preserves momentum)
+            var maxSpeed = MathF.Max(wish.Length, speed);
+
+            if (IsOnGround)
+            {
+                // On ground: accelerate with friction multiplier
+                var amount = 1f * groundFriction;
+                velocity = velocity.AddClamped(wish * amount, wish.Length * amount);
+            }
+            else
+            {
+                // In air: much lower control
+                var amount = 0.05f;
+                velocity = velocity.AddClamped(wish * amount, wish.Length);
+            }
+
+            // Clamp horizontal speed to max speed
+            var horizontalVel = velocity.WithZ(0);
+            if (horizontalVel.Length > maxSpeed)
+                velocity = (horizontalVel.Normal * maxSpeed).WithZ(velocity.z);
         }
-        else
+        else if (IsOnGround)
         {
-            // In air: much lower control
-            var amount = 0.05f;
-            velocity = velocity.AddClamped(wish * amount, wish.Length);
+            // No input and on ground - decelerate horizontal velocity
+            var horizontalVel = velocity.WithZ(0);
+            var deceleration = groundFriction * 2f;
+            velocity = horizontalVel.MoveTowards(Vector3.Zero, deceleration).WithZ(velocity.z);
         }
-
-        // Clamp to max speed to prevent acceleration beyond what we want
-        if (velocity.Length > maxSpeed)
-            velocity = velocity.Normal * maxSpeed;
-
-        // Add back ground velocity
-        velocity += groundVelocity;
 
         // Preserve vertical velocity when grounded (don't affect jumping/falling)
         if (IsOnGround)
@@ -1276,42 +1284,39 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             Body.WorldPosition = _stepPosition;
         }
 
-        // Sync velocity from physics
-        Velocity = Body.Velocity - GroundVelocity;
-
-        // Update ground velocity from what we're standing on
-        UpdatePhysicalGroundVelocity();
-
         // Stick to ground if needed
         if (IsOnGround && GroundStickEnabled && !IsSlipping)
         {
             StickToGround();
         }
 
-        // Update ground detection
+        // Update ground detection FIRST so we have accurate ground info
         CategorizePhysicalGround();
+
+        // Now apply ground velocity with fresh ground data
+        ApplyGroundVelocity();
+
+        // Sync velocity from physics - this is our "own" velocity without ground velocity
+        // Ground velocity is applied via position, not body velocity, so no subtraction needed
+        Velocity = Body.Velocity;
     }
 
     /// <summary>
-    /// Updates ground velocity based on what we're standing on
+    /// Applies platform and surface velocity by moving position directly
+    /// Called in PostPhysicsStep after ground is categorized for correct timing
     /// </summary>
-    private void UpdatePhysicalGroundVelocity()
+    private void ApplyGroundVelocity()
     {
-        if (!IsOnGround || !GroundObject.IsValid())
-        {
-            // Keep platform velocity for SurfaceVelocity
+        if (!IsOnGround || !GroundStickEnabled || IsSlipping)
             return;
-        }
 
-        var groundBody = GroundObject.GetComponent<Rigidbody>();
-        if (groundBody != null)
-        {
-            var mass1 = Body.MassOverride;
-            var mass2 = groundBody.PhysicsBody.Mass;
-            var massFactor = mass2 / (mass1 + mass2);
-            var velAtPoint = groundBody.GetVelocityAtPoint(WorldPosition);
-            // GroundVelocity is handled by the property already, but we adjust Body
-        }
+        var groundVelocity = GroundVelocity;
+        if (groundVelocity.IsNearZeroLength)
+            return;
+
+        // Move position directly by ground velocity - this ensures perfect platform following
+        // Using position instead of velocity avoids accumulation issues
+        Body.WorldPosition += groundVelocity * Time.Delta;
     }
 
     /// <summary>
@@ -1363,42 +1368,62 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     {
         var wasOnGround = IsOnGround;
 
-        // Trace from above feet to below feet (like s&box: +4 to -2)
-        var from = WorldPosition + _offset + Vector3.Up * 4f;
-        var to = WorldPosition + _offset + Vector3.Down * 2f;
+        // Use a small sphere trace from feet position downward
+        // This avoids the capsule hitting tilted objects to the side
+        var feetPos = WorldPosition;
+        var from = feetPos + Vector3.Up * 2f;
+        var to = feetPos + Vector3.Down * 2f;
 
-        var trace = BuildTrace(_shrunkenBounds, from, to);
+        // Use a small sphere instead of full capsule for ground detection
+        var groundTrace = Game.SceneTrace.Sphere(SkinWidth * 2f, from, to)
+            .IgnoreGameObjectHierarchy(GameObject)
+            .WithoutTags(IgnoreTags)
+            .Run();
 
-        if (trace.StartedSolid)
+        if (groundTrace.StartedSolid)
         {
             IsStuck = true;
-            // Still try to detect ground
+            // Still try to detect ground with full trace as fallback
+            var fallbackTrace = BuildTrace(_shrunkenBounds, WorldPosition + _offset + Vector3.Up * 4f, WorldPosition + _offset + Vector3.Down * 2f);
+            if (fallbackTrace.Hit && !fallbackTrace.StartedSolid)
+            {
+                var fallbackAngle = Vector3.GetAngle(Vector3.Up, fallbackTrace.Normal);
+                if (fallbackAngle <= MaxGroundAngle)
+                {
+                    IsOnGround = true;
+                    GroundNormal = fallbackTrace.Normal;
+                    GroundSurface = fallbackTrace.Surface;
+                    GroundObject = fallbackTrace.GameObject;
+                    IsSlipping = false;
+                    return;
+                }
+            }
         }
         else
         {
             IsStuck = false;
         }
 
-        if (trace.Hit && !trace.StartedSolid)
+        if (groundTrace.Hit && !groundTrace.StartedSolid)
         {
-            var surfaceAngle = Vector3.GetAngle(Vector3.Up, trace.Normal);
+            var surfaceAngle = Vector3.GetAngle(Vector3.Up, groundTrace.Normal);
             var isStandable = surfaceAngle <= MaxGroundAngle;
 
             if (isStandable)
             {
                 IsOnGround = true;
-                GroundNormal = trace.Normal;
-                GroundSurface = trace.Surface;
-                GroundObject = trace.GameObject;
+                GroundNormal = groundTrace.Normal;
+                GroundSurface = groundTrace.Surface;
+                GroundObject = groundTrace.GameObject;
                 IsSlipping = false;
             }
             else
             {
                 // Surface too steep
                 IsOnGround = false;
-                GroundNormal = trace.Normal;
-                GroundSurface = trace.Surface;
-                GroundObject = trace.GameObject;
+                GroundNormal = groundTrace.Normal;
+                GroundSurface = groundTrace.Surface;
+                GroundObject = groundTrace.GameObject;
                 IsSlipping = true;
             }
         }
