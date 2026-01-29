@@ -902,14 +902,18 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     /// <param name="amount"></param>
     public void Punch(in Vector3 amount)
     {
-        Velocity += amount + GroundVelocity; // Apply before ungrounding, otherwise we lose the platform and surface velocities
+        var groundVel = GroundVelocity; // Capture before ungrounding
         IsOnGround = false;
 
         // For physical mode, apply directly to the physics body
         if (PhysicallySimulated && Body.IsValid())
         {
-            Body.Velocity += amount + GroundVelocity;
+            // Set velocity to current + punch + ground velocity
+            // This ensures we carry platform momentum when jumping
+            Body.Velocity = Body.Velocity + amount + groundVel;
         }
+
+        Velocity += amount + groundVel;
     }
 
     protected void CreateBody()
@@ -1355,7 +1359,8 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         _didStep = true;
         _stepPosition = newFeetPos;
         Body.WorldPosition = _stepPosition;
-        Body.Velocity = Body.Velocity.WithZ(0) * 0.9f;
+        // Clear vertical velocity when stepping, but preserve horizontal speed
+        Body.Velocity = Body.Velocity.WithZ(0);
     }
 
     void IScenePhysicsEvents.PostPhysicsStep()
@@ -1376,14 +1381,29 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             Body.WorldPosition = _stepPosition;
         }
 
-        // Stick to ground if needed
-        if (IsOnGround && GroundStickEnabled && !IsSlipping)
-        {
-            StickToGround();
-        }
+        // Track if we were grounded before categorizing
+        var wasOnGround = IsOnGround;
 
         // Update ground detection FIRST so we have accurate ground info
         CategorizePhysicalGround();
+
+        // Try to stick to ground - either if we're on ground, or if we just walked off an edge
+        // (wasOnGround but now !IsOnGround and moving downward or horizontally)
+        if (GroundStickEnabled && !IsSlipping)
+        {
+            var shouldTryStick = IsOnGround;
+
+            // Also try sticking if we just left ground and are moving down/forward (walking off stairs)
+            if (!shouldTryStick && wasOnGround && Body.Velocity.z <= 0f)
+            {
+                shouldTryStick = true;
+            }
+
+            if (shouldTryStick)
+            {
+                StickToGround();
+            }
+        }
 
         // Now apply ground velocity with fresh ground data
         ApplyGroundVelocity();
@@ -1450,6 +1470,13 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             {
                 Body.Velocity = Body.Velocity.WithZ(0);
             }
+
+            // Update ground state when we successfully stick
+            IsOnGround = true;
+            GroundNormal = trace.Normal;
+            GroundSurface = trace.Surface;
+            GroundObject = trace.GameObject;
+            IsSlipping = false;
         }
     }
 
