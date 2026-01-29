@@ -1120,41 +1120,55 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         // Work with velocity directly (ground velocity handled in PostPhysicsStep)
         var velocity = Body.Velocity;
 
-        // Ground friction factor for acceleration
-        var groundFriction = 0.25f + (GroundSurface?.Friction ?? 1f) * 10f;
+        // Calculate acceleration/deceleration using the same logic as non-physical mode
+        var currentSpeed = Math.Max(velocity.WithZ(0).Length, 10f);
+        var acceleration = (IsOnGround ? GroundAcceleration : AirAcceleration) * (FixedAcceleration ? 1f : AccelerationCurve.Evaluate(currentSpeed));
+        var deceleration = (IsOnGround ? GroundDeceleration : AirDeceleration) * (FixedDeceleration ? 1f : DecelerationCurve.Evaluate(currentSpeed));
+
+        // Apply ground surface friction if enabled
+        if (!IgnoreGroundSurface && GroundSurface != null)
+        {
+            acceleration *= GroundSurface.Friction;
+            deceleration *= GroundSurface.Friction;
+        }
 
         if (!wish.IsNearZeroLength)
         {
             // We have input - accelerate towards wish
-            var speed = velocity.WithZ(0).Length;
-
-            // Max speed is the greater of wish speed or current speed (preserves momentum)
-            var maxSpeed = MathF.Max(wish.Length, speed);
-
-            if (IsOnGround)
+            if (AccelerationEnabled)
             {
-                // On ground: accelerate with friction multiplier
-                var amount = 1f * groundFriction;
-                velocity = velocity.AddClamped(wish * amount, wish.Length * amount);
+                var speed = velocity.WithZ(0).Length;
+                var maxSpeed = MathF.Max(wish.Length, speed);
+
+                // Use MoveTowards for smooth acceleration
+                var targetVelocity = wish.Normal * maxSpeed;
+                var horizontalVel = velocity.WithZ(0);
+                velocity = horizontalVel.MoveTowards(targetVelocity, acceleration * Time.Delta).WithZ(velocity.z);
+
+                // Clamp horizontal speed to max speed
+                var finalHorizontal = velocity.WithZ(0);
+                if (finalHorizontal.Length > maxSpeed)
+                    velocity = (finalHorizontal.Normal * maxSpeed).WithZ(velocity.z);
             }
             else
             {
-                // In air: much lower control
-                var amount = 0.05f;
-                velocity = velocity.AddClamped(wish * amount, wish.Length);
+                // Instant acceleration - directly use wish velocity
+                velocity = wish.WithZ(velocity.z);
             }
-
-            // Clamp horizontal speed to max speed
-            var horizontalVel = velocity.WithZ(0);
-            if (horizontalVel.Length > maxSpeed)
-                velocity = (horizontalVel.Normal * maxSpeed).WithZ(velocity.z);
         }
         else if (IsOnGround)
         {
             // No input and on ground - decelerate horizontal velocity
-            var horizontalVel = velocity.WithZ(0);
-            var deceleration = groundFriction * 2f;
-            velocity = horizontalVel.MoveTowards(Vector3.Zero, deceleration).WithZ(velocity.z);
+            if (AccelerationEnabled)
+            {
+                var horizontalVel = velocity.WithZ(0);
+                velocity = horizontalVel.MoveTowards(Vector3.Zero, deceleration * Time.Delta).WithZ(velocity.z);
+            }
+            else
+            {
+                // Instant stop
+                velocity = Vector3.Zero.WithZ(velocity.z);
+            }
         }
 
         // Preserve vertical velocity when grounded (don't affect jumping/falling)
