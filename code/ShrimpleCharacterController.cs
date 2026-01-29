@@ -76,13 +76,15 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [Header("Rigid Body")]
     public float BodyMassOverride
     {
-        get => Body.IsValid() ? Body.MassOverride : 0f;
+        get;
         set
         {
+            field = value;
+
             if (Body.IsValid())
                 Body.MassOverride = value;
         }
-    }
+    } = 100f;
 
     [Property]
     [Feature("Physical")]
@@ -213,7 +215,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     /// </summary>
     [Property]
     [Group("Trace")]
-    [HideIf("TraceShape", TraceType.Bounds)]
+    [ShowIf(nameof(_showWidthHeight), true)]
     [Range(1f, 128f, false, true)]
     [Sync]
     public float TraceWidth
@@ -227,14 +229,17 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         }
     } = 16f;
 
-    bool _cylinderOrBox => TraceShape == TraceType.Box || TraceShape == TraceType.Cylinder;
+    // Show width/height if Physical mode OR if not using Bounds shape
+    bool _showWidthHeight => PhysicallySimulated || TraceShape != TraceType.Bounds;
+    // Show height if Physical mode OR if using Box/Cylinder shape
+    bool _showHeight => PhysicallySimulated || TraceShape == TraceType.Box || TraceShape == TraceType.Cylinder;
 
     /// <summary>
     /// Height of our trace
     /// </summary>
     [Property]
     [Group("Trace")]
-    [ShowIf("_cylinderOrBox", true)]
+    [ShowIf(nameof(_showHeight), true)]
     [Range(1f, 256f, false, true)]
     [Sync]
     public float TraceHeight
@@ -416,6 +421,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [Group("Movement")]
     [Property]
     [Range(1f, 10f, true)]
+    [Validate(nameof(isPhysical), "Physical mode uses collider friction for wall interaction", LogLevel.Info)]
     public float GripFactorReduction { get; set; } = 1f;
 
     /// <summary>
@@ -987,7 +993,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         // IMPORTANT: Disable rigidbody gravity - the controller handles gravity manually
         // This prevents double gravity application and maintains 1:1 parity with non-physical mode
         Body.Gravity = false;
-        Body.MassOverride = 500f;
+        Body.MassOverride = BodyMassOverride;
         Body.RigidbodyFlags |= RigidbodyFlags.DisableCollisionSounds;
 
         Body.EnhancedCcd = EnableCCD;
@@ -1019,12 +1025,12 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         }
 
         // === PHYSICAL MODE ===
-        // Following s&box PlayerController pattern: physics-driven with friction control
+        // Following s&box PlayerController pattern: physics-driven with damping/friction control
 
         _didStep = false;
 
-        // Update collider friction based on movement state
-        UpdateColliderFriction();
+        // Update body physics - gravity, damping, friction
+        UpdateBodyPhysics();
 
         // Update mass center - shift it up when moving to help glide over bumps
         UpdateMassCenter();
@@ -1060,103 +1066,103 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     }
 
     /// <summary>
-    /// Updates collider friction - high friction when braking, zero when moving
+    /// Updates body physics properties - gravity, damping, friction (following s&box MoveMode.UpdateRigidBody pattern)
     /// </summary>
-    private void UpdateColliderFriction()
+    private void UpdateBodyPhysics()
     {
-        if (!Collider.IsValid()) return;
+        if (!Collider.IsValid() || !Body.IsValid()) return;
 
-        var dominated = false;
-        var dominated_by_friction = 0.0f;
+        // Gravity control: only enable when moving or on dynamic ground
+        bool wantsGravity = false;
+        if (!IsOnGround) wantsGravity = true;
+        if (Velocity.Length > 1f) wantsGravity = true;
+        if (GroundVelocity.Length > 1f) wantsGravity = true;
 
-        // Check what we're standing on
+        // Check if on dynamic ground
+        var onDynamic = false;
         if (IsOnGround && GroundObject.IsValid())
         {
             var groundBody = GroundObject.GetComponent<Rigidbody>();
-            if (groundBody != null && groundBody.PhysicsBody.BodyType == PhysicsBodyType.Dynamic)
-            {
-                // Dominating a physics object - low friction
-                dominated = true;
-                dominated_by_friction = 0.5f;
-            }
+            onDynamic = groundBody != null && groundBody.PhysicsBody.BodyType == PhysicsBodyType.Dynamic;
         }
+        if (onDynamic) wantsGravity = true;
 
-        float friction;
-        var dominated_friction = dominated ? dominated_by_friction : 0.0f;
-        var dominated_max = dominated ? 0.5f : 10.0f;
+        // Note: We handle gravity manually in AddWishVelocity, but we still
+        // control the body's gravity flag for physics interactions
+        Body.Gravity = wantsGravity && GravityEnabled;
 
-        // Determine if we want to brake (stop) or move freely
-        var wantsBrake = WishVelocity.WithZ(0).Length < 0.1f;
-        var groundFriction = GroundSurface?.Friction ?? 1.0f;
+        // Linear damping for braking (s&box pattern)
+        // High damping when on ground with no wish = brakes
+        // Low damping otherwise = momentum carries through
+        bool wantsBrakes = IsOnGround && WishVelocity.Length < 1f && GroundVelocity.Length < 1f;
+        Body.LinearDamping = wantsBrakes ? 10f : 0.1f;
+        Body.AngularDamping = 1f;
 
-        if (IsOnGround && wantsBrake)
+        // Collider friction - low when moving to allow physics to handle collisions
+        float friction = 0f;
+        if (IsOnGround && WishVelocity.Length < 0.1f)
         {
-            // High friction when stopping
-            friction = MathF.Max(dominated_friction, MathF.Min(dominated_max, 1.0f + 100.0f * groundFriction));
+            // Standing still - some friction to prevent sliding
+            friction = onDynamic ? 0.5f : 1f;
         }
-        else
-        {
-            // Zero friction when moving or in air - let velocity carry us
-            friction = dominated_friction;
-        }
-
-        // Apply friction to collider
         Collider.Friction = friction;
     }
 
     /// <summary>
-    /// Adds velocity towards wish direction using acceleration
+    /// Adds velocity towards wish direction (following s&box MoveMode.AddVelocity pattern)
     /// </summary>
     private void AddWishVelocity()
     {
-        var dominated = false;
+        var wish = WishVelocity;
+        if (wish.IsNearZeroLength) return;
 
-        // Check if standing on dynamic object
-        if (IsOnGround && GroundObject.IsValid())
+        var groundVelocity = GroundVelocity;
+        var z = Body.Velocity.z;
+
+        // Get velocity relative to ground
+        var velocity = Body.Velocity - groundVelocity;
+        var speed = velocity.Length;
+
+        // Max speed is the greater of wish speed or current speed (preserves momentum)
+        var maxSpeed = MathF.Max(wish.Length, speed);
+
+        // Ground friction factor for acceleration
+        var groundFriction = 0.25f + (GroundSurface?.Friction ?? 1f) * 10f;
+
+        if (IsOnGround)
         {
-            var groundBody = GroundObject.GetComponent<Rigidbody>();
-            dominated = groundBody != null && groundBody.PhysicsBody.BodyType == PhysicsBodyType.Dynamic;
+            // On ground: accelerate with friction multiplier
+            var amount = 1f * groundFriction;
+            velocity = velocity.AddClamped(wish * amount, wish.Length * amount);
+        }
+        else
+        {
+            // In air: much lower control
+            var amount = 0.05f;
+            velocity = velocity.AddClamped(wish * amount, wish.Length);
         }
 
-        var dominated_max = dominated ? 50.0f : 10000.0f;
+        // Clamp to max speed to prevent acceleration beyond what we want
+        if (velocity.Length > maxSpeed)
+            velocity = velocity.Normal * maxSpeed;
 
-        // Apply gravity directly to body velocity (not via wish)
+        // Add back ground velocity
+        velocity += groundVelocity;
+
+        // Preserve vertical velocity when grounded (don't affect jumping/falling)
+        if (IsOnGround)
+        {
+            velocity.z = z;
+        }
+
+        // Apply gravity when not grounded
         if (GravityEnabled && (!IsOnGround || IsSlipping || !GroundStickEnabled))
         {
-            Body.Velocity += AppliedGravity * Time.Delta;
+            velocity += AppliedGravity * Time.Delta;
         }
 
-        // Handle horizontal movement separately
-        var wishHorizontal = WishVelocity.WithZ(0);
-        var currentHorizontal = Body.Velocity.WithZ(0) - GroundVelocity.WithZ(0);
-
-        // Calculate acceleration
-        var accel = IsOnGround ? GroundAcceleration : AirAcceleration;
-        if (!IgnoreGroundSurface && GroundSurface != null && IsOnGround)
-            accel *= GroundSurface.Friction;
-
-        // Move current velocity towards wish velocity
-        var delta = wishHorizontal - currentHorizontal;
-        var maxDelta = accel * Time.Delta;
-
-        if (delta.Length > maxDelta)
-            delta = delta.Normal * maxDelta;
-
-        delta = delta.ClampLength(0, dominated_max);
-
-        // Apply horizontal velocity change only
-        Body.Velocity += new Vector3(delta.x, delta.y, 0);
-
-        // Only clamp downward velocity if grounded and not jumping
-        if (IsOnGround && GroundStickEnabled && !IsSlipping)
-        {
-            var vel = Body.Velocity;
-            // Only kill small downward velocity, allow jumping
-            if (vel.z < 0 && vel.z > -50f)
-            {
-                Body.Velocity = vel.WithZ(0);
-            }
-        }
+        // Set velocity directly (s&box pattern - physics handles collisions)
+        Body.Velocity = velocity;
     }
 
     /// <summary>
