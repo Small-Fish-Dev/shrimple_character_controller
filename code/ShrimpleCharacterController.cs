@@ -1442,8 +1442,9 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
         var currentPosition = WorldPosition;
 
-        // Trace from slightly above to below
-        var from = currentPosition + _offset + Vector3.Up * 1f;
+        // Trace from above current position down to GroundStickDistance below
+        // Start higher up to catch stairs we're walking down
+        var from = currentPosition + _offset + Vector3.Up * StepHeight;
         var to = currentPosition + _offset + Vector3.Down * GroundStickDistance;
 
         var trace = BuildTrace(_shrunkenBounds, from, to);
@@ -1459,6 +1460,10 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
             var targetFeetPos = trace.EndPosition - _offset + Vector3.Up * 0.01f;
             var delta = currentPosition - targetFeetPos;
+
+            // Only stick if we're moving down (not up through the floor)
+            if (delta.z < -0.1f)
+                return; // Target is above us, don't teleport up
 
             if (delta.IsNearlyZero(0.001f))
                 return;
