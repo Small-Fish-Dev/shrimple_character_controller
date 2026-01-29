@@ -18718,7 +18718,7 @@
           {
             "Id": {
               "Type": "Component",
-              "IdValue": "40a1af69-cc70-4101-a1b9-9592a93f4a08"
+              "IdValue": "f9a7676d-7d33-4dd0-81cc-7d3352c7a9a0"
             },
             "Parent": {
               "Type": "GameObject",
@@ -18732,7 +18732,7 @@
             "IsContainerArray": true,
             "Data": {
               "__type": "Sandbox.CapsuleCollider",
-              "__guid": "40a1af69-cc70-4101-a1b9-9592a93f4a08",
+              "__guid": "f9a7676d-7d33-4dd0-81cc-7d3352c7a9a0",
               "__enabled": true,
               "Flags": 0,
               "ColliderFlags": 0,
@@ -18754,14 +18754,14 @@
               "RollingResistance": null,
               "Start": "0,0,5.7",
               "Static": false,
-              "Surface": "surfaces/flesh.surface",
+              "Surface": null,
               "SurfaceVelocity": "0,0,0"
             }
           },
           {
             "Id": {
               "Type": "Component",
-              "IdValue": "be4ee9bc-e40e-4583-8d57-a15515692c3c"
+              "IdValue": "c568b54a-86f8-4d83-86f3-9e8ca41aae84"
             },
             "Parent": {
               "Type": "GameObject",
@@ -18769,13 +18769,13 @@
             },
             "PreviousElement": {
               "Type": "Component",
-              "IdValue": "40a1af69-cc70-4101-a1b9-9592a93f4a08"
+              "IdValue": "f9a7676d-7d33-4dd0-81cc-7d3352c7a9a0"
             },
             "ContainerProperty": "Components",
             "IsContainerArray": true,
             "Data": {
               "__type": "Sandbox.Rigidbody",
-              "__guid": "be4ee9bc-e40e-4583-8d57-a15515692c3c",
+              "__guid": "c568b54a-86f8-4d83-86f3-9e8ca41aae84",
               "__enabled": true,
               "Flags": 0,
               "AngularDamping": 0,
@@ -18837,21 +18837,21 @@
               "Type": "Component",
               "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
             },
-            "Property": "Body",
-            "Value": {
-              "_type": "component",
-              "component_id": "be4ee9bc-e40e-4583-8d57-a15515692c3c",
-              "go": "74bb872c-c7e7-4227-85d3-9108a4460ee0",
-              "component_type": "Rigidbody"
-            }
+            "Property": "__version",
+            "Value": 4
           },
           {
             "Target": {
               "Type": "Component",
               "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
             },
-            "Property": "BodyMassOverride",
-            "Value": 100
+            "Property": "Body",
+            "Value": {
+              "_type": "component",
+              "component_id": "c568b54a-86f8-4d83-86f3-9e8ca41aae84",
+              "go": "74bb872c-c7e7-4227-85d3-9108a4460ee0",
+              "component_type": "Rigidbody"
+            }
           },
           {
             "Target": {
@@ -18869,7 +18869,7 @@
             "Property": "Collider",
             "Value": {
               "_type": "component",
-              "component_id": "40a1af69-cc70-4101-a1b9-9592a93f4a08",
+              "component_id": "f9a7676d-7d33-4dd0-81cc-7d3352c7a9a0",
               "go": "74bb872c-c7e7-4227-85d3-9108a4460ee0",
               "component_type": "CapsuleCollider"
             }
@@ -18879,24 +18879,16 @@
               "Type": "Component",
               "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
             },
-            "Property": "ColliderSurface",
-            "Value": "surfaces/flesh.surface"
-          },
-          {
-            "Target": {
-              "Type": "Component",
-              "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
-            },
-            "Property": "EnableCCD",
-            "Value": false
-          },
-          {
-            "Target": {
-              "Type": "Component",
-              "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
-            },
             "Property": "HidePhysicalComponents",
             "Value": false
+          },
+          {
+            "Target": {
+              "Type": "Component",
+              "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
+            },
+            "Property": "MaxGroundAngle",
+            "Value": "30 60"
           },
           {
             "Target": {
