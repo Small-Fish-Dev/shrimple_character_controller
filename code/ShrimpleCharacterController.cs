@@ -475,12 +475,26 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     public bool GroundStickEnabled { get; set; } = true;
 
     /// <summary>
-    /// How steep terrain can be for you to stand on without slipping
+    /// How steep terrain can be for you to stand on without slipping.<br/>
+    /// Min = Angle where velocity starts to drop off<br/>
+    /// Max = Max angle where velocity is fully blocked (you can still slide down with gravity)
     /// </summary>
     [Property]
     [Feature("GroundStick")]
-    [Range(0f, 89f, true, true)]
-    public float MaxGroundAngle { get; set; } = 60f;
+    public RangedFloat MaxGroundAngle
+    {
+        get;
+        set
+        {
+            // Clamp values to valid range and ensure x <= y
+            var min = MathX.Clamp(value.Min, 0f, 89f);
+            var max = MathX.Clamp(value.Max, 0f, 89f);
+            if (min > max) min = max;
+            if (max < min) max = min;
+
+            field = new RangedFloat(min, max);
+        }
+    } = new RangedFloat(30f, 60f);
 
     /// <summary>
     /// How far from the ground the MoveHelper is going to stick (Useful for going down stairs!)
@@ -692,6 +706,22 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     /// The current ground angle you're standing on (Always 0f if IsOnGround false)
     /// </summary>
     public float GroundAngle => Vector3.GetAngle(GroundNormal, Vector3.Up);
+
+    /// <summary>
+    /// Gets the velocity multiplier for a given slope angle based on MaxGroundAngle range.<br/>
+    /// Returns 1.0 below the start angle, 0.0 at/above the max angle, and lerps between.
+    /// </summary>
+    public float GetSlopeVelocityMultiplier(float angle)
+    {
+        if (angle <= MaxGroundAngle.Min) return 1f;
+        if (angle >= MaxGroundAngle.Max) return 0f;
+        return 1f - MathX.LerpInverse(angle, MaxGroundAngle.Min, MaxGroundAngle.Max);
+    }
+
+    /// <summary>
+    /// Whether the given angle is considered standable (below max ground angle)
+    /// </summary>
+    public bool IsAngleStandable(float angle) => angle <= MaxGroundAngle.Max;
 
     /// <summary>
     /// The current surface you're standing on
@@ -1140,44 +1170,79 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
                 var speed = velocity.WithZ(0).Length;
                 var maxSpeed = MathF.Max(wish.Length, speed);
 
-                // Use MoveTowards for smooth acceleration
-                var targetVelocity = wish.Normal * maxSpeed;
-                var horizontalVel = velocity.WithZ(0);
-                velocity = horizontalVel.MoveTowards(targetVelocity, acceleration * Time.Delta).WithZ(velocity.z);
+                // Project wish velocity onto ground plane when grounded
+                // This makes velocity follow the slope instead of being purely horizontal
+                var targetVelocity = wish;
+                if (IsOnGround && GroundStickEnabled && !GroundNormal.IsNearlyZero(0.01f))
+                {
+                    targetVelocity = Vector3.VectorPlaneProject(wish, GroundNormal);
+                    // Maintain original speed after projection
+                    if (!targetVelocity.IsNearlyZero(0.01f))
+                    {
+                        // Only apply slope slowdown when going uphill (against gravity)
+                        // Check if the projected velocity is going upward
+                        var isGoingUphill = Vector3.Dot(targetVelocity, AppliedGravity) < 0f;
+                        var slopeMultiplier = isGoingUphill ? GetSlopeVelocityMultiplier(GroundAngle) : 1f;
+                        targetVelocity = targetVelocity.Normal * maxSpeed * slopeMultiplier;
+                    }
+                }
+                else
+                {
+                    targetVelocity = wish.Normal * maxSpeed;
+                }
 
-                // Clamp horizontal speed to max speed
-                var finalHorizontal = velocity.WithZ(0);
-                if (finalHorizontal.Length > maxSpeed)
-                    velocity = (finalHorizontal.Normal * maxSpeed).WithZ(velocity.z);
+                // MoveTowards the projected target velocity (includes Z component for slope following)
+                velocity = velocity.MoveTowards(targetVelocity, acceleration * Time.Delta);
+
+                // Clamp speed to max
+                if (velocity.Length > maxSpeed)
+                    velocity = velocity.Normal * maxSpeed;
             }
             else
             {
                 // Instant acceleration - directly use wish velocity
-                velocity = wish.WithZ(velocity.z);
+                // Project onto ground plane to follow slopes
+                if (IsOnGround && GroundStickEnabled && !GroundNormal.IsNearlyZero(0.01f))
+                {
+                    var projectedWish = Vector3.VectorPlaneProject(wish, GroundNormal);
+                    if (!projectedWish.IsNearlyZero(0.01f))
+                    {
+                        // Only apply slope slowdown when going uphill
+                        var isGoingUphill = Vector3.Dot(projectedWish, AppliedGravity) < 0f;
+                        var slopeMultiplier = isGoingUphill ? GetSlopeVelocityMultiplier(GroundAngle) : 1f;
+                        velocity = projectedWish.Normal * wish.Length * slopeMultiplier;
+                    }
+                    else
+                        velocity = Vector3.Zero;
+                }
+                else
+                {
+                    velocity = wish;
+                }
             }
         }
         else if (IsOnGround)
         {
-            // No input and on ground - decelerate horizontal velocity
+            // No input and on ground - decelerate to zero
             if (AccelerationEnabled)
             {
-                var horizontalVel = velocity.WithZ(0);
-                velocity = horizontalVel.MoveTowards(Vector3.Zero, deceleration * Time.Delta).WithZ(velocity.z);
+                velocity = velocity.MoveTowards(Vector3.Zero, deceleration * Time.Delta);
             }
             else
             {
                 // Instant stop
-                velocity = Vector3.Zero.WithZ(velocity.z);
+                velocity = Vector3.Zero;
             }
         }
 
-        // Preserve vertical velocity when grounded (don't affect jumping/falling)
-        if (IsOnGround)
+        // Preserve vertical velocity when grounded but NOT sticking to ground
+        // When ground stick is enabled, velocity follows the slope so we don't preserve Z
+        if (IsOnGround && !GroundStickEnabled)
         {
             velocity.z = z;
         }
 
-        // Apply gravity when not grounded
+        // Apply gravity when not grounded or when slipping
         if (GravityEnabled && (!IsOnGround || IsSlipping || !GroundStickEnabled))
         {
             velocity += AppliedGravity * Time.Delta;
@@ -1263,7 +1328,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
         // Check if standable
         var groundAngle = Vector3.GetAngle(Vector3.Up, downTrace.Normal);
-        if (groundAngle > MaxGroundAngle)
+        if (!IsAngleStandable(groundAngle))
             return;
 
         // Calculate new feet position
@@ -1356,7 +1421,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         if (trace.Hit)
         {
             var surfaceAngle = Vector3.GetAngle(Vector3.Up, trace.Normal);
-            if (surfaceAngle > MaxGroundAngle)
+            if (!IsAngleStandable(surfaceAngle))
                 return; // Not standable
 
             var targetFeetPos = trace.EndPosition - _offset + Vector3.Up * 0.01f;
@@ -1402,7 +1467,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             if (fallbackTrace.Hit && !fallbackTrace.StartedSolid)
             {
                 var fallbackAngle = Vector3.GetAngle(Vector3.Up, fallbackTrace.Normal);
-                if (fallbackAngle <= MaxGroundAngle)
+                if (IsAngleStandable(fallbackAngle))
                 {
                     IsOnGround = true;
                     GroundNormal = fallbackTrace.Normal;
@@ -1421,7 +1486,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         if (groundTrace.Hit && !groundTrace.StartedSolid)
         {
             var surfaceAngle = Vector3.GetAngle(Vector3.Up, groundTrace.Normal);
-            var isStandable = surfaceAngle <= MaxGroundAngle;
+            var isStandable = IsAngleStandable(surfaceAngle);
 
             if (isStandable)
             {
@@ -1621,7 +1686,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
                 GroundSurface = IsOnGround ? groundTrace.Surface : null;
                 GroundNormal = IsOnGround ? groundTrace.Normal : -AppliedGravity.Normal;
                 GroundObject = IsOnGround ? groundTrace.GameObject : null;
-                IsSlipping = IsOnGround && GroundAngle > MaxGroundAngle;
+                IsSlipping = IsOnGround && !IsAngleStandable(GroundAngle);
 
                 if (IsSlipping && !gravityPass && Vector3.Dot(velocity, AppliedGravity) < 0f)
                     velocity = velocity.WithZ(0f); // If we're slipping ignore any extra velocity we had
@@ -1676,7 +1741,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
                     0f : elasticityDirection * (IncludeGroundElasticity ? GroundSurface?.Elasticity ?? 1f : 1f)
                 : 0f; // Allah help me format this better
 
-            if (angle <= MaxGroundAngle) // Terrain we can walk on
+            if (IsAngleStandable(angle)) // Terrain we can walk on
             {
                 var projectedLeftover = leftover;
 
@@ -1684,6 +1749,14 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
                     projectedLeftover = Vector3.VectorPlaneProject(projectedLeftover, travelTrace.Normal); // Don't project the vertical velocity after landing else it boosts your horizontal velocity
                 else
                     projectedLeftover = projectedLeftover.ProjectAndScale(travelTrace.Normal); // Project the velocity along the terrain
+
+                // Apply slope velocity reduction only when going uphill (against gravity)
+                var isGoingUphill = Vector3.Dot(projectedLeftover, AppliedGravity) < 0f;
+                if (isGoingUphill)
+                {
+                    var slopeMultiplier = GetSlopeVelocityMultiplier(angle);
+                    projectedLeftover *= slopeMultiplier;
+                }
 
                 if (elasticity > 0)
                     leftover = Vector3.Lerp(projectedLeftover, Vector3.Reflect(leftover, travelTrace.Normal), elasticity, false);
@@ -1713,7 +1786,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
                             var stepTrace = BuildTrace(_shrunkenBounds, travelTrace.EndPosition + stepHorizontal + stepVertical, travelTrace.EndPosition + stepHorizontal);
                             var stepAngle = Vector3.GetAngle(stepTrace.Normal, -AppliedGravity.Normal);
 
-                            if (!stepTrace.StartedSolid && stepTrace.Hit && stepAngle <= MaxGroundAngle) // We found a step!
+                            if (!stepTrace.StartedSolid && stepTrace.Hit && IsAngleStandable(stepAngle)) // We found a step!
                             {
                                 if (isStep || !IsSlipping && PseudoStepsEnabled)
                                 {
@@ -1973,7 +2046,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             Move();
     }
 
-    public override int ComponentVersion => 3;
+    public override int ComponentVersion => 4;
 
     [JsonUpgrader(typeof(ShrimpleCharacterController), 3)]
     private static void UpdateTraceShape(JsonObject json)
@@ -1982,5 +2055,17 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             json["TraceShape"] = isCylinder ? "Cylinder" : "Box";
         else
             json["TraceShape"] = "Box";
+    }
+
+    [JsonUpgrader(typeof(ShrimpleCharacterController), 4)]
+    private static void UpdateMaxGroundAngle(JsonObject json)
+    {
+        // Old default was 60f, new default is (30f, 60f)
+        if (json.TryGetPropertyValue("MaxGroundAngle", out var oldValue) && oldValue is JsonValue floatValue && floatValue.TryGetValue<float>(out var oldAngle))
+        {
+            json.Remove("MaxGroundAngle");
+            var startAngle = oldAngle * 0.75f;
+            json["MaxGroundAngle"] = $"{startAngle:F2} {oldAngle:F2}";
+        }
     }
 }
