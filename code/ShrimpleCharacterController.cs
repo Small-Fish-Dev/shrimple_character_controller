@@ -18,7 +18,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [Validate(nameof(physicalAndManual), "When manually updating a simulated body make sure to call Move() before the physics step!", LogLevel.Warn)]
     public bool PhysicallySimulated
     {
-        get => field;
+        get;
         set
         {
             field = value;
@@ -105,17 +105,12 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [Title("Enable CCD")]
     public bool EnableCCD
     {
-        get => field;
+        get;
         set
         {
             field = value;
             if (Body.IsValid())
-            {
-                if (value)
-                    Body.RigidbodyFlags |= RigidbodyFlags.EnableCCD;
-                else
-                    Body.RigidbodyFlags &= ~RigidbodyFlags.EnableCCD;
-            }
+                Body.EnhancedCcd = value;
         }
     }
 
@@ -125,7 +120,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     public Rigidbody Body { get; protected set; }
 
     /// <summary>
-    /// Hide the <see cref="Body"/> component and the GameObject holding the <see cref="Collider"/> component
+    /// Hide the <see cref="Body"/> and <see cref="Collider"/> components in the inspector
     /// </summary>
     [Property]
     [Feature("Physical")]
@@ -134,15 +129,13 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [Validate(nameof(isPhysical), "Make sure to go over the other features to see any warning regarding physical simulation!", LogLevel.Warn)]
     public bool HidePhysicalComponents
     {
-        get => field;
+        get;
         protected set
         {
             field = value;
 
             if (value)
             {
-                if (BodyObject.IsValid())
-                    BodyObject.Flags |= GameObjectFlags.Hidden;
                 if (Body.IsValid())
                     Body.Flags |= ComponentFlags.Hidden;
                 if (Collider.IsValid())
@@ -150,8 +143,6 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
             }
             else
             {
-                if (BodyObject.IsValid())
-                    BodyObject.Flags &= ~GameObjectFlags.Hidden;
                 if (Body.IsValid())
                     Body.Flags &= ~ComponentFlags.Hidden;
                 if (Collider.IsValid())
@@ -176,6 +167,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     /// </summary>
     [Property]
     [Group("Trace")]
+    [Validate(nameof(isPhysical), "Physical mode uses a capsule collider to prevent snagging on terrain.", LogLevel.Info)]
     public bool RotateWithGameObject { get; set; } = true;
 
     public enum TraceType
@@ -204,9 +196,10 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
     [Property]
     [Group("Trace")]
+    [HideIf(nameof(PhysicallySimulated), true)]
     public TraceType TraceShape
     {
-        get => field;
+        get;
         set
         {
             field = value;
@@ -222,9 +215,10 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [Group("Trace")]
     [HideIf("TraceShape", TraceType.Bounds)]
     [Range(1f, 128f, false, true)]
+    [Sync]
     public float TraceWidth
     {
-        [Sync] get => field;
+        get;
         set
         {
             field = value;
@@ -242,9 +236,10 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [Group("Trace")]
     [ShowIf("_cylinderOrBox", true)]
     [Range(1f, 256f, false, true)]
+    [Sync]
     public float TraceHeight
     {
-        [Sync] get => field;
+        get;
         set
         {
             field = value;
@@ -259,9 +254,10 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [Property]
     [Group("Trace")]
     [ShowIf("TraceShape", TraceType.Bounds)]
+    [Sync]
     public BBox TraceBounds
     {
-        [Sync] get => TraceShape == TraceType.Bounds ? field : Bounds;
+        get => TraceShape == TraceType.Bounds ? field : Bounds;
         set
         {
             field = value;
@@ -553,9 +549,10 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [Property]
     [Feature("Push")]
     [Validate(nameof(isPhysical), "Contoller is physical! Make sure the tags are ignored on the collision matrix", LogLevel.Warn)]
+    [Sync]
     public Dictionary<string, float> PushTagsWeight
     {
-        [Sync] get => field;
+        get;
         set
         {
             field = value;
@@ -577,7 +574,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [Feature("Gravity")]
     public bool UseSceneGravity
     {
-        get => field;
+        get;
         set
         {
             field = value;
@@ -593,7 +590,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [HideIf("UseSceneGravity", true)]
     public bool UseVectorGravity
     {
-        get => field;
+        get;
         set
         {
             field = value;
@@ -613,7 +610,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [ShowIf("_usingFloatGravity", true)]
     public float Gravity
     {
-        get => field;
+        get;
         set
         {
             field = value;
@@ -630,7 +627,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     [ShowIf("_usingVectorGravity", true)]
     public Vector3 VectorGravity
     {
-        get => field;
+        get;
         set
         {
             field = value;
@@ -871,48 +868,60 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
     {
         Velocity += amount + GroundVelocity; // Apply before ungrounding, otherwise we lose the platform and surface velocities
         IsOnGround = false;
+
+        // For physical mode, apply directly to the physics body
+        if (PhysicallySimulated && Body.IsValid())
+        {
+            Body.Velocity += amount + GroundVelocity;
+        }
     }
 
     protected void CreateBody()
     {
+        // Destroy existing components
+        if (Collider.IsValid())
+            Collider.Destroy();
+        if (Body.IsValid())
+            Body.Destroy();
         if (BodyObject.IsValid())
             BodyObject.Destroy();
 
-        var newBody = new GameObject(GameObject, true, "Body");
-        BodyObject = newBody;
-
-        if (HidePhysicalComponents)
-            BodyObject.Flags |= GameObjectFlags.Hidden;
-        else
-            BodyObject.Flags &= ~GameObjectFlags.Hidden;
-
+        // Create collider and rigidbody on the main GameObject
+        // This ensures they're properly linked for physics interactions
         CreateCollider();
         CreateRigidbody();
     }
 
     protected void DestroyBody()
     {
-        Collider?.Destroy();
-        Body?.Destroy();
-        BodyObject?.Destroy();
+        if (Collider.IsValid())
+            Collider.Destroy();
+        if (Body.IsValid())
+            Body.Destroy();
+        if (BodyObject.IsValid())
+            BodyObject.Destroy();
     }
 
     protected void CreateCollider()
     {
-        if (!BodyObject.IsValid())
-            return;
         if (Collider.IsValid())
             Collider.Destroy();
 
-        //if (GameObject.Components.TryGet<Collider>(out var exisitingCollider))
-        //    exisitingCollider.Destroy();
-
-        if (TraceShape == TraceType.Box || TraceShape == TraceType.Bounds)
-            Collider = BodyObject.GetOrAddComponent<BoxCollider>();
-        else if (TraceShape == TraceType.Cylinder)
-            Collider = BodyObject.GetOrAddComponent<HullCollider>();
-        else if (TraceShape == TraceType.Sphere)
-            Collider = BodyObject.GetOrAddComponent<SphereCollider>();
+        // Physical mode always uses capsule - rounded edges prevent snagging on terrain
+        if (PhysicallySimulated)
+        {
+            Collider = GameObject.GetOrAddComponent<CapsuleCollider>();
+        }
+        else
+        {
+            // Non-physical mode uses the selected trace shape for the collider
+            if (TraceShape == TraceType.Box || TraceShape == TraceType.Bounds)
+                Collider = GameObject.GetOrAddComponent<BoxCollider>();
+            else if (TraceShape == TraceType.Cylinder)
+                Collider = GameObject.GetOrAddComponent<HullCollider>();
+            else if (TraceShape == TraceType.Sphere)
+                Collider = GameObject.GetOrAddComponent<SphereCollider>();
+        }
 
         if (HidePhysicalComponents)
             Collider.Flags |= ComponentFlags.Hidden;
@@ -924,26 +933,40 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
     protected void UpdateCollider()
     {
-        if (!BodyObject.IsValid())
-            return;
         if (!Collider.IsValid())
             return;
 
-        if (Collider is BoxCollider boxCollider)
+        if (Collider is CapsuleCollider capsuleCollider)
+        {
+            // Capsule for Physical mode - rounded ends help glide over terrain
+            var radius = (TraceWidth - SkinWidth) / 2f;
+            var height = TraceHeight - SkinWidth;
+            capsuleCollider.Radius = radius;
+            // Start and End define the capsule spine (excluding the hemisphere caps)
+            // Bottom at radius height (so hemisphere touches ground), top at height - radius
+            capsuleCollider.Start = Vector3.Up * radius;
+            capsuleCollider.End = Vector3.Up * (height - radius);
+        }
+        else if (Collider is BoxCollider boxCollider)
         {
             var bounds = BuildBounds();
             boxCollider.Scale = bounds.Size - SkinWidth;
-            boxCollider.Center = bounds.Center;
+            // Center the box so bottom is at feet (origin) - box bounds are centered, so offset up by half height
+            boxCollider.Center = Vector3.Up * (TraceHeight / 2f);
         }
         else if (Collider is HullCollider hullCollider)
         {
             hullCollider.Type = HullCollider.PrimitiveType.Cylinder;
             hullCollider.Height = TraceHeight - SkinWidth;
             hullCollider.Radius = (TraceWidth - SkinWidth) / 2f;
-            hullCollider.Center = Vector3.Up * (TraceHeight + SkinWidth) / 2f;
+            hullCollider.Center = Vector3.Up * (TraceHeight / 2f);
         }
         else if (Collider is SphereCollider sphereCollider)
+        {
             sphereCollider.Radius = (TraceWidth - SkinWidth) / 2f;
+            // Center sphere at radius height so bottom touches feet
+            sphereCollider.Center = Vector3.Up * sphereCollider.Radius;
+        }
     }
 
     protected void CreateRigidbody()
@@ -967,9 +990,7 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
         Body.MassOverride = 500f;
         Body.RigidbodyFlags |= RigidbodyFlags.DisableCollisionSounds;
 
-        // Apply CCD if enabled
-        if (EnableCCD)
-            Body.RigidbodyFlags |= RigidbodyFlags.EnableCCD;
+        Body.EnhancedCcd = EnableCCD;
 
         if (HidePhysicalComponents)
             Body.Flags |= ComponentFlags.Hidden;
@@ -978,54 +999,410 @@ public class ShrimpleCharacterController : Component, IScenePhysicsEvents, IScen
 
     }
 
-    MoveHelperResult _lastMove;
-    Vector3 _prePhysicsBodyPosition;
+    // Step handling for physical mode
+    bool _didStep;
+    Vector3 _stepPosition;
+    const float StepSkin = 0.095f;
 
     void IScenePhysicsEvents.PrePhysicsStep()
     {
-        if ((!PhysicallySimulated && !ManuallyUpdate) || !Body.IsValid()) return;
+        if (!Body.IsValid()) return;
 
-        // Store physics body position before simulation to detect external pushes
-        _prePhysicsBodyPosition = Body.WorldPosition;
+        // For non-physical mode with manual update, just return
+        if (!PhysicallySimulated && ManuallyUpdate) return;
 
-        // Calculate the controller's desired movement
-        _lastMove = Move(true);
+        // For non-physical automatic mode, run Move() normally
+        if (!PhysicallySimulated)
+        {
+            Move();
+            return;
+        }
 
-        // Set body velocity to move toward the intended position
-        // This is the core of physical mode - let physics engine handle the actual movement
-        Body.Velocity = (_lastMove.Position - WorldPosition - _lastMove.Offset) / Time.Delta;
+        // === PHYSICAL MODE ===
+        // Following s&box PlayerController pattern: physics-driven with friction control
+
+        _didStep = false;
+
+        // Update collider friction based on movement state
+        UpdateColliderFriction();
+
+        // Update mass center - shift it up when moving to help glide over bumps
+        UpdateMassCenter();
+
+        // Add velocity towards wish direction
+        AddWishVelocity();
+
+        // Try stepping up obstacles
+        if (StepsEnabled && IsOnGround)
+        {
+            TryStepUp();
+        }
+    }
+
+    /// <summary>
+    /// Updates the mass center based on movement - shifts it up when moving to help tip over bumps
+    /// Following s&box PlayerController pattern from Elements.cs
+    /// </summary>
+    private void UpdateMassCenter()
+    {
+        if (!Body.IsValid()) return;
+
+        // When moving, shift mass center up to waist level so physics body can "tip over" small bumps
+        // When stationary, drop mass center to foot level for stability
+        var wishSpeed = WishVelocity.WithZ(0).Length;
+        var halfHeight = AppliedHeight * 0.5f;
+
+        // Clamp wish speed contribution: 0 at rest, up to half height when moving fast
+        float massCenter = IsOnGround ? wishSpeed.Clamp(0, halfHeight) : halfHeight;
+
+        Body.MassCenterOverride = new Vector3(0, 0, massCenter);
+        Body.OverrideMassCenter = true;
+    }
+
+    /// <summary>
+    /// Updates collider friction - high friction when braking, zero when moving
+    /// </summary>
+    private void UpdateColliderFriction()
+    {
+        if (!Collider.IsValid()) return;
+
+        var dominated = false;
+        var dominated_by_friction = 0.0f;
+
+        // Check what we're standing on
+        if (IsOnGround && GroundObject.IsValid())
+        {
+            var groundBody = GroundObject.GetComponent<Rigidbody>();
+            if (groundBody != null && groundBody.PhysicsBody.BodyType == PhysicsBodyType.Dynamic)
+            {
+                // Dominating a physics object - low friction
+                dominated = true;
+                dominated_by_friction = 0.5f;
+            }
+        }
+
+        float friction;
+        var dominated_friction = dominated ? dominated_by_friction : 0.0f;
+        var dominated_max = dominated ? 0.5f : 10.0f;
+
+        // Determine if we want to brake (stop) or move freely
+        var wantsBrake = WishVelocity.WithZ(0).Length < 0.1f;
+        var groundFriction = GroundSurface?.Friction ?? 1.0f;
+
+        if (IsOnGround && wantsBrake)
+        {
+            // High friction when stopping
+            friction = MathF.Max(dominated_friction, MathF.Min(dominated_max, 1.0f + 100.0f * groundFriction));
+        }
+        else
+        {
+            // Zero friction when moving or in air - let velocity carry us
+            friction = dominated_friction;
+        }
+
+        // Apply friction to collider
+        Collider.Friction = friction;
+    }
+
+    /// <summary>
+    /// Adds velocity towards wish direction using acceleration
+    /// </summary>
+    private void AddWishVelocity()
+    {
+        var dominated = false;
+
+        // Check if standing on dynamic object
+        if (IsOnGround && GroundObject.IsValid())
+        {
+            var groundBody = GroundObject.GetComponent<Rigidbody>();
+            dominated = groundBody != null && groundBody.PhysicsBody.BodyType == PhysicsBodyType.Dynamic;
+        }
+
+        var dominated_max = dominated ? 50.0f : 10000.0f;
+
+        // Apply gravity directly to body velocity (not via wish)
+        if (GravityEnabled && (!IsOnGround || IsSlipping || !GroundStickEnabled))
+        {
+            Body.Velocity += AppliedGravity * Time.Delta;
+        }
+
+        // Handle horizontal movement separately
+        var wishHorizontal = WishVelocity.WithZ(0);
+        var currentHorizontal = Body.Velocity.WithZ(0) - GroundVelocity.WithZ(0);
+
+        // Calculate acceleration
+        var accel = IsOnGround ? GroundAcceleration : AirAcceleration;
+        if (!IgnoreGroundSurface && GroundSurface != null && IsOnGround)
+            accel *= GroundSurface.Friction;
+
+        // Move current velocity towards wish velocity
+        var delta = wishHorizontal - currentHorizontal;
+        var maxDelta = accel * Time.Delta;
+
+        if (delta.Length > maxDelta)
+            delta = delta.Normal * maxDelta;
+
+        delta = delta.ClampLength(0, dominated_max);
+
+        // Apply horizontal velocity change only
+        Body.Velocity += new Vector3(delta.x, delta.y, 0);
+
+        // Only clamp downward velocity if grounded and not jumping
+        if (IsOnGround && GroundStickEnabled && !IsSlipping)
+        {
+            var vel = Body.Velocity;
+            // Only kill small downward velocity, allow jumping
+            if (vel.z < 0 && vel.z > -50f)
+            {
+                Body.Velocity = vel.WithZ(0);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Try to step up an obstacle in front of us (following s&box PlayerController.Step.cs pattern)
+    /// Uses wish velocity direction so we can step even when blocked (velocity is zero)
+    /// </summary>
+    private void TryStepUp()
+    {
+        // Use wish velocity for direction - this allows stepping even when blocked
+        // Fall back to body velocity if no wish input
+        var wishHorizontal = WishVelocity.WithZ(0);
+        var bodyHorizontal = Body.Velocity.WithZ(0);
+
+        // Prefer wish direction, but use body velocity if no input
+        var moveDir = wishHorizontal.IsNearlyZero(0.1f) ? bodyHorizontal : wishHorizontal;
+        if (moveDir.IsNearlyZero(0.1f))
+            return;
+
+        var from = WorldPosition;
+        // Use a minimum check distance based on step depth, scaled by velocity if moving
+        var speed = MathF.Max(bodyHorizontal.Length * Time.Delta, StepDepth);
+        var vel = moveDir.Normal * speed;
+
+        // 1. Trace forward in movement direction
+        var a = from + _offset - vel.Normal * SkinWidth;
+        var b = from + _offset + vel;
+
+        var forwardTrace = BuildTrace(_shrunkenBounds, a, b);
+
+        // If started solid, bail
+        if (forwardTrace.StartedSolid)
+            return;
+
+        // If we didn't hit anything, no step needed
+        if (!forwardTrace.Hit)
+            return;
+
+        // Calculate remaining distance after hit
+        var remainingDist = vel.Length - forwardTrace.Distance;
+        if (remainingDist <= 0)
+            remainingDist = StepDepth; // Minimum step depth when right up against obstacle
+
+        var remainingVel = vel.Normal * remainingDist;
+
+        // 2. Move upward from hit point
+        from = forwardTrace.EndPosition - _offset; // Convert back to feet position
+        var upPoint = from + _offset + Vector3.Up * StepHeight;
+
+        var upTrace = BuildTrace(_shrunkenBounds, from + _offset, upPoint);
+
+        if (upTrace.StartedSolid)
+            return;
+
+        // Need at least 2 units of headroom
+        if (upTrace.Distance < 2f)
+            return;
+
+        // 3. Move across at raised height
+        var raisedPos = upTrace.EndPosition;
+        var acrossEnd = raisedPos + remainingVel;
+
+        var acrossTrace = BuildTrace(_shrunkenBounds, raisedPos, acrossEnd);
+
+        if (acrossTrace.StartedSolid)
+            return;
+
+        // 4. Step down to find ground
+        var top = acrossTrace.EndPosition;
+        var bottom = top + Vector3.Down * StepHeight;
+
+        var downTrace = BuildTrace(_shrunkenBounds, top, bottom);
+
+        // No ground found
+        if (!downTrace.Hit)
+            return;
+
+        // Check if standable
+        var groundAngle = Vector3.GetAngle(Vector3.Up, downTrace.Normal);
+        if (groundAngle > MaxGroundAngle)
+            return;
+
+        // Calculate new feet position
+        var newFeetPos = downTrace.EndPosition - _offset + Vector3.Up * SkinWidth;
+
+        // Didn't step up enough to matter (avoids jitter on flat ground)
+        if (MathF.Abs(newFeetPos.z - WorldPosition.z) < 0.5f)
+            return;
+
+        // Perform the step
+        _didStep = true;
+        _stepPosition = newFeetPos;
+        Body.WorldPosition = _stepPosition;
+        Body.Velocity = Body.Velocity.WithZ(0) * 0.9f;
     }
 
     void IScenePhysicsEvents.PostPhysicsStep()
     {
-        // Apply ground velocity for non-physical mode or when body is invalid
         if (!Body.IsValid())
         {
             WorldPosition += GroundVelocity * Time.Delta;
             return;
         }
 
-        // Apply platform/surface offset
-        Body.WorldPosition += _lastMove.Offset + GroundVelocity * Time.Delta;
-
         if (!PhysicallySimulated) return;
 
-        // Remove the manual offset from velocity
-        Body.Velocity -= _lastMove.Offset / Time.Delta;
+        // === PHYSICAL MODE POST-PHYSICS ===
 
-        // Check if physics pushed us (collision with other objects)
-        var expectedPosition = _prePhysicsBodyPosition + Body.Velocity * Time.Delta;
-        var actualPosition = Body.WorldPosition;
-        var physicsPush = actualPosition - expectedPosition;
-
-        // Update controller velocity from the Move() calculation
-        Velocity = _lastMove.Velocity;
-
-        // If we were pushed by physics, incorporate that into our velocity
-        if (physicsPush.Length > 0.5f)
+        // Restore step position if we stepped (prevents double velocity)
+        if (_didStep)
         {
-            // Add the push as an impulse to our velocity (scaled to feel right)
-            Velocity += physicsPush / Time.Delta * 0.5f;
+            Body.WorldPosition = _stepPosition;
+        }
+
+        // Sync velocity from physics
+        Velocity = Body.Velocity - GroundVelocity;
+
+        // Update ground velocity from what we're standing on
+        UpdatePhysicalGroundVelocity();
+
+        // Stick to ground if needed
+        if (IsOnGround && GroundStickEnabled && !IsSlipping)
+        {
+            StickToGround();
+        }
+
+        // Update ground detection
+        CategorizePhysicalGround();
+    }
+
+    /// <summary>
+    /// Updates ground velocity based on what we're standing on
+    /// </summary>
+    private void UpdatePhysicalGroundVelocity()
+    {
+        if (!IsOnGround || !GroundObject.IsValid())
+        {
+            // Keep platform velocity for SurfaceVelocity
+            return;
+        }
+
+        var groundBody = GroundObject.GetComponent<Rigidbody>();
+        if (groundBody != null)
+        {
+            var mass1 = Body.MassOverride;
+            var mass2 = groundBody.PhysicsBody.Mass;
+            var massFactor = mass2 / (mass1 + mass2);
+            var velAtPoint = groundBody.GetVelocityAtPoint(WorldPosition);
+            // GroundVelocity is handled by the property already, but we adjust Body
+        }
+    }
+
+    /// <summary>
+    /// Stick to ground by lifting slightly and placing back down (s&box Reground pattern)
+    /// </summary>
+    private void StickToGround()
+    {
+        // Don't reground if body is sleeping (not moving)
+        if (Body.PhysicsBody.Sleeping)
+            return;
+
+        var currentPosition = WorldPosition;
+
+        // Trace from slightly above to below
+        var from = currentPosition + _offset + Vector3.Up * 1f;
+        var to = currentPosition + _offset + Vector3.Down * GroundStickDistance;
+
+        var trace = BuildTrace(_shrunkenBounds, from, to);
+
+        if (trace.StartedSolid)
+            return;
+
+        if (trace.Hit)
+        {
+            var surfaceAngle = Vector3.GetAngle(Vector3.Up, trace.Normal);
+            if (surfaceAngle > MaxGroundAngle)
+                return; // Not standable
+
+            var targetFeetPos = trace.EndPosition - _offset + Vector3.Up * 0.01f;
+            var delta = currentPosition - targetFeetPos;
+
+            if (delta.IsNearlyZero(0.001f))
+                return;
+
+            Body.WorldPosition = targetFeetPos;
+
+            // When stepping down, clear vertical velocity to avoid fall buildup
+            if (delta.z > 0.01f)
+            {
+                Body.Velocity = Body.Velocity.WithZ(0);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Detect what ground we're standing on (s&box CategorizeGround pattern)
+    /// </summary>
+    private void CategorizePhysicalGround()
+    {
+        var wasOnGround = IsOnGround;
+
+        // Trace from above feet to below feet (like s&box: +4 to -2)
+        var from = WorldPosition + _offset + Vector3.Up * 4f;
+        var to = WorldPosition + _offset + Vector3.Down * 2f;
+
+        var trace = BuildTrace(_shrunkenBounds, from, to);
+
+        if (trace.StartedSolid)
+        {
+            IsStuck = true;
+            // Still try to detect ground
+        }
+        else
+        {
+            IsStuck = false;
+        }
+
+        if (trace.Hit && !trace.StartedSolid)
+        {
+            var surfaceAngle = Vector3.GetAngle(Vector3.Up, trace.Normal);
+            var isStandable = surfaceAngle <= MaxGroundAngle;
+
+            if (isStandable)
+            {
+                IsOnGround = true;
+                GroundNormal = trace.Normal;
+                GroundSurface = trace.Surface;
+                GroundObject = trace.GameObject;
+                IsSlipping = false;
+            }
+            else
+            {
+                // Surface too steep
+                IsOnGround = false;
+                GroundNormal = trace.Normal;
+                GroundSurface = trace.Surface;
+                GroundObject = trace.GameObject;
+                IsSlipping = true;
+            }
+        }
+        else
+        {
+            IsOnGround = false;
+            GroundNormal = Vector3.Up;
+            GroundSurface = null;
+            GroundObject = null;
+            IsSlipping = false;
         }
     }
 
