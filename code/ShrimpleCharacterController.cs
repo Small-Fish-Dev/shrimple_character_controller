@@ -6,16 +6,16 @@ namespace ShrimpleCharacterController;
 public partial class ShrimpleCharacterController : Component, IScenePhysicsEvents, ISceneEvent<IScenePhysicsEvents>, Component.ICollisionListener
 {
     /// <summary>
-    /// Manually update this by calling Move() or let it always be simulated
+    /// Manually update this by calling Move() or let it always be simulated.
+    /// Not supported when PhysicallySimulated is enabled.
     /// </summary>
     [Property]
     [Group("Options")]
-    [Validate(nameof(physicalAndManual), "When manually updating a simulated body make sure to call Move() before the physics step!", LogLevel.Warn)]
+    [HideIf(nameof(PhysicallySimulated), true)]
     public bool ManuallyUpdate { get; set; } = false;
 
     [Property]
     [FeatureEnabled("Physical")]
-    [Validate(nameof(physicalAndManual), "When manually updating a simulated body make sure to call Move() before the physics step!", LogLevel.Warn)]
     public bool PhysicallySimulated
     {
         get;
@@ -30,7 +30,6 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
         }
     }
 
-    private bool physicalAndManual(object _) => !ManuallyUpdate || !PhysicallySimulated;
     private bool isPhysical(object _) => !PhysicallySimulated;
 
     [Property]

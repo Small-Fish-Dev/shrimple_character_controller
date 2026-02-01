@@ -15,7 +15,6 @@ public partial class ShrimpleCharacterController
         }
 
         if (!Body.IsValid()) return;
-        if (ManuallyUpdate) return;
 
         _didStep = false;
 
@@ -36,7 +35,6 @@ public partial class ShrimpleCharacterController
         }
 
         if (!PhysicallySimulated) return;
-        if (ManuallyUpdate) return;
 
         if (_didStep)
             Body.WorldPosition = _stepPosition;
