@@ -7,13 +7,7 @@ public partial class ShrimpleCharacterController
 
     void IScenePhysicsEvents.PrePhysicsStep()
     {
-        if (!PhysicallySimulated)
-        {
-            if (ManuallyUpdate) return;
-            Move();
-            return;
-        }
-
+        if (!PhysicallySimulated) return;
         if (!Body.IsValid()) return;
 
         _didStep = false;
