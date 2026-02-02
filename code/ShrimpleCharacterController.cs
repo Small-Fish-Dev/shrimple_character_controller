@@ -1380,6 +1380,30 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
             Move();
     }
 
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+
+        Collider?.Destroy();
+        Body?.Destroy();
+    }
+
+    protected override void OnDisabled()
+    {
+        base.OnDisabled();
+
+        Collider?.Enabled = false;
+        Body?.Enabled = false;
+    }
+
+    protected override void OnEnabled()
+    {
+        base.OnEnabled();
+
+        Collider?.Enabled = true;
+        Body?.Enabled = true;
+    }
+
     public override int ComponentVersion => 4;
 
     [JsonUpgrader(typeof(ShrimpleCharacterController), 3)]
