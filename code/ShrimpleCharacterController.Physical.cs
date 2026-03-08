@@ -89,82 +89,18 @@ public partial class ShrimpleCharacterController
 
     private void AddWishVelocity()
     {
-        var wish = WishVelocity;
         var z = Body.Velocity.z;
-        var velocity = Body.Velocity;
+        var velocity = CalculateGoalVelocity(Time.Delta);
 
-        var currentSpeed = Math.Max(velocity.WithZ(0).Length, 10f);
-        var acceleration = (IsOnGround ? GroundAcceleration : AirAcceleration) * (FixedAcceleration ? 1f : AccelerationCurve.Evaluate(currentSpeed));
-        var deceleration = (IsOnGround ? GroundDeceleration : AirDeceleration) * (FixedDeceleration ? 1f : DecelerationCurve.Evaluate(currentSpeed));
-
-        if (!IgnoreGroundSurface && GroundSurface != null)
+        if (IsOnGround && GroundStickEnabled && !GroundNormal.IsNearlyZero(0.01f))
         {
-            acceleration *= GroundSurface.Friction;
-            deceleration *= GroundSurface.Friction;
-        }
-
-        if (!wish.IsNearZeroLength)
-        {
-            if (AccelerationEnabled)
+            var projected = Vector3.VectorPlaneProject(velocity.WithZ(0), GroundNormal);
+            if (!projected.IsNearlyZero(0.01f))
             {
-                var speed = velocity.WithZ(0).Length;
-                var maxSpeed = MathF.Max(wish.Length, speed);
-
-                var targetVelocity = wish;
-                if (IsOnGround && GroundStickEnabled && !GroundNormal.IsNearlyZero(0.01f))
-                {
-                    targetVelocity = Vector3.VectorPlaneProject(wish, GroundNormal);
-                    if (!targetVelocity.IsNearlyZero(0.01f))
-                    {
-                        var isGoingUphill = Vector3.Dot(targetVelocity, AppliedGravity) < 0f;
-                        var slopeMultiplier = isGoingUphill ? GetSlopeVelocityMultiplier(GroundAngle) : 1f;
-                        targetVelocity = targetVelocity.Normal * maxSpeed * slopeMultiplier;
-                    }
-
-                    velocity = velocity.MoveTowards(targetVelocity, acceleration * Time.Delta);
-
-                    if (velocity.Length > maxSpeed)
-                        velocity = velocity.Normal * maxSpeed;
-                }
-                else
-                {
-                    var horizontalVel = velocity.WithZ(0);
-                    var targetHorizontal = wish.Normal * maxSpeed;
-                    horizontalVel = horizontalVel.MoveTowards(targetHorizontal, acceleration * Time.Delta);
-
-                    if (horizontalVel.Length > maxSpeed)
-                        horizontalVel = horizontalVel.Normal * maxSpeed;
-
-                    velocity = horizontalVel.WithZ(velocity.z);
-                }
+                var isGoingUphill = Vector3.Dot(projected, AppliedGravity) < 0f;
+                var slopeMultiplier = isGoingUphill ? GetSlopeVelocityMultiplier(GroundAngle) : 1f;
+                velocity = projected.Normal * projected.Length * slopeMultiplier;
             }
-            else
-            {
-                if (IsOnGround && GroundStickEnabled && !GroundNormal.IsNearlyZero(0.01f))
-                {
-                    var projectedWish = Vector3.VectorPlaneProject(wish, GroundNormal);
-                    if (!projectedWish.IsNearlyZero(0.01f))
-                    {
-                        var isGoingUphill = Vector3.Dot(projectedWish, AppliedGravity) < 0f;
-                        var slopeMultiplier = isGoingUphill ? GetSlopeVelocityMultiplier(GroundAngle) : 1f;
-                        velocity = projectedWish.Normal * wish.Length * slopeMultiplier;
-                    }
-                    else
-                        velocity = Vector3.Zero;
-                }
-                else
-                {
-                    if (!IsOnGround)
-                        velocity = wish.WithZ(velocity.z);
-                    else
-                        velocity = wish;
-                }
-            }
-        }
-        else if (IsOnGround)
-        {
-            if (AccelerationEnabled)
-                velocity = velocity.MoveTowards(Vector3.Zero, deceleration * Time.Delta);
             else
                 velocity = Vector3.Zero;
         }
