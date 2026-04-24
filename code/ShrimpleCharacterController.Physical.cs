@@ -15,13 +15,7 @@ public partial class ShrimpleCharacterController
         UpdateBodyPhysics();
         UpdateMassCenter();
 
-        if ( IsOnGround && GroundStickEnabled && !IsSlipping )
-            StickToGround();
-
-        AddWishVelocity();
-
-        if ( StepsEnabled && IsOnGround )
-            TryStepUp();
+        UpdateMovement();
     }
 
     void IScenePhysicsEvents.PostPhysicsStep()
@@ -114,18 +108,28 @@ public partial class ShrimpleCharacterController
         Body.Velocity = velocity;
     }
 
-    private void TryStepUp()
+    private void UpdateMovement()
     {
+        if ( IsOnGround && GroundStickEnabled && !IsSlipping )
+            StickToGround();
+
+        AddWishVelocity();
+
+        if ( !StepsEnabled || !IsOnGround ) return;
+
         var wishHorizontal = WishVelocity.WithZ( 0 );
         var bodyHorizontal = Body.Velocity.WithZ( 0 );
-
         var moveDir = wishHorizontal.IsNearlyZero( 0.1f ) ? bodyHorizontal : wishHorizontal;
         if ( moveDir.IsNearlyZero( 0.1f ) ) return;
 
         var speed = MathF.Max( bodyHorizontal.Length * Time.Delta, StepDepth );
         var vel = moveDir.Normal * speed;
-
         var forwardTrace = BuildTrace( _shrunkenBounds, WorldPosition + _offset - vel.Normal * SkinWidth, WorldPosition + _offset + vel );
+        TryStepUp( forwardTrace, vel );
+    }
+
+    private void TryStepUp( SceneTraceResult forwardTrace, Vector3 vel )
+    {
         if ( forwardTrace.StartedSolid || !forwardTrace.Hit ) return;
 
         var angle = Vector3.GetAngle( -AppliedGravity.Normal, forwardTrace.Normal );
