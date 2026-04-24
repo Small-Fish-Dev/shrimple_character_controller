@@ -478,20 +478,24 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
     /// Min = Angle where velocity starts to drop off<br/>
     /// Max = Max angle where velocity is fully blocked (you can still slide down with gravity)
     /// </summary>
-    [Property]
+    [Property, Step( 0.1f )]
     [Feature( "GroundStick" )]
     public RangedFloat MaxGroundAngle
     {
         get;
         set
         {
-            // Clamp values to valid range and ensure x <= y
-            var min = MathX.Clamp( value.Min, 0f, 89f );
-            var max = MathX.Clamp( value.Max, 0f, 89f );
-            if ( min > max ) min = max;
-            if ( max < min ) max = min;
+            if ( value.Range == RangedFloat.RangeType.Between )
+            {
+                var min = MathX.Clamp( value.Min, 0f, 89f );
+                var max = MathX.Clamp( value.Max, 0f, 89f );
 
-            field = new RangedFloat( min, max );
+                field = new RangedFloat( MathF.Min( min, max ), MathF.Max( min, max ) );
+            }
+            else
+            {
+                field = new RangedFloat( MathX.Clamp( value.FixedValue, 0f, 89f ) );
+            }
         }
     } = new RangedFloat( 30f, 60f );
 

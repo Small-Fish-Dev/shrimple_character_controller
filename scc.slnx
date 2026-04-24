@@ -11,6 +11,7 @@
   <Folder Name="/Tools/">
     <Project Path="../../../../../Program Files (x86)/Steam/steamapps/common/sbox/addons/tools/code/Base Editor Library.csproj" />
     <Project Path="../../../../../Program Files (x86)/Steam/steamapps/common/sbox/editor/ActionGraph/Code/actiongraph.csproj" />
+    <Project Path="../../../../../Program Files (x86)/Steam/steamapps/common/sbox/editor/DooEditor/Code/dooeditor.csproj" />
     <Project Path="../../../../../Program Files (x86)/Steam/steamapps/common/sbox/editor/Hammer/Code/hammer.csproj" />
     <Project Path="../../../../../Program Files (x86)/Steam/steamapps/common/sbox/editor/MovieMaker/Code/moviemaker.csproj" />
     <Project Path="../../../../../Program Files (x86)/Steam/steamapps/common/sbox/editor/ShaderGraph/Code/shadergraph.csproj" />
