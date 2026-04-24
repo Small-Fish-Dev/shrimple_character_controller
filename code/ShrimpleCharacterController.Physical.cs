@@ -31,20 +31,7 @@ public partial class ShrimpleCharacterController
         if ( _didStep )
             Body.WorldPosition = _stepPosition;
 
-        var wasOnGround = IsOnGround;
-
         CategorizePhysicalGround();
-
-        if ( GroundStickEnabled && !IsSlipping )
-        {
-            var shouldTryStick = IsOnGround;
-            if ( !shouldTryStick && wasOnGround )
-                shouldTryStick = true;
-
-            if ( shouldTryStick )
-                StickToGround();
-        }
-
         ApplyGroundVelocity();
         Velocity = Body.Velocity;
     }
@@ -205,7 +192,7 @@ public partial class ShrimpleCharacterController
     private void CategorizePhysicalGround()
     {
         var position = WorldPosition + _offset;
-        var groundTrace = BuildTrace( _shrunkenBounds, position, position + AppliedGravity.Normal * (GroundStickDistance + SkinWidth * 1.1f) );
+        var groundTrace = BuildTrace( _shrunkenBounds, position + Vector3.Up * StepHeight, position + Vector3.Down * GroundStickDistance );
 
         if ( groundTrace.StartedSolid )
         {
@@ -213,29 +200,50 @@ public partial class ShrimpleCharacterController
             var fallbackTrace = BuildTrace( _shrunkenBounds, position + -AppliedGravity.Normal * 4f, position + AppliedGravity.Normal * 2f );
             if ( fallbackTrace.Hit && !fallbackTrace.StartedSolid )
             {
-                var fallbackAngle = Vector3.GetAngle( Vector3.Up, fallbackTrace.Normal );
-                if ( IsAngleStandable( fallbackAngle ) )
-                {
-                    IsOnGround = true;
-                    GroundNormal = fallbackTrace.Normal;
-                    GroundSurface = fallbackTrace.Surface;
-                    GroundObject = fallbackTrace.GameObject;
-                    IsSlipping = false;
-                }
+                var standable = IsAngleStandable( Vector3.GetAngle( Vector3.Up, fallbackTrace.Normal ) );
+                IsOnGround = true;
+                GroundNormal = fallbackTrace.Normal;
+                GroundSurface = fallbackTrace.Surface;
+                GroundObject = fallbackTrace.GameObject;
+                IsSlipping = !standable;
             }
             return;
         }
+
         IsStuck = false;
 
-        var wasOnGround = IsOnGround;
-        var hasLanded = !wasOnGround && Vector3.Dot( Velocity, AppliedGravity ) >= 0f && groundTrace.Hit && groundTrace.Distance <= SkinWidth * 2f;
-        var isGrounded = wasOnGround && groundTrace.Hit;
+        if ( groundTrace.Hit )
+        {
+            var standable = IsAngleStandable( Vector3.GetAngle( Vector3.Up, groundTrace.Normal ) );
+            var hasLanded = !IsOnGround && Vector3.Dot( Velocity, AppliedGravity ) >= 0f && groundTrace.Distance <= SkinWidth * 2f + StepHeight;
 
-        IsOnGround = hasLanded || isGrounded;
-        GroundNormal = IsOnGround ? groundTrace.Normal : -AppliedGravity.Normal;
-        GroundSurface = IsOnGround ? groundTrace.Surface : null;
-        GroundObject = IsOnGround ? groundTrace.GameObject : null;
-        IsSlipping = IsOnGround && !IsAngleStandable( GroundAngle );
+            IsOnGround = IsOnGround || hasLanded;
+            GroundNormal = groundTrace.Normal;
+            GroundSurface = groundTrace.Surface;
+            GroundObject = groundTrace.GameObject;
+            IsSlipping = IsOnGround && !standable;
+
+            if ( GroundStickEnabled && !IsSlipping && IsOnGround && !Body.PhysicsBody.Sleeping )
+            {
+                var targetFeetPos = groundTrace.EndPosition - _offset + Vector3.Up * 0.01f;
+                var delta = WorldPosition - targetFeetPos;
+
+                if ( delta.z >= -0.1f && !delta.IsNearlyZero( 0.001f ) )
+                {
+                    Body.WorldPosition = targetFeetPos;
+                    if ( Body.Velocity.z > 0f )
+                        Body.Velocity = Body.Velocity.WithZ( 0 );
+                }
+            }
+
+            return;
+        }
+
+        IsOnGround = false;
+        GroundNormal = Vector3.Zero;
+        GroundSurface = null;
+        GroundObject = null;
+        IsSlipping = false;
     }
 
     public bool TryPhysicalUnstuck( Vector3 position, out Vector3 result )
