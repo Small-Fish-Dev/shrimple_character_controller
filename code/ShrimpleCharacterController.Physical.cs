@@ -113,7 +113,8 @@ public partial class ShrimpleCharacterController
 
         if ( !forwardTrace.Hit || forwardTrace.StartedSolid ) return;
 
-        if ( Vector3.Dot( Body.Velocity, forwardTrace.Normal ) < 0f )
+        var forwardAngle = Vector3.GetAngle( -AppliedGravity.Normal, forwardTrace.Normal );
+        if ( IsAngleStandable( forwardAngle ) && Vector3.Dot( Body.Velocity, forwardTrace.Normal ) < 0f )
             Body.Velocity = Vector3.VectorPlaneProject( Body.Velocity, forwardTrace.Normal );
 
         if ( StepsEnabled && IsOnGround )
