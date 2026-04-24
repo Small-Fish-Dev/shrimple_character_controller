@@ -99,14 +99,10 @@ public partial class ShrimpleCharacterController
         if ( IsOnGround && GroundStickEnabled && !GroundNormal.IsNearlyZero( 0.01f ) )
         {
             var projected = Vector3.VectorPlaneProject( velocity.WithZ( 0 ), GroundNormal );
-            if ( !projected.IsNearlyZero( 0.01f ) )
-            {
-                var isGoingUphill = Vector3.Dot( projected, AppliedGravity ) < 0f;
-                var slopeMultiplier = isGoingUphill ? GetSlopeVelocityMultiplier( GroundAngle ) : 1f;
-                velocity = projected.Normal * projected.Length * slopeMultiplier;
-            }
-            else
-                velocity = Vector3.Zero;
+            var isGoingUphill = Vector3.Dot( projected, AppliedGravity ) < 0f;
+            var slopeMultiplier = isGoingUphill ? GetSlopeVelocityMultiplier( GroundAngle ) : 1f;
+
+            velocity *= slopeMultiplier;
         }
 
         if ( IsOnGround && !GroundStickEnabled )
