@@ -136,6 +136,10 @@ public partial class ShrimpleCharacterController
 
         if ( forwardTrace.StartedSolid ) return;
         if ( !forwardTrace.Hit ) return;
+        var angle = Vector3.GetAngle( -AppliedGravity.Normal, forwardTrace.Normal );
+        var isStep = angle >= 90f - StepTolerance && angle <= 90f + StepTolerance;
+
+        if ( !isStep ) return;
 
         var remainingDist = vel.Length - forwardTrace.Distance;
         if ( remainingDist <= 0 ) remainingDist = StepDepth;
@@ -241,7 +245,6 @@ public partial class ShrimpleCharacterController
             }
             return;
         }
-
         IsStuck = false;
 
         var wasOnGround = IsOnGround;
