@@ -122,49 +122,24 @@ public partial class ShrimpleCharacterController
         var moveDir = wishHorizontal.IsNearlyZero( 0.1f ) ? bodyHorizontal : wishHorizontal;
         if ( moveDir.IsNearlyZero( 0.1f ) ) return;
 
-        var from = WorldPosition;
         var speed = MathF.Max( bodyHorizontal.Length * Time.Delta, StepDepth );
         var vel = moveDir.Normal * speed;
 
-        var a = from + _offset - vel.Normal * SkinWidth;
-        var b = from + _offset + vel;
-        var forwardTrace = BuildTrace( _shrunkenBounds, a, b );
+        var forwardTrace = BuildTrace( _shrunkenBounds, WorldPosition + _offset - vel.Normal * SkinWidth, WorldPosition + _offset + vel );
+        if ( forwardTrace.StartedSolid || !forwardTrace.Hit ) return;
 
-        if ( forwardTrace.StartedSolid ) return;
-        if ( !forwardTrace.Hit ) return;
         var angle = Vector3.GetAngle( -AppliedGravity.Normal, forwardTrace.Normal );
-        var isStep = angle >= 90f - StepTolerance && angle <= 90f + StepTolerance;
+        if ( angle < 90f - StepTolerance || angle > 90f + StepTolerance ) return;
 
-        if ( !isStep ) return;
+        var stepHorizontal = Vector3.VectorPlaneProject( vel.Normal, AppliedGravity.Normal ).Normal * StepDepth;
+        var stepVertical = -AppliedGravity.Normal * (StepHeight + SkinWidth);
+        var stepTrace = BuildTrace( _shrunkenBounds, forwardTrace.EndPosition + stepHorizontal + stepVertical, forwardTrace.EndPosition + stepHorizontal );
 
-        var remainingDist = vel.Length - forwardTrace.Distance;
-        if ( remainingDist <= 0 ) remainingDist = StepDepth;
-        var remainingVel = vel.Normal * remainingDist;
+        if ( stepTrace.StartedSolid || !stepTrace.Hit ) return;
+        if ( !IsAngleStandable( Vector3.GetAngle( stepTrace.Normal, -AppliedGravity.Normal ) ) ) return;
 
-        from = forwardTrace.EndPosition - _offset;
-        var upPoint = from + _offset + Vector3.Up * StepHeight;
-        var upTrace = BuildTrace( _shrunkenBounds, from + _offset, upPoint );
-
-        if ( upTrace.StartedSolid ) return;
-        if ( upTrace.Distance < 2f ) return;
-
-        var raisedPos = upTrace.EndPosition;
-        var acrossEnd = raisedPos + remainingVel;
-        var acrossTrace = BuildTrace( _shrunkenBounds, raisedPos, acrossEnd );
-
-        if ( acrossTrace.StartedSolid ) return;
-
-        var top = acrossTrace.EndPosition;
-        var bottom = top + Vector3.Down * StepHeight;
-        var downTrace = BuildTrace( _shrunkenBounds, top, bottom );
-
-        if ( !downTrace.Hit ) return;
-
-        var groundAngle = Vector3.GetAngle( Vector3.Up, downTrace.Normal );
-        if ( !IsAngleStandable( groundAngle ) ) return;
-
-        var newFeetPos = downTrace.EndPosition - _offset + Vector3.Up * SkinWidth;
-        if ( MathF.Abs( newFeetPos.z - WorldPosition.z ) < 0.5f ) return;
+        var newFeetPos = stepTrace.EndPosition - _offset + Vector3.Up * SkinWidth;
+        if ( newFeetPos.z - WorldPosition.z < 0.5f ) return;
 
         _didStep = true;
         _stepPosition = newFeetPos;
