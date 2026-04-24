@@ -115,8 +115,6 @@ public partial class ShrimpleCharacterController
 
         AddWishVelocity();
 
-        if ( !StepsEnabled || !IsOnGround ) return;
-
         var wishHorizontal = WishVelocity.WithZ( 0 );
         var bodyHorizontal = Body.Velocity.WithZ( 0 );
         var moveDir = wishHorizontal.IsNearlyZero( 0.1f ) ? bodyHorizontal : wishHorizontal;
@@ -125,7 +123,14 @@ public partial class ShrimpleCharacterController
         var speed = MathF.Max( bodyHorizontal.Length * Time.Delta, StepDepth );
         var vel = moveDir.Normal * speed;
         var forwardTrace = BuildTrace( _shrunkenBounds, WorldPosition + _offset - vel.Normal * SkinWidth, WorldPosition + _offset + vel );
-        TryStepUp( forwardTrace, vel );
+
+        if ( !forwardTrace.Hit || forwardTrace.StartedSolid ) return;
+
+        if ( Vector3.Dot( Body.Velocity, forwardTrace.Normal ) < 0f )
+            Body.Velocity = Vector3.VectorPlaneProject( Body.Velocity, forwardTrace.Normal );
+
+        if ( StepsEnabled && IsOnGround )
+            TryStepUp( forwardTrace, vel );
     }
 
     private void TryStepUp( SceneTraceResult forwardTrace, Vector3 vel )
