@@ -216,7 +216,10 @@ public partial class ShrimpleCharacterController
         if ( groundTrace.Hit )
         {
             var standable = IsAngleStandable( Vector3.GetAngle( Vector3.Up, groundTrace.Normal ) );
-            var hasLanded = !IsOnGround && Vector3.Dot( Velocity, AppliedGravity ) >= 0f && groundTrace.Distance <= SkinWidth * 2f + StepHeight;
+            var landingAngle = Vector3.Dot( Velocity.Normal, groundTrace.Normal );
+            var verticalAngle = Vector3.Dot( Velocity.Normal, AppliedGravity.Normal );
+            var goingUp = verticalAngle < 0.1f;
+            var hasLanded = !IsOnGround && landingAngle <= (MaxGroundAngle.Max / 180f) && groundTrace.Distance <= SkinWidth * (goingUp ? 6f : 2f) + StepHeight;
 
             IsOnGround = IsOnGround || hasLanded;
             GroundNormal = groundTrace.Normal;
