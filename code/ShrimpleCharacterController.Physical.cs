@@ -14,7 +14,6 @@ public partial class ShrimpleCharacterController
 
         UpdateBodyPhysics();
         UpdateMassCenter();
-
         UpdateMovement();
     }
 
@@ -79,7 +78,7 @@ public partial class ShrimpleCharacterController
 
         if ( IsOnGround && GroundStickEnabled && !GroundNormal.IsNearlyZero( 0.01f ) )
         {
-            var projected = velocity.ProjectAndScale( GroundNormal );
+            var projected = Vector3.VectorPlaneProject( velocity, GroundNormal );
             var isGoingUphill = Vector3.Dot( projected, AppliedGravity ) < 0f;
             var slopeMultiplier = isGoingUphill ? GetSlopeVelocityMultiplier( GroundAngle ) : 1f;
 
@@ -119,8 +118,6 @@ public partial class ShrimpleCharacterController
 
         if ( StepsEnabled && IsOnGround )
             TryStepUp( forwardTrace, vel );
-        if ( Body.Velocity.WithZ( 0f ).Length >= 10f )
-            Log.Info( "UpdateAfter: " + Body.Velocity.WithZ( 0f ).Length );
     }
 
     private void TryStepUp( SceneTraceResult forwardTrace, Vector3 vel )
@@ -160,7 +157,7 @@ public partial class ShrimpleCharacterController
     {
         var currentPosition = WorldPosition;
         var from = currentPosition + _offset + Vector3.Up * StepHeight;
-        var to = currentPosition + _offset + Vector3.Down * GroundStickDistance;
+        var to = currentPosition + _offset + Vector3.Down * (GroundStickDistance + SkinWidth);
 
         var trace = BuildTrace( _shrunkenBounds, from, to );
 
@@ -171,11 +168,7 @@ public partial class ShrimpleCharacterController
             var surfaceAngle = Vector3.GetAngle( Vector3.Up, trace.Normal );
             if ( !IsAngleStandable( surfaceAngle ) ) return;
 
-            var targetFeetPos = trace.EndPosition - _offset + Vector3.Up * 0.01f;
-            var delta = currentPosition - targetFeetPos;
-
-            if ( delta.z < -0.1f ) return;
-            if ( delta.IsNearlyZero( 0.001f ) ) return;
+            var targetFeetPos = trace.EndPosition - _offset + Vector3.Up * SkinWidth;
 
             Body.WorldPosition = targetFeetPos;
             Body.Sleeping = false;
@@ -194,7 +187,7 @@ public partial class ShrimpleCharacterController
     private void CategorizePhysicalGround()
     {
         var position = WorldPosition + _offset;
-        var groundTrace = BuildTrace( _shrunkenBounds, position + Vector3.Up * StepHeight, position + Vector3.Down * GroundStickDistance );
+        var groundTrace = BuildTrace( _shrunkenBounds, position + Vector3.Up * StepHeight, position + Vector3.Down * (GroundStickDistance + SkinWidth) );
 
         if ( groundTrace.StartedSolid )
         {
@@ -230,7 +223,7 @@ public partial class ShrimpleCharacterController
 
             if ( GroundStickEnabled && !IsSlipping && IsOnGround )
             {
-                var targetFeetPos = groundTrace.EndPosition - _offset + Vector3.Up * 0.01f;
+                var targetFeetPos = groundTrace.EndPosition - _offset + Vector3.Up * SkinWidth;
                 var delta = WorldPosition - targetFeetPos;
 
                 if ( delta.z >= -0.1f && !delta.IsNearlyZero( 0.001f ) )
