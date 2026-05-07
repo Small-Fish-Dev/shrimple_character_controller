@@ -247,55 +247,6 @@ public partial class ShrimpleCharacterController
         IsSlipping = false;
     }
 
-    public bool TryPhysicalUnstuck( Vector3 position, out Vector3 result )
-    {
-        if ( Body.IsValid() )
-        {
-            var bodyPos = Body.WorldPosition;
-            var bodyTrace = BuildTrace( _shrunkenBounds, bodyPos + _offset, bodyPos + _offset );
-            if ( !bodyTrace.StartedSolid )
-            {
-                result = bodyPos;
-                return true;
-            }
-        }
-
-        for ( int i = 1; i <= 10; i++ )
-        {
-            var upPos = position + -AppliedGravity.Normal * (i * 2f);
-            var upTrace = BuildTrace( _shrunkenBounds, upPos + _offset, upPos + _offset );
-            if ( !upTrace.StartedSolid )
-            {
-                result = upPos;
-                if ( Body.IsValid() )
-                {
-                    Body.WorldPosition = upPos;
-                    Body.Velocity = Vector3.Zero;
-                }
-                return true;
-            }
-        }
-
-        if ( Body.IsValid() && Body.Velocity.Length > 1f )
-        {
-            var velDir = Body.Velocity.Normal;
-            for ( int i = 1; i <= 5; i++ )
-            {
-                var velPos = position + velDir * (i * 4f);
-                var velTrace = BuildTrace( _shrunkenBounds, velPos + _offset, velPos + _offset );
-                if ( !velTrace.StartedSolid )
-                {
-                    result = velPos;
-                    Body.WorldPosition = velPos;
-                    return true;
-                }
-            }
-        }
-
-        result = position;
-        return false;
-    }
-
     protected void CreateBody()
     {
         if ( Collider.IsValid() ) Collider.Destroy();

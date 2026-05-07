@@ -675,7 +675,6 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
     [Feature( "Unstuck" )]
     [Range( 1, 100, false )]
     [Step( 1f )]
-    [Validate( nameof( isPhysical ), "Physical mode uses physics-aware unstuck. Check IsStuck for stuck state.", LogLevel.Info )]
     public int MaxUnstuckTries { get; set; } = 40;
 
     /// <summary>
@@ -1045,24 +1044,19 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
                 IsStuck = true;
                 if ( UnstuckEnabled )
                 {
-                    if ( PhysicallySimulated )
-                    {
-                        // For physical mode, attempt physics-aware unstuck
-                        if ( Body.IsValid() && TryPhysicalUnstuck( position, out var physResult ) )
-                        {
-                            IsStuck = false;
-                            position = physResult;
-                        }
-                        // If physical unstuck fails, IsStuck remains true
-                        // The physics body may naturally resolve this through collision response
-                    }
-                    else if ( UnstuckTarget == null )
+                    if ( UnstuckTarget == null )
                     {
                         IsStuck = !TryUnstuck( position, out var result );
 
                         if ( !IsStuck )
                         {
                             position = result; // Update the new position
+
+                            if ( PhysicallySimulated && Body.IsValid() )
+                            {
+                                Body.WorldPosition = result;
+                                Body.Velocity = Vector3.Zero;
+                            }
 
                             if ( groundTrace.GameObject != null )
                                 if ( groundTrace.GameObject.Components.TryGet<ShrimpleCharacterController>( out var otherHelper ) )
