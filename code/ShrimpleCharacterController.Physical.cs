@@ -193,8 +193,17 @@ public partial class ShrimpleCharacterController
         if ( groundTrace.StartedSolid )
         {
             IsStuck = true;
+
+            if ( UnstuckEnabled && TryUnstuck( WorldPosition, out var unstuckResult ) )
+            {
+                IsStuck = false;
+                Body.WorldPosition = unstuckResult;
+                Body.Velocity = Vector3.Zero;
+            }
+
             var fallbackTrace = BuildTrace( _shrunkenBounds, position + -AppliedGravity.Normal * 4f, position + AppliedGravity.Normal * 2f );
-            if ( fallbackTrace.Hit && !fallbackTrace.StartedSolid )
+
+            if ( fallbackTrace.Hit && !fallbackTrace.StartedSolid && Vector3.Dot( fallbackTrace.Normal, -AppliedGravity.Normal ) > 0f )
             {
                 var standable = IsAngleStandable( Vector3.GetAngle( Vector3.Up, fallbackTrace.Normal ) );
                 IsOnGround = true;
