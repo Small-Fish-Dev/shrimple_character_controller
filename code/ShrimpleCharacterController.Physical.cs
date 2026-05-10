@@ -192,27 +192,34 @@ public partial class ShrimpleCharacterController
 
         if ( groundTrace.StartedSolid )
         {
-            IsStuck = true;
+            var stuckCheck = BuildTrace( _shrunkenBounds, position, position, useCapsule: true );
 
-            if ( UnstuckEnabled && TryUnstuck( WorldPosition, out var unstuckResult ) )
+            if ( stuckCheck.StartedSolid )
             {
-                IsStuck = false;
-                Body.WorldPosition = unstuckResult;
-                Body.Velocity = Vector3.Zero;
+                IsStuck = true;
+
+                if ( UnstuckEnabled && TryUnstuck( position, out var unstuckResult ) )
+                {
+                    IsStuck = false;
+                    Body.WorldPosition = unstuckResult - _offset;
+                    Body.Velocity = Vector3.Zero;
+                }
+
+                var fallbackTrace = BuildTrace( _shrunkenBounds, position + -AppliedGravity.Normal * 4f, position + AppliedGravity.Normal * 2f );
+
+                if ( fallbackTrace.Hit && !fallbackTrace.StartedSolid && Vector3.Dot( fallbackTrace.Normal, -AppliedGravity.Normal ) > 0f )
+                {
+                    var standable = IsAngleStandable( Vector3.GetAngle( Vector3.Up, fallbackTrace.Normal ) );
+                    IsOnGround = true;
+                    GroundNormal = fallbackTrace.Normal;
+                    GroundSurface = fallbackTrace.Surface;
+                    GroundObject = fallbackTrace.GameObject;
+                    IsSlipping = !standable;
+                }
+                return;
             }
 
-            var fallbackTrace = BuildTrace( _shrunkenBounds, position + -AppliedGravity.Normal * 4f, position + AppliedGravity.Normal * 2f );
-
-            if ( fallbackTrace.Hit && !fallbackTrace.StartedSolid && Vector3.Dot( fallbackTrace.Normal, -AppliedGravity.Normal ) > 0f )
-            {
-                var standable = IsAngleStandable( Vector3.GetAngle( Vector3.Up, fallbackTrace.Normal ) );
-                IsOnGround = true;
-                GroundNormal = fallbackTrace.Normal;
-                GroundSurface = fallbackTrace.Surface;
-                GroundObject = fallbackTrace.GameObject;
-                IsSlipping = !standable;
-            }
-            return;
+            groundTrace = BuildTrace( _shrunkenBounds, position, position + Vector3.Down * (GroundStickDistance + SkinWidth) );
         }
 
         IsStuck = false;
