@@ -866,17 +866,29 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
     /// <param name="bounds"></param>
     /// <param name="from"></param>
     /// <param name="to"></param>
+    /// <param name="useCapsule">Use a capsule shape instead of the defaults</param>
     /// <returns></returns>
-    public SceneTraceResult BuildTrace( BBox bounds, Vector3 from, Vector3 to )
+    public SceneTraceResult BuildTrace( BBox bounds, Vector3 from, Vector3 to, bool useCapsule = false )
     {
         SceneTrace builder = new SceneTrace(); // Empty trace builder
 
-        if ( TraceShape == TraceType.Box || TraceShape == TraceType.Bounds )
-            builder = Game.SceneTrace.Box( bounds, from, to );
-        if ( TraceShape == TraceType.Cylinder )
-            builder = Game.SceneTrace.Cylinder( bounds.Maxs.z - bounds.Mins.z, bounds.Maxs.x, from, to );
-        if ( TraceShape == TraceType.Sphere )
-            builder = Game.SceneTrace.Sphere( bounds.Maxs.x, from + WorldRotation.Up * bounds.Maxs.x, to + WorldRotation.Up * bounds.Maxs.x );
+        if ( useCapsule )
+        {
+            var radius = bounds.Maxs.x;
+            var halfHeight = (bounds.Maxs.z - bounds.Mins.z) / 2f;
+            var hemiOffset = MathF.Max( halfHeight - radius, 0f );
+            var capsule = new Capsule( Vector3.Down * hemiOffset, Vector3.Up * hemiOffset, radius );
+            builder = Game.SceneTrace.Capsule( capsule, from, to );
+        }
+        else
+        {
+            if ( TraceShape == TraceType.Box || TraceShape == TraceType.Bounds )
+                builder = Game.SceneTrace.Box( bounds, from, to );
+            if ( TraceShape == TraceType.Cylinder )
+                builder = Game.SceneTrace.Cylinder( bounds.Maxs.z - bounds.Mins.z, bounds.Maxs.x, from, to );
+            if ( TraceShape == TraceType.Sphere )
+                builder = Game.SceneTrace.Sphere( bounds.Maxs.x, from + WorldRotation.Up * bounds.Maxs.x, to + WorldRotation.Up * bounds.Maxs.x );
+        }
 
         builder = builder
             .IgnoreGameObjectHierarchy( GameObject )
@@ -1343,7 +1355,7 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
             if ( startPos - endPos == Vector3.Zero ) // No difference!
                 continue;
 
-            var unstuckTrace = BuildTrace( _shrunkenBounds, startPos, endPos );
+            var unstuckTrace = BuildTrace( _shrunkenBounds, startPos, endPos, PhysicallySimulated );
 
             if ( !unstuckTrace.StartedSolid )
             {
