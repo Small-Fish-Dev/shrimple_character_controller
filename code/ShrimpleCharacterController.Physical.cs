@@ -188,11 +188,13 @@ public partial class ShrimpleCharacterController
     private void CategorizePhysicalGround()
     {
         var position = WorldPosition + _offset;
-        var groundTrace = BuildTrace( _shrunkenBounds, position + Vector3.Up * StepHeight, position + Vector3.Down * (GroundStickDistance + SkinWidth) );
+        var shortCylinderOffset = AppliedWidth / 2f;
+        var shortCylinderBounds = new BBox( _shrunkenBounds.Mins, new Vector3( _shrunkenBounds.Maxs.x, _shrunkenBounds.Maxs.y, _shrunkenBounds.Maxs.z - shortCylinderOffset ) );
+        var groundTrace = BuildTrace( shortCylinderBounds, position + Vector3.Down * shortCylinderOffset / 2f, position + Vector3.Down * (GroundStickDistance + SkinWidth) );
 
         if ( groundTrace.StartedSolid )
         {
-            var stuckCheck = BuildTrace( _shrunkenBounds, position, position, useCapsule: true );
+            var stuckCheck = BuildTrace( _shrunkenBounds.Grow( -SkinWidth ), position, position, useCapsule: true );
 
             if ( stuckCheck.StartedSolid )
             {
@@ -240,7 +242,7 @@ public partial class ShrimpleCharacterController
 
             if ( GroundStickEnabled && !IsSlipping && IsOnGround )
             {
-                var targetFeetPos = groundTrace.EndPosition - _offset + Vector3.Up * SkinWidth;
+                var targetFeetPos = groundTrace.EndPosition - _offset + Vector3.Up * (SkinWidth + shortCylinderOffset / 2f);
                 var delta = WorldPosition - targetFeetPos;
 
                 if ( delta.z >= -0.1f && !delta.IsNearlyZero( 0.001f ) )
