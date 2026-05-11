@@ -1,24 +1,26 @@
 {
   "RootObject": {
     "__guid": "c4460a44-d5f8-4633-bc14-19079f66c3e6",
-    "__version": 1,
+    "__version": 2,
     "Flags": 0,
-    "Name": "Player",
+    "Name": "shrimpleflyer",
     "Position": "0,0,0",
     "Rotation": "0,0,0,1",
     "Scale": "1,1,1",
     "Tags": "",
     "Enabled": true,
     "NetworkMode": 2,
-    "NetworkInterpolation": true,
+    "NetworkFlags": 0,
     "NetworkOrphaned": 0,
+    "NetworkTransmit": true,
     "OwnerTransfer": 1,
     "Components": [
       {
         "__type": "ShrimpleCharacterController.ShrimpleCharacterController",
         "__guid": "268b83b1-d731-4eae-8a67-95f3b2a37d4b",
         "__enabled": true,
-        "__version": 3,
+        "Flags": 0,
+        "__version": 4,
         "AccelerationCurve": {
           "rangex": "0,500",
           "frames": [
@@ -41,7 +43,20 @@
         "AccelerationEnabled": true,
         "AirAcceleration": 1500,
         "AirDeceleration": 700,
+        "ApplySurfaceVelocity": true,
+        "Body": null,
+        "BodyMassOverride": 100,
+        "BodyObject": null,
+        "BodyRigidbodyFlags": 0,
         "BouncingEnabled": false,
+        "Collider": {
+          "_type": "component",
+          "component_id": "16e77e00-08e4-4d4e-984b-41029cbf9d55",
+          "go": "c4460a44-d5f8-4633-bc14-19079f66c3e6",
+          "component_type": "HullCollider"
+        },
+        "ColliderElasticity": null,
+        "ColliderSurface": null,
         "DecelerationCurve": {
           "rangex": "0,500",
           "frames": [
@@ -62,6 +77,7 @@
           ]
         },
         "ElasticityThreshold": 30,
+        "EnableCCD": false,
         "FixedAcceleration": true,
         "FixedDeceleration": true,
         "Gravity": -200,
@@ -71,6 +87,7 @@
         "GroundDeceleration": 1500,
         "GroundStickDistance": 12,
         "GroundStickEnabled": false,
+        "HidePhysicalComponents": true,
         "HorizontalElasticity": 0,
         "IgnoreGroundSurface": false,
         "IgnoreTags": "",
@@ -79,7 +96,7 @@
         "IncludeGroundElasticity": false,
         "ManuallyUpdate": true,
         "MaxBounces": 5,
-        "MaxGroundAngle": 60,
+        "MaxGroundAngle": "45 60",
         "MaxUnstuckTries": 20,
         "OnComponentDestroy": null,
         "OnComponentDisabled": null,
@@ -87,6 +104,7 @@
         "OnComponentFixedUpdate": null,
         "OnComponentStart": null,
         "OnComponentUpdate": null,
+        "PhysicallySimulated": false,
         "PseudoStepsEnabled": true,
         "PushEnabled": false,
         "PushTagsWeight": {
@@ -98,6 +116,11 @@
         "StepHeight": 12,
         "StepsEnabled": false,
         "StepTolerance": 1,
+        "StickToPlatforms": true,
+        "TraceBounds": {
+          "Mins": "-175,-175,0",
+          "Maxs": "175,175,80"
+        },
         "TraceHeight": 80,
         "TraceShape": "Cylinder",
         "TraceWidth": 350,
@@ -112,6 +135,7 @@
         "__type": "ShrimpleCharacterController.ShrimpleFlyer",
         "__guid": "023f71d5-39f3-4487-8834-8b90289e3291",
         "__enabled": true,
+        "Flags": 0,
         "OnComponentDestroy": null,
         "OnComponentDisabled": null,
         "OnComponentEnabled": null,
@@ -120,34 +144,69 @@
         "OnComponentUpdate": null,
         "RunSpeed": 2400,
         "WalkSpeed": 800
+      },
+      {
+        "__type": "Sandbox.HullCollider",
+        "__guid": "16e77e00-08e4-4d4e-984b-41029cbf9d55",
+        "__enabled": true,
+        "Flags": 1,
+        "BoxSize": "50,50,50",
+        "Center": "0,0,40",
+        "ColliderFlags": 0,
+        "Elasticity": null,
+        "Friction": null,
+        "Height": 68,
+        "IsTrigger": false,
+        "OnComponentDestroy": null,
+        "OnComponentDisabled": null,
+        "OnComponentEnabled": null,
+        "OnComponentFixedUpdate": null,
+        "OnComponentStart": null,
+        "OnComponentUpdate": null,
+        "OnObjectTriggerEnter": null,
+        "OnObjectTriggerExit": null,
+        "OnTriggerEnter": null,
+        "OnTriggerExit": null,
+        "Points": [],
+        "Radius": 169,
+        "Radius2": 0,
+        "RollingResistance": null,
+        "Slices": 16,
+        "Static": false,
+        "Surface": null,
+        "SurfaceVelocity": "0,0,0",
+        "Type": "Cylinder"
       }
     ],
     "Children": [
       {
         "__guid": "dc69a438-1444-4045-8f63-4ad33ad29bc0",
-        "__version": 1,
+        "__version": 2,
         "Flags": 0,
         "Name": "Model",
         "Position": "0,0,20",
         "Rotation": "0,0,0,1",
-        "Scale": "1,1,1",
+        "Scale": "4,4,2",
         "Tags": "",
         "Enabled": true,
         "NetworkMode": 2,
-        "NetworkInterpolation": true,
+        "NetworkFlags": 0,
         "NetworkOrphaned": 0,
+        "NetworkTransmit": true,
         "OwnerTransfer": 1,
         "Components": [
           {
             "__type": "Sandbox.ModelRenderer",
             "__guid": "fa020faf-80a8-46b2-b667-6ed276e3c303",
             "__enabled": true,
+            "Flags": 0,
             "BodyGroups": 18446744073709551615,
             "CreateAttachments": false,
+            "LodOverride": null,
             "MaterialGroup": null,
             "MaterialOverride": null,
             "Materials": null,
-            "Model": "models/ufo/ufo.vmdl",
+            "Model": "models/tower-defense-kit/towerdefense_enemy-ufo-d.vmdl",
             "OnComponentDestroy": null,
             "OnComponentDisabled": null,
             "OnComponentEnabled": null,
@@ -166,7 +225,28 @@
         ],
         "Children": []
       }
-    ]
+    ],
+    "__properties": {
+      "NetworkInterpolation": true,
+      "TimeScale": 1,
+      "WantsSystemScene": true,
+      "Metadata": {},
+      "NavMesh": {
+        "Enabled": false,
+        "IncludeStaticBodies": true,
+        "IncludeKeyframedBodies": true,
+        "EditorAutoUpdate": false,
+        "AgentHeight": 64,
+        "AgentRadius": 16,
+        "AgentStepSize": 18,
+        "AgentMaxSlope": 40,
+        "ExcludedBodies": "",
+        "IncludedBodies": "",
+        "DeferGeneration": false,
+        "CustomBounds": false
+      }
+    },
+    "__variables": []
   },
   "ResourceVersion": 2,
   "ShowInMenu": true,
@@ -174,7 +254,7 @@
   "MenuIcon": "airplanemode_active",
   "DontBreakAsTemplate": false,
   "__references": [
-    "fish.ufo#105349"
+    "kenneynl.towerdefenseenemyufod#81513"
   ],
   "__version": 2
 }
