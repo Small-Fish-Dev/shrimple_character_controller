@@ -601,7 +601,7 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
         set
         {
             field = value;
-            _appliedGravity = BuildGravity();
+            BuildGravity();
         }
     } = true;
 
@@ -617,7 +617,7 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
         set
         {
             field = value;
-            _appliedGravity = BuildGravity();
+            BuildGravity();
         }
     }
 
@@ -637,7 +637,7 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
         set
         {
             field = value;
-            _appliedGravity = BuildGravity();
+            BuildGravity();
         }
     } = -850f;
 
@@ -654,11 +654,12 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
         set
         {
             field = value;
-            _appliedGravity = BuildGravity();
+            BuildGravity();
         }
     } = new Vector3( 0f, 0f, -850f );
 
     private Vector3 _appliedGravity;
+    public Vector3 GravityNormal { get; private set; }
     public Vector3 AppliedGravity => _appliedGravity;
 
     /// <summary>
@@ -806,6 +807,7 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
     protected override void OnStart()
     {
         RebuildBounds();
+        BuildGravity();
         _pushTags = BuildPushTags();
     }
 
@@ -853,7 +855,11 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
         _shrunkenBounds = Bounds.Grow( -SkinWidth );
     }
 
-    private Vector3 BuildGravity() => UseSceneGravity ? Scene.PhysicsWorld.Gravity : UseVectorGravity ? VectorGravity : new Vector3( 0f, 0f, Gravity );
+    private void BuildGravity()
+    {
+        _appliedGravity = UseSceneGravity? Scene.PhysicsWorld.Gravity : UseVectorGravity? VectorGravity : new Vector3(0f, 0f, Gravity);
+        GravityNormal = _appliedGravity.Normal;
+    }
 
     private string[] BuildPushTags()
     {
