@@ -822,7 +822,7 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
             if ( TraceShape == TraceType.Box )
                 draw.LineBBox( Bounds.Translate( Vector3.Up * Bounds.Size.z / 2f ) );
             if ( TraceShape == TraceType.Cylinder )
-                draw.LineCylinder( Vector3.Zero, WorldRotation.Up * (Bounds.Maxs.z - Bounds.Mins.z), Bounds.Maxs.x, Bounds.Maxs.x, 24 );
+                draw.LineCylinder( Vector3.Zero, Vector3.Up * (Bounds.Maxs.z - Bounds.Mins.z), Bounds.Maxs.x, Bounds.Maxs.x, 24 );
             if ( TraceShape == TraceType.Sphere )
                 draw.LineSphere( Vector3.Up * Bounds.Maxs.x, Bounds.Maxs.x );
             if ( TraceShape == TraceType.Bounds )
