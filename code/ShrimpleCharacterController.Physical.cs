@@ -125,17 +125,17 @@ public partial class ShrimpleCharacterController
     {
         if ( forwardTrace.StartedSolid || !forwardTrace.Hit ) return;
 
-        var angle = Vector3.GetAngle( -AppliedGravity.Normal, forwardTrace.Normal );
+        var angle = Vector3.GetAngle( -GravityNormal, forwardTrace.Normal );
         if ( angle < 90f - StepTolerance || angle > 90f + StepTolerance ) return;
 
-        var stepHorizontal = Vector3.VectorPlaneProject( vel.Normal, AppliedGravity.Normal ).Normal * StepDepth;
-        var stepVertical = -AppliedGravity.Normal * (StepHeight + SkinWidth);
+        var stepHorizontal = Vector3.VectorPlaneProject( vel.Normal, GravityNormal ).Normal * StepDepth;
+        var stepVertical = -GravityNormal * (StepHeight + SkinWidth);
         var stepTrace = BuildTrace( _shrunkenBounds, forwardTrace.EndPosition + stepHorizontal + stepVertical, forwardTrace.EndPosition + stepHorizontal );
 
         if ( stepTrace.StartedSolid || !stepTrace.Hit ) return;
-        if ( !IsAngleStandable( Vector3.GetAngle( stepTrace.Normal, -AppliedGravity.Normal ) ) ) return;
+        if ( !IsAngleStandable( Vector3.GetAngle( stepTrace.Normal, -GravityNormal ) ) ) return;
 
-        var newFeetPos = stepTrace.EndPosition - _offset + Vector3.Up * SkinWidth;
+        var newFeetPos = stepTrace.EndPosition - _offset + _upAxis * SkinWidth;
         if ( newFeetPos.z - WorldPosition.z < 0.5f ) return;
 
         _didStep = true;
@@ -157,8 +157,8 @@ public partial class ShrimpleCharacterController
     private void StickToGround()
     {
         var currentPosition = WorldPosition;
-        var from = currentPosition + _offset + Vector3.Up * StepHeight;
-        var to = currentPosition + _offset + Vector3.Down * (GroundStickDistance + SkinWidth);
+        var from = currentPosition + _offset - GravityNormal * StepHeight;
+        var to = currentPosition + _offset + GravityNormal * (GroundStickDistance + SkinWidth);
 
         var trace = BuildTrace( _shrunkenBounds, from, to );
 
@@ -166,10 +166,10 @@ public partial class ShrimpleCharacterController
 
         if ( trace.Hit )
         {
-            var surfaceAngle = Vector3.GetAngle( Vector3.Up, trace.Normal );
+            var surfaceAngle = Vector3.GetAngle( -GravityNormal, trace.Normal );
             if ( !IsAngleStandable( surfaceAngle ) ) return;
 
-            var targetFeetPos = trace.EndPosition - _offset + Vector3.Up * SkinWidth;
+            var targetFeetPos = trace.EndPosition - _offset + _upAxis * SkinWidth;
 
             Body.WorldPosition = targetFeetPos;
             Body.Sleeping = false;
@@ -190,7 +190,7 @@ public partial class ShrimpleCharacterController
         var position = WorldPosition + _offset;
         var shortCylinderOffset = AppliedWidth / 2f;
         var shortCylinderBounds = new BBox( _shrunkenBounds.Mins, new Vector3( _shrunkenBounds.Maxs.x, _shrunkenBounds.Maxs.y, _shrunkenBounds.Maxs.z - shortCylinderOffset ) );
-        var groundTrace = BuildTrace( shortCylinderBounds, position + Vector3.Down * shortCylinderOffset / 2f, position + Vector3.Down * (GroundStickDistance + SkinWidth) );
+        var groundTrace = BuildTrace( shortCylinderBounds, position + GravityNormal * shortCylinderOffset / 2f, position + GravityNormal * (GroundStickDistance + SkinWidth) );
 
         if ( groundTrace.StartedSolid )
         {
@@ -207,9 +207,9 @@ public partial class ShrimpleCharacterController
                     Body.Velocity = Vector3.Zero;
                 }
 
-                var fallbackTrace = BuildTrace( _shrunkenBounds, position + -AppliedGravity.Normal * 4f, position + AppliedGravity.Normal * 2f );
+                var fallbackTrace = BuildTrace( _shrunkenBounds, position + -GravityNormal * 4f, position + GravityNormal * 2f );
 
-                if ( fallbackTrace.Hit && !fallbackTrace.StartedSolid && Vector3.Dot( fallbackTrace.Normal, -AppliedGravity.Normal ) > 0f )
+                if ( fallbackTrace.Hit && !fallbackTrace.StartedSolid && Vector3.Dot( fallbackTrace.Normal, -GravityNormal ) > 0f )
                 {
                     var standable = IsAngleStandable( Vector3.GetAngle( Vector3.Up, fallbackTrace.Normal ) );
                     IsOnGround = true;
@@ -221,7 +221,7 @@ public partial class ShrimpleCharacterController
                 return;
             }
 
-            groundTrace = BuildTrace( _shrunkenBounds, position, position + Vector3.Down * (GroundStickDistance + SkinWidth) );
+            groundTrace = BuildTrace( _shrunkenBounds, position, position + GravityNormal * (GroundStickDistance + SkinWidth) );
         }
 
         IsStuck = false;
@@ -230,7 +230,7 @@ public partial class ShrimpleCharacterController
         {
             var standable = IsAngleStandable( Vector3.GetAngle( Vector3.Up, groundTrace.Normal ) );
             var landingAngle = Vector3.Dot( Velocity.Normal, groundTrace.Normal );
-            var verticalAngle = Vector3.Dot( Velocity.Normal, AppliedGravity.Normal );
+            var verticalAngle = Vector3.Dot( Velocity.Normal, GravityNormal );
             var goingUp = verticalAngle < 0.1f;
             var hasLanded = !IsOnGround && landingAngle <= (MaxGroundAngle.Max / 180f) && groundTrace.Distance <= SkinWidth * (goingUp ? 6f : 2f) + StepHeight;
 
@@ -242,7 +242,7 @@ public partial class ShrimpleCharacterController
 
             if ( GroundStickEnabled && !IsSlipping && IsOnGround )
             {
-                var targetFeetPos = groundTrace.EndPosition - _offset + Vector3.Up * (SkinWidth + shortCylinderOffset / 2f);
+                var targetFeetPos = groundTrace.EndPosition - _offset + _upAxis * (SkinWidth + shortCylinderOffset / 2f);
                 var delta = WorldPosition - targetFeetPos;
 
                 if ( delta.z >= -0.1f && !delta.IsNearlyZero( 0.001f ) )

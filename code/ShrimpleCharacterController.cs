@@ -719,7 +719,7 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
     /// <summary>
     /// The current ground angle you're standing on (Always 0f if IsOnGround false)
     /// </summary>
-    public float GroundAngle => Vector3.GetAngle( GroundNormal, Vector3.Up );
+    public float GroundAngle => Vector3.GetAngle( GroundNormal, -GravityNormal );
 
     /// <summary>
     /// Gets the velocity multiplier for a given slope angle based on MaxGroundAngle range.<br/>
@@ -781,6 +781,7 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
     public float AppliedDepth => TraceWidth * WorldScale.y; // The depth of the MoveHelper in world units
     public float AppliedHeight => TraceShape == TraceType.Sphere ? AppliedWidth :
         TraceShape == TraceType.Bounds ? TraceBounds.Size.z * WorldScale.z : TraceHeight * WorldScale.z; // The height of the MoveHelper in world units
+    private Vector3 _upAxis => RotateWithGameObject ? WorldRotation.Up : Vector3.Up;
     private Vector3 _offset => (RotateWithGameObject ? WorldRotation.Up : Vector3.Up) * (TraceShape == TraceType.Sphere || TraceShape == TraceType.Bounds ? 0f : AppliedHeight / 2f); // The position of the MoveHelper in world units
 
     /// <summary>
@@ -883,7 +884,7 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
             var radius = bounds.Maxs.x;
             var halfHeight = (bounds.Maxs.z - bounds.Mins.z) / 2f;
             var hemiOffset = MathF.Max( halfHeight - radius, 0f );
-            var capsule = new Capsule( Vector3.Down * hemiOffset, Vector3.Up * hemiOffset, radius );
+            var capsule = new Capsule( Vector3.Down * hemiOffset, Vector3.Up * hemiOffset, radius ); // Do not rotate Vector3, it's rotated 17 lines down!
             builder = Game.SceneTrace.Capsule( capsule, from, to );
         }
         else
@@ -893,7 +894,7 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
             if ( TraceShape == TraceType.Cylinder )
                 builder = Game.SceneTrace.Cylinder( bounds.Maxs.z - bounds.Mins.z, bounds.Maxs.x, from, to );
             if ( TraceShape == TraceType.Sphere )
-                builder = Game.SceneTrace.Sphere( bounds.Maxs.x, from + WorldRotation.Up * bounds.Maxs.x, to + WorldRotation.Up * bounds.Maxs.x );
+                builder = Game.SceneTrace.Sphere( bounds.Maxs.x, from + Vector3.Up * bounds.Maxs.x, to + Vector3.Up * bounds.Maxs.x );
         }
 
         builder = builder
