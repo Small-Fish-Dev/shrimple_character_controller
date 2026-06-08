@@ -792,6 +792,7 @@
           "OnComponentUpdate": null,
           "OverrideMassCenter": false,
           "RigidbodyFlags": 0,
+          "SleepThreshold": 2,
           "StartAsleep": false
         }
       ],
@@ -898,6 +899,7 @@
           "OnComponentUpdate": null,
           "OverrideMassCenter": false,
           "RigidbodyFlags": 0,
+          "SleepThreshold": 2,
           "StartAsleep": false
         }
       ],
@@ -1004,6 +1006,7 @@
           "OnComponentUpdate": null,
           "OverrideMassCenter": false,
           "RigidbodyFlags": 0,
+          "SleepThreshold": 2,
           "StartAsleep": false
         }
       ],
@@ -1110,6 +1113,7 @@
           "OnComponentUpdate": null,
           "OverrideMassCenter": false,
           "RigidbodyFlags": 0,
+          "SleepThreshold": 2,
           "StartAsleep": false
         }
       ],
@@ -1216,6 +1220,7 @@
           "OnComponentUpdate": null,
           "OverrideMassCenter": false,
           "RigidbodyFlags": 0,
+          "SleepThreshold": 2,
           "StartAsleep": false
         }
       ],
@@ -1322,6 +1327,7 @@
           "OnComponentUpdate": null,
           "OverrideMassCenter": false,
           "RigidbodyFlags": 0,
+          "SleepThreshold": 2,
           "StartAsleep": false
         }
       ],
@@ -1428,6 +1434,7 @@
           "OnComponentUpdate": null,
           "OverrideMassCenter": false,
           "RigidbodyFlags": 0,
+          "SleepThreshold": 2,
           "StartAsleep": false
         }
       ],
@@ -1534,6 +1541,7 @@
           "OnComponentUpdate": null,
           "OverrideMassCenter": false,
           "RigidbodyFlags": 0,
+          "SleepThreshold": 2,
           "StartAsleep": false
         }
       ],
@@ -1640,6 +1648,7 @@
           "OnComponentUpdate": null,
           "OverrideMassCenter": false,
           "RigidbodyFlags": 0,
+          "SleepThreshold": 2,
           "StartAsleep": false
         }
       ],
@@ -1746,6 +1755,7 @@
           "OnComponentUpdate": null,
           "OverrideMassCenter": false,
           "RigidbodyFlags": 0,
+          "SleepThreshold": 2,
           "StartAsleep": false
         }
       ],
@@ -1852,6 +1862,7 @@
           "OnComponentUpdate": null,
           "OverrideMassCenter": false,
           "RigidbodyFlags": 0,
+          "SleepThreshold": 2,
           "StartAsleep": false
         }
       ],
@@ -1884,7 +1895,7 @@
           {
             "Id": {
               "Type": "Component",
-              "IdValue": "b851f3bd-936a-41d7-acd4-0bf2fa396615"
+              "IdValue": "1bf098f4-1984-4281-afd0-91a5055e9793"
             },
             "Parent": {
               "Type": "GameObject",
@@ -1898,7 +1909,7 @@
             "IsContainerArray": true,
             "Data": {
               "__type": "Sandbox.Rigidbody",
-              "__guid": "b851f3bd-936a-41d7-acd4-0bf2fa396615",
+              "__guid": "1bf098f4-1984-4281-afd0-91a5055e9793",
               "__enabled": true,
               "Flags": 1,
               "AngularDamping": 0,
@@ -1928,13 +1939,14 @@
               "OnComponentUpdate": null,
               "OverrideMassCenter": false,
               "RigidbodyFlags": "DisableCollisionSounds",
+              "SleepThreshold": 2,
               "StartAsleep": false
             }
           },
           {
             "Id": {
               "Type": "Component",
-              "IdValue": "9d702f73-853f-4ade-acdf-d7c6b186fee2"
+              "IdValue": "3e225c2c-68b1-48b0-ac6a-db7b78e94969"
             },
             "Parent": {
               "Type": "GameObject",
@@ -1942,13 +1954,13 @@
             },
             "PreviousElement": {
               "Type": "Component",
-              "IdValue": "b851f3bd-936a-41d7-acd4-0bf2fa396615"
+              "IdValue": "1bf098f4-1984-4281-afd0-91a5055e9793"
             },
             "ContainerProperty": "Components",
             "IsContainerArray": true,
             "Data": {
               "__type": "Sandbox.CapsuleCollider",
-              "__guid": "9d702f73-853f-4ade-acdf-d7c6b186fee2",
+              "__guid": "3e225c2c-68b1-48b0-ac6a-db7b78e94969",
               "__enabled": true,
               "Flags": 1,
               "ColliderFlags": 0,
@@ -2000,21 +2012,13 @@
           },
           {
             "Target": {
-              "Type": "GameObject",
-              "IdValue": "74bb872c-c7e7-4227-85d3-9108a4460ee0"
-            },
-            "Property": "Rotation",
-            "Value": "0,0,0,0.999999881"
-          },
-          {
-            "Target": {
               "Type": "Component",
               "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
             },
             "Property": "Body",
             "Value": {
               "_type": "component",
-              "component_id": "b851f3bd-936a-41d7-acd4-0bf2fa396615",
+              "component_id": "1bf098f4-1984-4281-afd0-91a5055e9793",
               "go": "74bb872c-c7e7-4227-85d3-9108a4460ee0",
               "component_type": "Rigidbody"
             }
@@ -2035,7 +2039,7 @@
             "Property": "Collider",
             "Value": {
               "_type": "component",
-              "component_id": "9d702f73-853f-4ade-acdf-d7c6b186fee2",
+              "component_id": "3e225c2c-68b1-48b0-ac6a-db7b78e94969",
               "go": "74bb872c-c7e7-4227-85d3-9108a4460ee0",
               "component_type": "CapsuleCollider"
             }
@@ -2084,9 +2088,6 @@
       "CustomBounds": false
     },
     "GameObjectSystems": {
-      "Sandbox.MovieMaker.MovieRecorderSystem": {
-        "DisableClientRecording": false
-      },
       "Sandbox.Clutter.ClutterGridSystem": {
         "Storage": {
           "$blob": "61feeac0-27b4-42b8-a298-936b99e917c3"

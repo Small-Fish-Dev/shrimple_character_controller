@@ -79,7 +79,7 @@ public partial class ShrimpleCharacterController
         if ( IsOnGround && GroundStickEnabled && !GroundNormal.IsNearlyZero( 0.01f ) )
         {
             if ( MathF.Abs( GroundNormal.z ) > 0.01f )
-                velocity = velocity.WithZ( -(GroundNormal.x * velocity.x + GroundNormal.y * velocity.y) / GroundNormal.z );
+                velocity = velocity.WithZ( -( GroundNormal.x * velocity.x + GroundNormal.y * velocity.y ) / GroundNormal.z );
 
             var isGoingUphill = Vector3.Dot( velocity, AppliedGravity ) < 0f;
             var slopeMultiplier = isGoingUphill ? GetSlopeVelocityMultiplier( GroundAngle ) : 1f;
@@ -89,7 +89,7 @@ public partial class ShrimpleCharacterController
         if ( IsOnGround && !GroundStickEnabled )
             velocity.z = z;
 
-        if ( GravityEnabled && (!IsOnGround || IsSlipping || !GroundStickEnabled) )
+        if ( GravityEnabled && ( !IsOnGround || IsSlipping || !GroundStickEnabled ) )
             velocity += AppliedGravity * Time.Delta;
 
         Body.Velocity = velocity;
@@ -129,7 +129,7 @@ public partial class ShrimpleCharacterController
         if ( angle < 90f - StepTolerance || angle > 90f + StepTolerance ) return;
 
         var stepHorizontal = Vector3.VectorPlaneProject( vel.Normal, GravityNormal ).Normal * StepDepth;
-        var stepVertical = -GravityNormal * (StepHeight + SkinWidth);
+        var stepVertical = -GravityNormal * ( StepHeight + SkinWidth );
         var stepTrace = BuildTrace( _shrunkenBounds, forwardTrace.EndPosition + stepHorizontal + stepVertical, forwardTrace.EndPosition + stepHorizontal );
 
         if ( stepTrace.StartedSolid || !stepTrace.Hit ) return;
@@ -158,7 +158,7 @@ public partial class ShrimpleCharacterController
     {
         var currentPosition = WorldPosition;
         var from = currentPosition + _offset - GravityNormal * StepHeight;
-        var to = currentPosition + _offset + GravityNormal * (GroundStickDistance + SkinWidth);
+        var to = currentPosition + _offset + GravityNormal * ( GroundStickDistance + SkinWidth );
 
         var trace = BuildTrace( _shrunkenBounds, from, to );
 
@@ -190,7 +190,7 @@ public partial class ShrimpleCharacterController
         var position = WorldPosition + _offset;
         var shortCylinderOffset = AppliedWidth / 2f;
         var shortCylinderBounds = new BBox( _shrunkenBounds.Mins, new Vector3( _shrunkenBounds.Maxs.x, _shrunkenBounds.Maxs.y, _shrunkenBounds.Maxs.z - shortCylinderOffset ) );
-        var groundTrace = BuildTrace( shortCylinderBounds, position + GravityNormal * shortCylinderOffset / 2f, position + GravityNormal * (GroundStickDistance + SkinWidth) );
+        var groundTrace = BuildTrace( shortCylinderBounds, position + GravityNormal * shortCylinderOffset / 2f, position + GravityNormal * ( GroundStickDistance + SkinWidth ) );
 
         if ( groundTrace.StartedSolid )
         {
@@ -221,7 +221,7 @@ public partial class ShrimpleCharacterController
                 return;
             }
 
-            groundTrace = BuildTrace( _shrunkenBounds, position, position + GravityNormal * (GroundStickDistance + SkinWidth) );
+            groundTrace = BuildTrace( _shrunkenBounds, position, position + GravityNormal * ( GroundStickDistance + SkinWidth ) );
         }
 
         IsStuck = false;
@@ -232,7 +232,7 @@ public partial class ShrimpleCharacterController
             var landingAngle = Vector3.Dot( Velocity.Normal, groundTrace.Normal );
             var verticalAngle = Vector3.Dot( Velocity.Normal, GravityNormal );
             var goingUp = verticalAngle < 0.1f;
-            var hasLanded = !IsOnGround && landingAngle <= (MaxGroundAngle.Max / 180f) && groundTrace.Distance <= SkinWidth * (goingUp ? 6f : 2f) + StepHeight;
+            var hasLanded = !IsOnGround && landingAngle <= ( MaxGroundAngle.Max / 180f ) && groundTrace.Distance <= SkinWidth * ( goingUp ? 6f : 2f ) + StepHeight;
 
             IsOnGround = IsOnGround || hasLanded;
             GroundNormal = groundTrace.Normal;
@@ -242,7 +242,7 @@ public partial class ShrimpleCharacterController
 
             if ( GroundStickEnabled && !IsSlipping && IsOnGround )
             {
-                var targetFeetPos = groundTrace.EndPosition - _offset + _upAxis * (SkinWidth + shortCylinderOffset / 2f);
+                var targetFeetPos = groundTrace.EndPosition - _offset + _upAxis * ( SkinWidth + shortCylinderOffset / 2f );
                 var delta = WorldPosition - targetFeetPos;
 
                 if ( delta.z >= -0.1f && !delta.IsNearlyZero( 0.001f ) )
@@ -265,14 +265,17 @@ public partial class ShrimpleCharacterController
         IsSlipping = false;
     }
 
-    protected void CreateBody()
+    protected void CreateBody( bool recreate = false )
     {
-        if ( Collider.IsValid() ) Collider.Destroy();
-        if ( Body.IsValid() ) Body.Destroy();
-        if ( BodyObject.IsValid() ) BodyObject.Destroy();
+        if ( recreate )
+        {
+            if ( Collider.IsValid() ) Collider.Destroy();
+            if ( Body.IsValid() ) Body.Destroy();
+            if ( BodyObject.IsValid() ) BodyObject.Destroy();
+        }
 
-        CreateCollider();
-        CreateRigidbody();
+        CreateCollider( recreate );
+        CreateRigidbody( recreate );
     }
 
     protected void DestroyBody()
@@ -282,20 +285,53 @@ public partial class ShrimpleCharacterController
         if ( BodyObject.IsValid() ) BodyObject.Destroy();
     }
 
-    protected void CreateCollider()
+    protected void CreateCollider( bool recreate = false )
     {
-        if ( Collider.IsValid() ) Collider.Destroy();
+        if ( recreate && Collider.IsValid() )
+            Collider.Destroy();
 
         if ( PhysicallySimulated )
-            Collider = GameObject.GetOrAddComponent<CapsuleCollider>();
+        {
+            if ( !Collider.IsValid() || Collider is not CapsuleCollider )
+            {
+                if ( Collider.IsValid() )
+                    Collider.Destroy();
+
+                Collider = GameObject.GetOrAddComponent<CapsuleCollider>();
+            }
+        }
         else
         {
             if ( TraceShape == TraceType.Box || TraceShape == TraceType.Bounds )
-                Collider = GameObject.GetOrAddComponent<BoxCollider>();
+            {
+                if ( !Collider.IsValid() || Collider is not BoxCollider )
+                {
+                    if ( Collider.IsValid() )
+                        Collider.Destroy();
+
+                    Collider = GameObject.GetOrAddComponent<BoxCollider>();
+                }
+            }
             else if ( TraceShape == TraceType.Cylinder )
-                Collider = GameObject.GetOrAddComponent<HullCollider>();
+            {
+                if ( !Collider.IsValid() || Collider is not HullCollider )
+                {
+                    if ( Collider.IsValid() )
+                        Collider.Destroy();
+
+                    Collider = GameObject.GetOrAddComponent<HullCollider>();
+                }
+            }
             else if ( TraceShape == TraceType.Sphere )
-                Collider = GameObject.GetOrAddComponent<SphereCollider>();
+            {
+                if ( !Collider.IsValid() || Collider is not SphereCollider )
+                {
+                    if ( Collider.IsValid() )
+                        Collider.Destroy();
+
+                    Collider = GameObject.GetOrAddComponent<SphereCollider>();
+                }
+            }
         }
 
         if ( HidePhysicalComponents )
@@ -312,40 +348,42 @@ public partial class ShrimpleCharacterController
 
         if ( Collider is CapsuleCollider capsuleCollider )
         {
-            var radius = (TraceWidth - SkinWidth) / 2f;
+            var radius = ( TraceWidth - SkinWidth ) / 2f;
             var height = TraceHeight - SkinWidth;
             capsuleCollider.Radius = radius;
             capsuleCollider.Start = Vector3.Up * radius;
-            capsuleCollider.End = Vector3.Up * (height - radius);
+            capsuleCollider.End = Vector3.Up * ( height - radius );
         }
         else if ( Collider is BoxCollider boxCollider )
         {
             var bounds = BuildBounds();
             boxCollider.Scale = bounds.Size - SkinWidth;
-            boxCollider.Center = Vector3.Up * (TraceHeight / 2f);
+            boxCollider.Center = Vector3.Up * ( TraceHeight / 2f );
         }
         else if ( Collider is HullCollider hullCollider )
         {
             hullCollider.Type = HullCollider.PrimitiveType.Cylinder;
             hullCollider.Height = TraceHeight - SkinWidth;
-            hullCollider.Radius = (TraceWidth - SkinWidth) / 2f;
-            hullCollider.Center = Vector3.Up * (TraceHeight / 2f);
+            hullCollider.Radius = ( TraceWidth - SkinWidth ) / 2f;
+            hullCollider.Center = Vector3.Up * ( TraceHeight / 2f );
         }
         else if ( Collider is SphereCollider sphereCollider )
         {
-            sphereCollider.Radius = (TraceWidth - SkinWidth) / 2f;
+            sphereCollider.Radius = ( TraceWidth - SkinWidth ) / 2f;
             sphereCollider.Center = Vector3.Up * sphereCollider.Radius;
         }
     }
 
-    protected void CreateRigidbody()
+    protected void CreateRigidbody( bool recreate = false )
     {
-        if ( Body.IsValid() ) Body.Destroy();
+        if ( recreate && Body.IsValid() )
+            Body.Destroy();
 
-        if ( GameObject.Components.TryGet<Rigidbody>( out var existingBody ) )
-            existingBody.Destroy();
+        if ( !Body.IsValid() && GameObject.Components.TryGet<Rigidbody>( out var existingBody ) )
+            Body = existingBody;
+        if ( !Body.IsValid() )
+            Body = GameObject.AddComponent<Rigidbody>();
 
-        Body = GameObject.AddComponent<Rigidbody>();
         Body.Locking = new PhysicsLock() { Pitch = true, Roll = true, Yaw = true };
         Body.Gravity = false;
         Body.MassOverride = BodyMassOverride;

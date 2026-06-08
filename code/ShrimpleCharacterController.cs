@@ -154,7 +154,7 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
 
     [Feature( "Physical" )]
     [Button( "Recreate Components", "sync" )]
-    public void RefreshBody() => CreateBody();
+    public void RefreshBody() => CreateBody( true );
 
     /// <summary>
     /// If pushing against a wall, scale the velocity based on the wall's angle (False is useful for NPCs that get stuck on corners)
@@ -782,7 +782,7 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
     public float AppliedHeight => TraceShape == TraceType.Sphere ? AppliedWidth :
         TraceShape == TraceType.Bounds ? TraceBounds.Size.z * WorldScale.z : TraceHeight * WorldScale.z; // The height of the MoveHelper in world units
     private Vector3 _upAxis => RotateWithGameObject ? WorldRotation.Up : Vector3.Up;
-    private Vector3 _offset => (RotateWithGameObject ? WorldRotation.Up : Vector3.Up) * (TraceShape == TraceType.Sphere || TraceShape == TraceType.Bounds ? 0f : AppliedHeight / 2f); // The position of the MoveHelper in world units
+    private Vector3 _offset => ( RotateWithGameObject ? WorldRotation.Up : Vector3.Up ) * ( TraceShape == TraceType.Sphere || TraceShape == TraceType.Bounds ? 0f : AppliedHeight / 2f ); // The position of the MoveHelper in world units
 
     /// <summary>
     /// The bounds of this MoveHelper generated from the TraceWidth and TraceHeight
@@ -822,18 +822,18 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
             if ( TraceShape == TraceType.Box )
                 draw.LineBBox( Bounds.Translate( Vector3.Up * Bounds.Size.z / 2f ) );
             if ( TraceShape == TraceType.Cylinder )
-                draw.LineCylinder( Vector3.Zero, Vector3.Up * (Bounds.Maxs.z - Bounds.Mins.z), Bounds.Maxs.x, Bounds.Maxs.x, 24 );
+                draw.LineCylinder( Vector3.Zero, Vector3.Up * ( Bounds.Maxs.z - Bounds.Mins.z ), Bounds.Maxs.x, Bounds.Maxs.x, 24 );
             if ( TraceShape == TraceType.Sphere )
                 draw.LineSphere( Vector3.Up * Bounds.Maxs.x, Bounds.Maxs.x );
             if ( TraceShape == TraceType.Bounds )
                 draw.LineBBox( TraceBounds );
-            
+
             if ( !UseSceneGravity && UseVectorGravity )
             {
                 draw.Color = Color.Red;
                 draw.LineThickness = 5f;
                 draw.IgnoreDepth = true;
-                draw.Arrow(Vector3.Zero, GravityNormal * 50f);
+                draw.Arrow( Vector3.Zero, GravityNormal * 50f );
             }
         }
     }
@@ -866,7 +866,7 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
 
     private void BuildGravity()
     {
-        _appliedGravity = UseSceneGravity? Scene.PhysicsWorld.Gravity : UseVectorGravity? VectorGravity : new Vector3(0f, 0f, Gravity);
+        _appliedGravity = UseSceneGravity ? Scene.PhysicsWorld.Gravity : UseVectorGravity ? VectorGravity : new Vector3( 0f, 0f, Gravity );
         GravityNormal = _appliedGravity.Normal;
     }
 
@@ -890,7 +890,7 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
         if ( useCapsule )
         {
             var radius = bounds.Maxs.x;
-            var halfHeight = (bounds.Maxs.z - bounds.Mins.z) / 2f;
+            var halfHeight = ( bounds.Maxs.z - bounds.Mins.z ) / 2f;
             var hemiOffset = MathF.Max( halfHeight - radius, 0f );
             var capsule = new Capsule( Vector3.Down * hemiOffset, Vector3.Up * hemiOffset, radius ); // Do not rotate Vector3, it's rotated 17 lines down!
             builder = Game.SceneTrace.Capsule( capsule, from, to );
@@ -978,7 +978,7 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
                     if ( PushTagsWeight.TryGetValue( tag, out var tagWeight ) )
                     {
                         var otherPosition = pushTrace.GameObject.WorldPosition.WithZ( WorldPosition.z ); // Only horizontal pushing
-                        var pushDirection = (otherPosition - WorldPosition).Normal;
+                        var pushDirection = ( otherPosition - WorldPosition ).Normal;
                         var pushVelocity = pushDirection * tagWeight * 50f; // I find 50 u/s to be a good amount to push if the weight is 1.0 (!!!)
 
                         goalVelocity -= pushVelocity;
@@ -1064,7 +1064,7 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
         // GROUND AND UNSTUCK CHECK //
         if ( depth == 0 ) // Only check for the first step since it's impossible to get stuck on other steps
         {
-            var groundTrace = BuildTrace( _shrunkenBounds, position, position + AppliedGravity.Normal * (GroundStickDistance + SkinWidth * 1.1f) ); // Compensate for floating inaccuracy
+            var groundTrace = BuildTrace( _shrunkenBounds, position, position + AppliedGravity.Normal * ( GroundStickDistance + SkinWidth * 1.1f ) ); // Compensate for floating inaccuracy
 
             if ( groundTrace.StartedSolid )
             {
@@ -1125,7 +1125,7 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
                     if ( slopeSpeed > maxSlipSpeed )
                     {
                         // Clamp the velocity component along the slope
-                        velocity = velocity - slopeDir * (slopeSpeed - maxSlipSpeed);
+                        velocity = velocity - slopeDir * ( slopeSpeed - maxSlipSpeed );
                     }
                 }
 
@@ -1161,7 +1161,7 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
             var elasticityDirection = MathX.Lerp( HorizontalElasticity, VerticalElasticity, angle / 90f );
             var elasticity = PhysicallySimulated ? 0f : BouncingEnabled ?
                 velocity.Length / delta <= ElasticityThreshold ?
-                    0f : elasticityDirection * (IncludeGroundElasticity ? GroundSurface?.Elasticity ?? 1f : 1f)
+                    0f : elasticityDirection * ( IncludeGroundElasticity ? GroundSurface?.Elasticity ?? 1f : 1f )
                 : 0f; // Allah help me format this better
 
             if ( IsAngleStandable( angle ) ) // Terrain we can walk on
@@ -1205,7 +1205,7 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
                         if ( IsOnGround ) // Stairs VVV
                         {
                             var stepHorizontal = Vector3.VectorPlaneProject( velocity.Normal, AppliedGravity.Normal ).Normal * StepDepth; // How far in front we're looking for steps
-                            var stepVertical = -AppliedGravity.Normal * (StepHeight + SkinWidth); // How high we're looking for steps + Some to compensate for floating inaccuracy
+                            var stepVertical = -AppliedGravity.Normal * ( StepHeight + SkinWidth ); // How high we're looking for steps + Some to compensate for floating inaccuracy
                             var stepTrace = BuildTrace( _shrunkenBounds, travelTrace.EndPosition + stepHorizontal + stepVertical, travelTrace.EndPosition + stepHorizontal );
                             var stepAngle = Vector3.GetAngle( stepTrace.Normal, -AppliedGravity.Normal );
 
@@ -1236,7 +1236,7 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
                     if ( elasticity > 0 )
                         leftover = Vector3.Lerp( wallLeftover, Vector3.Reflect( leftover, travelTrace.Normal ), elasticity, false );
                     else
-                        leftover = (wallLeftover * scale).WithZ( wallLeftover.z );
+                        leftover = ( wallLeftover * scale ).WithZ( wallLeftover.z );
 
                     WallObject = travelTrace.GameObject;
                     WallNormal = travelTrace.Normal;
@@ -1312,8 +1312,8 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
 
         var isSameDirection = velocity.IsNearlyZero( 1f ) || Vector3.Dot( wishVelocity.WithZ( 0f ).Normal, velocity.WithZ( 0f ).Normal ) >= 0f; // Is our wishVelocity roughly moving towards our velocity already?
         var currentSpeed = Math.Max( Velocity.WithZ( 0f ).Length, 10f );
-        var acceleration = (IsOnGround ? GroundAcceleration : AirAcceleration) * (FixedAcceleration ? 1f : AccelerationCurve.Evaluate( currentSpeed ));
-        var deceleration = (IsOnGround ? GroundDeceleration : AirDeceleration) * (FixedDeceleration ? 1f : DecelerationCurve.Evaluate( currentSpeed ));
+        var acceleration = ( IsOnGround ? GroundAcceleration : AirAcceleration ) * ( FixedAcceleration ? 1f : AccelerationCurve.Evaluate( currentSpeed ) );
+        var deceleration = ( IsOnGround ? GroundDeceleration : AirDeceleration ) * ( FixedDeceleration ? 1f : DecelerationCurve.Evaluate( currentSpeed ) );
 
         if ( isAccelerating )
             goalSpeed = acceleration;
@@ -1330,8 +1330,8 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
 
     private Vector3 CalculateGoalVelocity( float delta )
     {
-        bool shouldIgnoreZ = IgnoreZ || (IgnoreZWhenZero && WishVelocity.z.AlmostEqual( 0f ));
-        var wishVelocity = shouldIgnoreZ ? (WishVelocity.Normal * WishVelocity.Length).WithZ( Velocity.z ) : WishVelocity;
+        bool shouldIgnoreZ = IgnoreZ || ( IgnoreZWhenZero && WishVelocity.z.AlmostEqual( 0f ) );
+        var wishVelocity = shouldIgnoreZ ? ( WishVelocity.Normal * WishVelocity.Length ).WithZ( Velocity.z ) : WishVelocity;
         var isAccelerating = shouldIgnoreZ ? wishVelocity.WithZ( 0f ).Length >= Velocity.WithZ( 0f ).Length : wishVelocity.Length >= Velocity.Length;
 
         var goalSpeed = CalculateGoalSpeed( wishVelocity, Velocity, isAccelerating, delta );
@@ -1362,7 +1362,7 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
                 startPos = position + -AppliedGravity.Normal * 2f; // Try going up 2nd
 
             if ( i > 1 && i < MaxUnstuckTries / 2f )
-                startPos = position + Vector3.Random.Normal * ((float)i / 2f); // Start randomly checking 3rd
+                startPos = position + Vector3.Random.Normal * ( (float)i / 2f ); // Start randomly checking 3rd
 
             if ( i >= MaxUnstuckTries / 2f )
                 startPos = position + Vector3.Random.Normal * i; // Ok at this point start checking further
