@@ -827,6 +827,14 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
                 draw.LineSphere( Vector3.Up * Bounds.Maxs.x, Bounds.Maxs.x );
             if ( TraceShape == TraceType.Bounds )
                 draw.LineBBox( TraceBounds );
+            
+            if ( !UseSceneGravity && UseVectorGravity )
+            {
+                draw.Color = Color.Red;
+                draw.LineThickness = 5f;
+                draw.IgnoreDepth = true;
+                draw.Arrow(Vector3.Zero, GravityNormal * 50f);
+            }
         }
     }
 
