@@ -522,6 +522,14 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
     public bool ApplySurfaceVelocity { get; set; } = true;
 
     /// <summary>
+    /// When the surface you're on is slippery, scale the max ground angled relative to the friction<br/>
+    /// Example: Ice with friction 0.5f, MaxGroundAngle will be 30f instead of 60f
+    /// </summary>
+    [Property]
+    [Feature( "GroundStick" )]
+    public bool ScaleGroundAngleBySurfaceFriction { get; set; } = true;
+
+    /// <summary>
     /// Enable steps climbing (+1 Trace call)
     /// </summary>
     [FeatureEnabled( "Steps" )]
@@ -735,7 +743,7 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
     /// <summary>
     /// Whether the given angle is considered standable (below max ground angle)
     /// </summary>
-    public bool IsAngleStandable( float angle ) => angle <= MaxGroundAngle.Max;
+    public bool IsAngleStandable( float angle ) => angle <= MaxGroundAngle.Max * ( ScaleGroundAngleBySurfaceFriction ? GroundSurface?.Friction ?? 1f : 1f );
 
     /// <summary>
     /// The current surface you're standing on

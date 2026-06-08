@@ -2051,6 +2051,14 @@
             },
             "Property": "PhysicallySimulated",
             "Value": true
+          },
+          {
+            "Target": {
+              "Type": "Component",
+              "IdValue": "8d28351d-303a-4961-9b16-b56f86df43b3"
+            },
+            "Property": "ScaleGroundAngleBySurfaceFriction",
+            "Value": true
           }
         ],
         "MovedObjects": []
