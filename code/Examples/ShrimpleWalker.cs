@@ -82,7 +82,7 @@ public sealed class ShrimpleWalker : Component
 
         EyeAngles += Input.AnalogLook;
         EyeAngles = EyeAngles.WithPitch( MathX.Clamp( EyeAngles.pitch, -10f, 40f ) );
-        Renderer.WorldRotation = Rotation.Slerp( Renderer.WorldRotation, Rotation.FromYaw( EyeAngles.yaw ), Time.Delta * 15f );
+        Renderer.LocalRotation = Rotation.FromYaw( EyeAngles.yaw );
 
         var cameraOffset = Vector3.Up * 70f + Vector3.Backward * 280f;
         Camera.LocalRotation = EyeAngles.ToRotation();
