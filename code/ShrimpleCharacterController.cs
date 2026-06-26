@@ -1025,7 +1025,7 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
         if ( !manualUpdate )
         {
             Velocity = finalVelocity;
-            WorldPosition = finalPosition; // Actually updating the position is "expensive" so we only do it once at the end
+            WorldPosition = finalPosition + SurfaceVelocity * delta; // Actually updating the position is "expensive" so we only do it once at the end
         }
 
         return new MoveHelperResult( finalPosition, finalVelocity, moveHelperResult.Offset );
