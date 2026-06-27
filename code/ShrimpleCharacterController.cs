@@ -7,11 +7,10 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
 {
     /// <summary>
     /// Manually update this by calling Move() or let it always be simulated.
-    /// Not supported when PhysicallySimulated is enabled.
+    /// In physical mode, Move() drives the next physics step instead of running the trace-based path.
     /// </summary>
     [Property]
     [Group( "Options" )]
-    [HideIf( nameof( PhysicallySimulated ), true )]
     public bool ManuallyUpdate { get; set; } = false;
 
     [Property]
@@ -972,6 +971,19 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
     /// <param name="manualUpdate">Just calculate but don't update position</param>
     public MoveHelperResult Move( float delta, bool manualUpdate = false )
     {
+        // In physical mode the simulation runs inside the physics step callbacks.
+        // Queue this call so the next PrePhysicsStep/PostPhysicsStep drives the body with the requested delta.
+        if ( PhysicallySimulated )
+        {
+            if ( Body.IsValid() && !manualUpdate )
+            {
+                _physicalMoveDelta = delta;
+                _physicalMovePending = true;
+            }
+
+            return new MoveHelperResult( WorldPosition, Velocity );
+        }
+
         var goalVelocity = CalculateGoalVelocity( delta ); // Calculate the goal velocity using our Acceleration and Deceleration values
 
         // SIMULATE PUSH FORCES //

@@ -5,10 +5,21 @@ public partial class ShrimpleCharacterController
     bool _didStep;
     Vector3 _stepPosition;
 
+    // Set by Move() when ManuallyUpdate is enabled in physical mode, consumed by the next physics step
+    bool _physicalMovePending;
+    float _physicalMoveDelta;
+
+    // The delta this physics step should simulate (the manual Move() delta, otherwise the fixed step)
+    float ActiveDelta => ( ManuallyUpdate && _physicalMovePending ) ? _physicalMoveDelta : Time.Delta;
+
+    // The solver always integrates over Time.Delta, so we scale velocity to cover ActiveDelta worth of distance
+    float MoveScale => Time.Delta > 0f ? ActiveDelta / Time.Delta : 1f;
+
     void IScenePhysicsEvents.PrePhysicsStep()
     {
         if ( !PhysicallySimulated ) return;
         if ( !Body.IsValid() ) return;
+        if ( ManuallyUpdate && !_physicalMovePending ) return; // Wait for a manual Move() call to drive us
 
         _didStep = false;
 
@@ -26,13 +37,16 @@ public partial class ShrimpleCharacterController
         }
 
         if ( !PhysicallySimulated ) return;
+        if ( ManuallyUpdate && !_physicalMovePending ) return;
 
         if ( _didStep )
             Body.WorldPosition = _stepPosition;
 
         CategorizePhysicalGround();
         ApplyGroundVelocity();
-        Velocity = Body.Velocity;
+        Velocity = Body.Velocity / MoveScale; // De-scale back to logical units/second
+
+        _physicalMovePending = false;
     }
 
     private void UpdateMassCenter()
@@ -74,7 +88,7 @@ public partial class ShrimpleCharacterController
     private void AddWishVelocity()
     {
         var z = Body.Velocity.z;
-        var velocity = CalculateGoalVelocity( Time.Delta );
+        var velocity = CalculateGoalVelocity( ActiveDelta );
 
         if ( IsOnGround && GroundStickEnabled && !GroundNormal.IsNearlyZero( 0.01f ) )
         {
@@ -90,9 +104,9 @@ public partial class ShrimpleCharacterController
             velocity.z = z;
 
         if ( GravityEnabled && ( !IsOnGround || IsSlipping || !GroundStickEnabled ) )
-            velocity += AppliedGravity * Time.Delta;
+            velocity += AppliedGravity * ActiveDelta;
 
-        Body.Velocity = velocity;
+        Body.Velocity = velocity * MoveScale; // Scale so the solver covers ActiveDelta worth of distance over Time.Delta
     }
 
     private void UpdateMovement()
@@ -148,10 +162,10 @@ public partial class ShrimpleCharacterController
     {
         if ( !IsOnGround || !GroundStickEnabled || IsSlipping ) return;
 
-        var groundVelocity = GroundVelocity;
+        var groundVelocity = PlatformVelocity * Time.Delta + SurfaceVelocity * ActiveDelta;
         if ( groundVelocity.IsNearZeroLength ) return;
 
-        Body.WorldPosition += groundVelocity * Time.Delta;
+        Body.WorldPosition += groundVelocity;
     }
 
     private void StickToGround()
