@@ -10,7 +10,7 @@ public partial class ShrimpleCharacterController
     float _physicalMoveDelta;
 
     // The delta this physics step should simulate (the manual Move() delta, otherwise the fixed step)
-    float ActiveDelta => ( ManuallyUpdate && _physicalMovePending ) ? _physicalMoveDelta : Time.Delta;
+    float ActiveDelta => ( ManuallyUpdate && _physicalMovePending ) ? _physicalMoveDelta : ActiveAutoTimeDelta;
 
     // The solver always integrates over Time.Delta, so we scale velocity to cover ActiveDelta worth of distance
     float MoveScale => Time.Delta > 0f ? ActiveDelta / Time.Delta : 1f;
