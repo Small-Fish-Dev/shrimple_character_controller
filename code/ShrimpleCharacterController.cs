@@ -390,6 +390,25 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
     public bool IgnoreGroundSurface { get; set; } = false;
 
     /// <summary>
+    /// Use Time.Delta as the time step when automatically simulating (disable to set a fixed TimeDelta)
+    /// </summary>
+    [Property]
+    [Group( "Options" )]
+    [HideIf( nameof( ManuallyUpdate ), true )]
+    public bool UseTimeDelta { get; set; } = true;
+
+    /// <summary>
+    /// Fixed time step used when automatically simulating and UseTimeDelta is disabled
+    /// </summary>
+    [Property]
+    [Group( "Options" )]
+    [ShowIf( nameof( _showTimeDelta ), true )]
+    public float TimeDelta { get; set; } = 1f / 60f;
+
+    private bool _showTimeDelta => !ManuallyUpdate && !UseTimeDelta;
+    private float ActiveAutoTimeDelta => UseTimeDelta ? Time.Delta : TimeDelta;
+
+    /// <summary>
     /// Is this MoveHelper meant for horizontal grounded movement? (false = For flying or noclip)
     /// </summary>
     [Property]
@@ -1428,7 +1447,7 @@ public partial class ShrimpleCharacterController : Component, IScenePhysicsEvent
         base.OnFixedUpdate();
 
         if ( !ManuallyUpdate && Active && !PhysicallySimulated ) // If we're not physically simulated we Move inside of OnFixedUpdate
-            Move();
+            Move( ActiveAutoTimeDelta );
     }
 
     protected override void OnDestroy()
